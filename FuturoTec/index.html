@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>FuturoTEC - Conectando talentos da ETEC ao mercado de trabalho</title>
+    <meta name="description" content="Plataforma que conecta estudantes da ETEC com empresas parceiras. Mais de 100 empresas e 500 alunos empregados em diversas áreas técnicas." />
+    <meta name="author" content="FuturoTEC"/>
+
+    <meta property="og:title" content="FuturoTEC - Conectando talentos da ETEC ao mercado de trabalho" />
+    <meta property="og:description" content="Plataforma que conecta estudantes da ETEC com empresas parceiras. Mais de 100 empresas e 500 alunos empregados em diversas áreas técnicas." />
+    <meta property="og:type" content="website"/>
+    <meta property="og:image" content="https://lovable.dev/opengraph-image-p98pqg.png"/>
+
+    <meta name="twitter:card" content="summary_large_image"/>
+    <meta name="twitter:site" content="@lovable_dev"/>
+    <meta name="twitter:image" content="https://lovable.dev/opengraph-image-p98pqg.png"/>
+    <link rel="stylesheet" href="css/styles.css">
+  </head>
+
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+    <div class="app">
+
+  <!-- Header -->
+    <header class="header">
+        <div class="container">
+        <div class="nav-wrapper">
+        <div class="logo">
+            <img src="img/FuturoTecInicial.jpeg" alt="FuturoTEC Logo">
+        </div>
+
+            
+            <!-- Desktop Navigation -->
+            <nav class="nav-desktop">
+              <a href="#inicio" class="nav-link">Início</a>
+              <a href="#sobre" class="nav-link">Sobre</a>
+              <a href="#cursos" class="nav-link">Cursos</a>
+              <a href="#cadastro" class="nav-link">Cadastro</a>
+            </nav>
+            
+            <button class="login-btn">Login</button>
+            
+            <!-- Mobile Menu Button -->
+            <button class="mobile-menu-btn" id="mobileMenuBtn">
+              <span></span>
+              <span></span>
+              <span></span>
+            </button>
+          </div>
+          
+          <!-- Mobile Navigation -->
+          <nav class="nav-mobile" id="mobileNav">
+            <a href="#inicio" class="nav-link-mobile">Início</a>
+            <a href="#sobre" class="nav-link-mobile">Sobre</a>
+            <a href="#cursos" class="nav-link-mobile">Cursos</a>
+            <a href="#cadastro" class="nav-link-mobile">Cadastro</a>
+          </nav>
+        </div>
+      </header>
+
+      <main>
+        <!-- Hero Section -->
+        <section class="hero" id="inicio">
+          <div class="container">
+            <div class="hero-grid">
+              <div class="hero-content">
+                <h1 class="hero-title">
+                  Conectando<br />
+                  talentos da ETEC ao<br />
+                  mercado de trabalho
+                </h1>
+                <button class="cta-button">Começar</button>
+              </div>
+              <div class="hero-image">
+                <img src="img/ministrualexANDMORAIS.jpg" alt="VAI TER UMA IMAGEM AQUI VEY" />
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Stats Section -->
+        <section class="stats">
+          <div class="container">
+            <div class="stats-grid">
+              <div class="stat-item">
+                <div class="stat-icon">
+                  <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                    <line x1="8" y1="21" x2="16" y2="21"></line>
+                    <line x1="12" y1="17" x2="12" y2="21"></line>
+                  </svg>
+                </div>
+                <div class="stat-number">+ 100</div>
+                <div class="stat-label">Empresas parceiras</div>
+              </div>
+              
+              <div class="stat-item">
+                <div class="stat-icon">
+                  <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <path d="M22 10v6M2 10l10-5 10 5-10 5z"></path>
+                    <path d="M6 12v5c3 0 9 0 12 0v-5"></path>
+                  </svg>
+                </div>
+                <div class="stat-number">+ 500</div>
+                <div class="stat-label">Alunos empregados</div>
+              </div>
+              
+              <div class="stat-item">
+                <div class="stat-icon">
+                  <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <circle cx="12" cy="12" r="3"></circle>
+                    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1 1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                  </svg>
+                </div>
+                <div class="stat-number">Diversas</div>
+                <div class="stat-label">áreas técnicas</div>
+              </div>
+            </div>
+            
+            <div class="stats-title">
+              <h2>Conectando talentos</h2>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
