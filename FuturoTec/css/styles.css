@@ -1,4 +1,4 @@
-/* Reset e base */
+/* --- Reset e Variáveis --- */
 * {
   margin: 0;
   padding: 0;
@@ -17,6 +17,7 @@
   --blue-accent: hsl(210, 83%, 53%);
 }
 
+/* --- Estilos Gerais --- */
 body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   line-height: 1.6;
@@ -46,7 +47,7 @@ body {
   }
 }
 
-/* Header */
+/* --- Header --- */
 .header {
   background-color: var(--background);
   border-bottom: 1px solid var(--border);
@@ -62,13 +63,11 @@ body {
   justify-content: space-between;
 }
 
-/* Logo */
 .logo img {
-  max-height: 90px; /* controla a altura da logo */
-  width: auto;      /* mantém proporção */
+  max-height: 90px;
+  width: auto;
   display: block;
 }
-
 
 .nav-desktop {
   display: none;
@@ -117,7 +116,7 @@ body {
   background-color: var(--primary-hover);
 }
 
-/* Mobile Menu */
+/* --- Mobile Menu --- */
 .mobile-menu-btn {
   display: flex;
   flex-direction: column;
@@ -184,7 +183,7 @@ body {
   color: var(--primary);
 }
 
-/* Hero Section */
+/* --- Hero Section --- */
 .hero {
   padding: 3rem 0;
   background-color: var(--background);
@@ -267,7 +266,7 @@ body {
   }
 }
 
-/* Stats Section */
+/* --- Stats Section --- */
 .stats {
   padding: 4rem 0;
   background-color: var(--background);
@@ -319,25 +318,135 @@ body {
   color: var(--foreground);
 }
 
-/* Responsividade */
+/* --- Seção de Cadastro --- */
+.cadastro-section {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  gap: 40px;
+  min-height: calc(100vh - 80px);
+  flex-wrap: wrap;
+}
+
+.cadastro-content {
+  flex: 1;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+}
+
+.cadastro-title {
+  font-size: 2.8em;
+  font-weight: 600;
+  color: var(--foreground);
+  margin-bottom: 25px;
+}
+
+.cadastro-image {
+  flex: 1.2;
+  max-width: 600px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.cadastro-image img {
+  width: 100%;
+  height: auto;
+  border-radius: 12px;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* --- Botões --- */
+.botoes-container {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  width: 100%;
+  max-width: 350px;
+}
+
+.botao-link {
+  background-color: var(--primary);
+  color: var(--primary-foreground);
+  padding: 20px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.botao-link:hover {
+  background-color: var(--primary-hover);
+  cursor: pointer;
+  transform: translateY(-3px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.botao-icone {
+  margin-right: 20px;
+}
+
+.botao-icone svg {
+  width: 2.5em;
+  height: 2.5em;
+  fill: currentColor;
+  display: block;
+}
+
+.botao-texto {
+  display: flex;
+  flex-direction: column;
+}
+
+.botao-titulo {
+  font-size: 1.4em;
+  font-weight: bold;
+  margin: 0;
+}
+
+.botao-subtitulo {
+  font-size: 1em;
+  font-weight: normal;
+  margin: 0;
+}
+
+/* --- Responsividade --- */
+@media (max-width: 992px) {
+  .cadastro-section {
+    flex-direction: column-reverse;
+    text-align: center;
+  }
+
+  .cadastro-content {
+    align-items: center;
+  }
+
+  .cadastro-title {
+    font-size: 2.2em;
+  }
+}
+
 @media (max-width: 767px) {
   .hero-title {
     font-size: 2rem;
     text-align: center;
   }
-  
+
   .cta-button {
     align-self: center;
   }
-  
+
   .hero-image {
     order: -1;
   }
-  
+
   .stat-number {
     font-size: 1.5rem;
   }
-  
+
   .stat-label {
     font-size: 1rem;
   }
