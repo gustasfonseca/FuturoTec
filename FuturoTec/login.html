@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Cadastro - FuturoTEC</title>
+    <meta name="description" content="Plataforma que conecta estudantes da ETEC com empresas parceiras." />
+    <meta name="author" content="FuturoTEC"/>
+
+    <!-- Meta tags para compartilhamento (Open Graph / Twitter) -->
+    <meta property="og:title" content="FuturoTEC - Conectando talentos da ETEC" />
+    <meta property="og:description" content="Plataforma que conecta estudantes da ETEC com empresas parceiras." />
+    <meta property="og:type" content="website"/>
+    <meta property="og:image" content="https://placehold.co/1200x630/1A2B3C/FFFFFF?text=FuturoTEC"/>
+    <meta name="twitter:card" content="summary_large_image"/>
+    <meta name="twitter:image" content="https://placehold.co/1200x630/1A2B3C/FFFFFF?text=FuturoTEC"/>
+      <link rel="stylesheet" href="css/styles.css">
+ 
+</head>
+<body>
+    <div class="app">
+        <!-- Cabeçalho -->
+        <header class="header">
+            <div class="container">
+        <div class="nav-wrapper">
+        <div class="logo">
+            <img src="img/FuturoTecInicial.jpeg" alt="FuturoTEC Logo">
+        </div>
+
+            
+            <!-- Desktop Navigation -->
+            <nav class="nav-desktop">
+              <a href="index.html" class="nav-link">Início</a>
+              <a href="#blablabla" class="nav-link">Sobre</a>
+              <a href="cursos.html" class="nav-link">Cursos</a>
+              <a href="cadastro.html" class="nav-link">Cadastro</a>
+            </nav>
+            
+            <a href="login.html" class="login-btn">Login</a>
+            <a href="cadastro.html" class="login-btn">Cadastre-se</a>
+            
+            <!-- Mobile Menu Button -->
+            <button class="mobile-menu-btn" id="mobileMenuBtn">
+              <span></span>
+              <span></span>
+              <span></span>
+            </button>
+          </div>
+          
+          <!-- Mobile Navigation -->
+          <nav class="nav-mobile" id="mobileNav">
+            <a href="#inicio" class="nav-link-mobile">Início</a>
+            <a href="#sobre" class="nav-link-mobile">Sobre</a>
+            <a href="#cursos" class="nav-link-mobile">Cursos</a>
+            <a href="#cadastro" class="nav-link-mobile">Cadastro</a>
+          </nav>
+        </div>
+      </header>
+
+        <!-- Conteúdo Principal: Seção de Cadastro -->
+        <main class="cadastro-section container">
+            <div class="cadastro-content">
+                <h1 class="cadastro-title">Seja bem-vindo! :)</h1>
+                <div class="form-container">
+                    <div class="form-icon-main">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.5a5.5 5.5 0 0 1 5.5 5.5c0 1.57-.67 3-1.75 3.99.85.73 1.25 1.82 1.25 2.98V17.5a.5.5 0 0 1-1 0v-2.03a3.51 3.51 0 0 0-2.06-3.23A5.46 5.46 0 0 1 12 8a5.46 5.46 0 0 1-2.94 4.24A3.51 3.51 0 0 0 7 15.47V17.5a.5.5 0 0 1-1 0v-2.03c0-1.16.4-2.25 1.25-2.98A5.48 5.48 0 0 1 6.5 8a5.5 5.5 0 0 1 5.5-5.5zM12 4a4 4 0 1 0 0 8 4 4 0 0 0 0-8zm-8 13.5a.5.5 0 0 1 .5-.5h15a.5.5 0 0 1 0 1h-15a.5.5 0 0 1-.5-.5z"/></svg>
+                    </div>
+                    <form style="width: 100%;">
+                        <div class="input-group">
+                            <span class="icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.5a5.5 5.5 0 0 1 5.5 5.5c0 1.57-.67 3-1.75 3.99.85.73 1.25 1.82 1.25 2.98V17.5a.5.5 0 0 1-1 0v-2.03a3.51 3.51 0 0 0-2.06-3.23A5.46 5.46 0 0 1 12 8a5.46 5.46 0 0 1-2.94 4.24A3.51 3.51 0 0 0 7 15.47V17.5a.5.5 0 0 1-1 0v-2.03c0-1.16.4-2.25 1.25-2.98A5.48 5.48 0 0 1 6.5 8a5.5 5.5 0 0 1 5.5-5.5zM12 4a4 4 0 1 0 0 8 4 4 0 0 0 0-8zm-8 13.5a.5.5 0 0 1 .5-.5h15a.5.5 0 0 1 0 1h-15a.5.5 0 0 1-.5-.5z"/></svg>
+                            </span>
+                            <input type="text" class="form-input" placeholder="Nome de Usuário">
+                        </div>
+                        <div class="input-group" style="margin-top: 1rem;">
+                           <span class="icon">
+                               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 1.5a5.5 5.5 0 0 1 5.5 5.5v3.37a3.5 3.5 0 0 1 3.5 3.5v5.13a.5.5 0 0 1-.5.5H3.5a.5.5 0 0 1-.5-.5v-5.13a3.5 3.5 0 0 1 3.5-3.5V7A5.5 5.5 0 0 1 12 1.5zm0 1.5a4 4 0 0 0-4 4v3.37a.5.5 0 0 1-.5.5h-1a2 2 0 0 0-2 2v4.63h15v-4.63a2 2 0 0 0-2-2h-1a.5.5 0 0 1-.5-.5V7a4 4 0 0 0-4-4zm0 8.5a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3z"/></svg>
+                           </span>
+                            <input type="password" class="form-input" placeholder="Senha" id="password-field">
+                            <span class="icon-right" id="toggle-password">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+                            </span>
+                        </div><br>
+                        <div class="form-footer">
+                            <a href="#" class="forgot-password">Esqueceu sua senha?</a>
+                        </div>
+                        <button type="submit" class="form-submit-btn">LOGIN</button>
+                    </form>
+                    <p class="cadastro-link">Não tem uma conta? <a href="cadastro.html">Cadastre-se agora!</a></p>
+                </div>
+            </div>
+
+            <div class="cadastro-image">
+                <img src="https://s2-valor.glbimg.com/jCcCLOmX6Bx7xQsObzuPYMtAICs=/0x0:1024x768/924x0/smart/filters:strip_icc()/i.s3.glbimg.com/v1/AUTH_63b422c2caee4269b8b34177e8876b93/internal_photos/bs/2025/r/A/VIGS3fS6KmMk7FF7CeHw/2-anos-atos-antidemocraticos-mcamgo-abr-08012025-24.webp" alt="Pessoas em uma reunião de trabalho." onerror="this.onerror=null;this.src='https://placehold.co/600x450/cccccc/ffffff?text=Image+Not+Found';">
+            </div>
+        </main>
+    </div>
+
+    <footer class="footer">
+    <div class="container footer-grid">
+        <div class="footer-info">
+            <h4>FuturoTEC</h4>
+            <p>Projeto de Conclusão de Curso (TCC)</p>
+            <p class="school">ETEC Albert Einstein</p>
+            <p class="copyright">© 2025 FuturoTEC. Todos os direitos reservados.</p>
+            <p class="authors">Desenvolvido por: Nátaly Lima, Gustavo Fonseca, Eduarda Marques, Amanda Silva, Gabrielly Mendes, Uillian Oliveira e Felipe Cardoso.</p>
+        </div>
+
+        <div class="footer-links">
+            <h4>Links Úteis</h4>
+            <ul>
+                <li><a href="#">Termos de Uso</a></li>
+                <li><a href="#">Política de Privacidade</a></li>
+                <li><a href="#">Sobre nós</a></li>
+                <li><a href="#">Contato</a></li>
+            </ul>
+        </div>
+
+        <div class="footer-social">
+            <div class="footer-logo">
+                <img src="img/FuturoTecInicial.jpeg" alt="FuturoTEC Logo">
+            </div>
+            <h4>Conecte-se</h4>
+            <div class="social-icons">
+                <a href="#"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6H6a2 2 0 0 0-2 2z"></path><path d="M14 2v6h6"></path><path d="M8 12h8"></path><path d="M8 16h8"></path></svg></a>
+                <a href="#"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg></a>
+                <a href="#"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"></path></svg></a>
+            </div>
+        </div>
+    </div>
+    </footer>
+
+    <script>
+        // Script para o menu mobile
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const mobileNav = document.getElementById('mobileNav');
+        mobileMenuBtn.addEventListener('click', () => {
+            mobileNav.classList.toggle('open');
+            mobileMenuBtn.classList.toggle('active');
+        });
+
+        // Script para alternar a visibilidade da senha
+        const togglePassword = document.querySelector('#toggle-password');
+        const passwordField = document.querySelector('#password-field');
+        togglePassword.addEventListener('click', function () {
+            const type = passwordField.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordField.setAttribute('type', type);
+        });
+    </script>
+</body>
+</html>
