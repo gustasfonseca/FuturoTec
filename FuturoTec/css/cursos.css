@@ -1,0 +1,70 @@
+/* Escopo exclusivo para páginas de cursos */
+.curso-page {
+  font-family: Arial, sans-serif;
+  line-height: 1.6;
+  color: #222;
+  padding: 2rem 1rem;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+/* Título */
+.curso-page h1 {
+  font-size: 2rem;
+  text-align: center;
+  margin-bottom: 1.5rem;
+  color: #1a3d4f;
+}
+
+/* Bloco principal */
+.curso-card {
+  display: grid;
+  grid-template-columns: 1fr 250px;
+  gap: 1.5rem;
+  background: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+/* Imagem */
+.curso-card img {
+  width: 100%;
+  border-radius: 6px;
+  display: block;
+}
+
+/* Texto */
+.curso-card p {
+  margin-bottom: 1rem;
+  font-size: 1rem;
+  color: #444;
+}
+
+/* Seções */
+.curso-section {
+  margin-top: 2rem;
+  padding: 1.2rem;
+  background: #eef6f7;
+  border-left: 5px solid #2c6e7e;
+  border-radius: 6px;
+}
+
+.curso-section h2 {
+  font-size: 1.3rem;
+  color: #2c6e7e;
+  margin-bottom: 0.8rem;
+}
+
+.curso-section p {
+  font-size: 1rem;
+  color: #333;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .curso-card {
+    grid-template-columns: 1fr;
+  }
+}
