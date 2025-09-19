@@ -1,1 +1,280 @@
+/* --- Reset e Variáveis Globais --- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
 
+:root {
+    --primary: hsl(195, 35%, 45%); /* Tom de azul mais próximo da imagem */
+    --primary-hover: hsl(195, 35%, 40%);
+    --primary-foreground: hsl(0, 0%, 100%);
+    --background: hsl(220, 15%, 96%); /* Fundo cinza claro como na imagem */
+    --card-background: hsl(0, 0%, 100%);
+    --foreground: hsl(218, 11%, 25%);
+    --muted-foreground: hsl(215, 16%, 55%);
+    --border: hsl(214.3, 31.8%, 91.4%);
+    --input-border: hsl(220, 13%, 88%);
+}
+
+/* --- Estilos Gerais --- */
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.6;
+    color: var(--foreground);
+    background-color: var(--background);
+}
+
+.container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+
+/* --- Header --- */
+.header {
+    background-color: var(--card-background);
+    border-bottom: 1px solid var(--border);
+    padding: 0.5rem 0;
+}
+
+.nav-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.logo img {
+    height: 40px;
+    width: auto;
+}
+
+.user-nav {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.user-greeting {
+    font-weight: 500;
+    color: var(--muted-foreground);
+}
+
+.user-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background-color: var(--primary);
+}
+
+/* --- Layout Principal da Página de Perfil --- */
+.profile-page-container {
+    max-width: 1000px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+.profile-header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+}
+
+.profile-header h1 {
+    font-size: 2.25rem;
+    font-weight: 700;
+    color: var(--foreground);
+}
+
+.profile-header p {
+    font-size: 1.1rem;
+    color: var(--muted-foreground);
+}
+
+.profile-grid {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 2.5rem;
+    align-items: flex-start;
+}
+
+.profile-info h3 {
+    font-size: 1.25rem;
+    margin-bottom: 0.5rem;
+}
+
+.profile-info p {
+    color: var(--muted-foreground);
+}
+
+/* --- Card do Formulário --- */
+.profile-form-card {
+    background-color: var(--card-background);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 2rem;
+}
+
+hr {
+    border: 0;
+    border-top: 1px solid var(--border);
+    margin: 1.5rem 0;
+}
+
+/* --- Resumo do Usuário --- */
+.user-summary {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.profile-picture {
+    text-align: center;
+}
+
+.profile-picture img {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 0.5rem;
+}
+
+.change-photo-btn {
+    background: none;
+    border: none;
+    color: var(--primary);
+    font-weight: 500;
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+
+.user-details h2 {
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+.user-details .email,
+.user-details .job-title {
+    color: var(--muted-foreground);
+    font-size: 0.9rem;
+}
+
+.user-details .job-title {
+    font-weight: 500;
+    text-transform: uppercase;
+}
+
+/* --- Estilos do Formulário --- */
+form {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.form-group.full-width {
+    grid-column: 1 / -1;
+}
+
+.form-group label {
+    font-weight: 500;
+    font-size: 0.9rem;
+}
+
+.form-group label.required::after {
+    content: '*';
+    color: #e74c3c;
+    margin-left: 4px;
+}
+
+.form-group input[type="text"],
+.form-group input[type="email"],
+.form-group input[type="tel"],
+.form-group input[type="date"],
+.form-group select {
+    width: 100%;
+    padding: 0.7rem;
+    border: 1px solid var(--input-border);
+    border-radius: 6px;
+    font-size: 1rem;
+    color: var(--foreground);
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px hsla(195, 35%, 45%, 0.2);
+}
+
+.form-group input[disabled] {
+    background-color: hsl(220, 20%, 94%);
+    cursor: not-allowed;
+}
+
+.form-group .subtitle {
+    font-size: 0.9rem;
+    color: var(--muted-foreground);
+    margin-top: -0.25rem;
+}
+
+.radio-group {
+    display: flex;
+    gap: 1.5rem;
+    padding-top: 0.25rem;
+}
+
+.radio-group label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: normal;
+}
+
+.form-actions {
+    grid-column: 1 / -1;
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 1rem;
+}
+
+.save-button {
+    background-color: var(--primary);
+    color: var(--primary-foreground);
+    border: none;
+    padding: 0.75rem 2rem;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.save-button:hover {
+    background-color: var(--primary-hover);
+}
+
+/* --- Responsividade --- */
+@media (max-width: 900px) {
+    .profile-grid {
+        grid-template-columns: 1fr;
+    }
+    .profile-info {
+        text-align: center;
+    }
+}
+
+@media (max-width: 600px) {
+    form {
+        grid-template-columns: 1fr;
+    }
+    .user-summary {
+        flex-direction: column;
+        text-align: center;
+    }
+}
