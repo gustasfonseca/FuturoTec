@@ -1,0 +1,162 @@
+/* --- Variáveis de cores --- */
+:root {
+    --primary: #4F9B94; /* Cor principal (verde água) */
+    --primary-hover: #458a83; /* Verde mais escuro para hover */
+    --background: #f0f4f8; /* Fundo cinza muito claro */
+    --foreground: #334e68; /* Azul escuro (texto principal) */
+    --muted-foreground: #6b84a0; /* Azul acinzentado (subtítulos) */
+    --card-background: #E0F7FA; /* Fundo do container (azul claro) */
+    --shadow-color: rgba(46, 139, 87, 0.15); /* Sombra mais sutil */
+}
+
+/* --- Estilos Gerais --- */
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #ffffff; /* Fundo da página totalmente branco */
+    color: var(--foreground);
+    margin: 0;
+    padding: 0;
+}
+
+/* --- Layout da Página Inicial --- */
+
+/* Logo no topo */
+.logo-topo {
+    padding: 20px;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.logo-topo img {
+    max-height: 200px; /* Aumentei a altura máxima da logo para 120px */
+    width: auto;
+}
+
+/* Título principal da página */
+.top-title {
+    text-align: center;
+    font-size: 2.8em;
+    font-weight: 700;
+    color: var(--foreground);
+    margin-bottom: 40px;
+}
+
+/* Container principal que agrupa os botões e a imagem */
+.cadastro-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+    flex-wrap: wrap;
+    background-color: var(--primary);
+    border-radius: 16px;
+    box-shadow: 0 8px 24px var(--shadow-color);
+    max-width: 1100px;
+    margin: 20px auto;
+    gap: 50px;
+}
+
+@media (max-width: 768px) {
+    .cadastro-container {
+        flex-direction: column;
+        padding: 30px;
+        gap: 30px;
+    }
+}
+
+/* Conteúdo de texto e botões */
+.cadastro-content {
+    flex: 1;
+    max-width: 450px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+/* Título secundário dentro do container */
+.cadastro-title {
+    font-size: 2.5em;
+    font-weight: 700;
+    color: #ffffff;
+    margin-bottom: 10px;
+    text-align: left;
+}
+
+.cadastro-subtitle {
+    font-size: 1.1em;
+    font-weight: 400;
+    color: var(--background);
+    margin-bottom: 30px;
+}
+
+/* Imagem ao lado dos botões */
+.cadastro-image {
+    flex: 1;
+    max-width: 550px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.cadastro-image img {
+    width: 100%;
+    height: auto;
+    border-radius: 12px;
+    box-shadow: 0 6px 18px var(--shadow-color);
+}
+
+/* Estilos dos botões */
+.botoes-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    width: 100%;
+    max-width: 400px;
+}
+
+.botao-link {
+    background-color: var(--background);
+    color: var(--primary);
+    padding: 20px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.botao-link:hover {
+    background-color: var(--primary-hover);
+    color: var(--background);
+    transform: translateY(-4px);
+    box-shadow: 0 8px 16px var(--shadow-color);
+}
+
+.botao-icone {
+    margin-right: 20px;
+}
+
+.botao-icone svg {
+    width: 2.2em;
+    height: 2.2em;
+    fill: currentColor;
+    display: block;
+}
+
+.botao-texto {
+    display: flex;
+    flex-direction: column;
+}
+
+.botao-titulo {
+    font-size: 1.25em;
+    font-weight: 600;
+    margin: 0;
+}
+
+.botao-subtitulo {
+    font-size: 0.9em;
+    font-weight: 400;
+    margin: 0;
+    opacity: 0.8;
+}
