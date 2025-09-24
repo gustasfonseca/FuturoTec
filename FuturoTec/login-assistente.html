@@ -3,51 +3,43 @@
     <head>
         <meta charset="UTF-8"/>
         <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-        <title>Cadastro - FuturoTEC</title>
+        <title>Login - FuturoTEC</title>
         <meta name="description" content="Plataforma que conecta estudantes da ETEC com empresas parceiras." />
         <meta name="author" content="FuturoTEC"/>
-
-        <!-- Meta tags para compartilhamento (Open Graph / Twitter) -->
-        <meta property="og:title" content="FuturoTEC - Conectando talentos da ETEC" />
-        <meta property="og:description" content="Plataforma que conecta estudantes da ETEC com empresas parceiras." />
-        <meta property="og:type" content="website"/>
-        <meta property="og:image" content="https://placehold.co/1200x630/1A2B3C/FFFFFF?text=FuturoTEC"/>
-        <meta name="twitter:card" content="summary_large_image"/>
-        <meta name="twitter:image" content="https://placehold.co/1200x630/1A2B3C/FFFFFF?text=FuturoTEC"/>
         <link rel="stylesheet" href="css/styles.css">
         <link rel="stylesheet" href="css/auth.css">
-    
     </head>
-    <body>
-        <div class="app">
-            <header class="header">...</header>
-            <main class="auth-section">
-                <div class="auth-card">
-                    <h2 class="auth-title">Login</h2>
-                    <h3>Login do Assistente Técnico</h3>
-                    
-                    <form id="form-login-assistente" class="auth-form">
-                        <div class="form-group">
-                            <label for="email-login-assistente">Email:</label>
-                            <input type="email" id="email-login-assistente" name="email" placeholder="Email:" required>
-                        </div>
-                        <div class="form-group password-group">
-                            <label for="senha-login-assistente">Senha:</label>
-                            <input type="password" id="senha-login-assistente" name="senha" placeholder="Senha:" required>
-                            <span class="password-toggle" data-target="senha-login-assistente"><i data-feather="eye"></i></span>
-                        </div>
-                        <p class="forgot-password"><a href="#">Esqueceu sua senha?</a></p>
-                        <button type="submit" class="submit-btn">Entrar</button>
-                        <p class="login-link">Não tem uma conta? <a href="cadastro-assistente.html">Cadastre-se</a></p>
-                    </form>
-                </div>
-            </main>
-            <footer>...</footer>
-        </div>
-        <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-        <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
-        <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
-        <script src="js/auth-assistente.js"></script>
-        <script> feather.replace(); </script>
-    </body>
+<body>
+    <div class="app">
+        <header class="header">...</header>
+        <main class="auth-section">
+            <div class="auth-card">
+                <h2 class="auth-title">Login</h2>
+                <h3>Login do Assistente Técnico</h3>
+                
+                <form id="form-login-assistente" class="auth-form">
+                    <div class="form-group">
+                        <label for="email-login-assistente">Email:</label>
+                        <input type="email" id="email-login-assistente" name="email" placeholder="Email:" required>
+                    </div>
+                    <div class="form-group password-group">
+                        <label for="senha-login-assistente">Senha:</label>
+                        <input type="password" id="senha-login-assistente" name="senha" placeholder="Senha:" required>
+                        <span class="password-toggle" data-target="senha-login-assistente"><i data-feather="eye"></i></span>
+                    </div>
+                    <p class="forgot-password"><a href="#">Esqueceu sua senha?</a></p>
+                    <button type="submit" class="submit-btn">Entrar</button>
+                    <p class="login-link">Não tem uma conta? <a href="cadastro-assistente.html">Cadastre-se</a></p>
+                </form>
+            </div>
+        </main>
+        <footer>...</footer>
+    </div>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <script src="js/auth-assistente.js"></script>
+    <script src="https://unpkg.com/feather-icons"></script>
+    <script> feather.replace(); </script>
+</body>
 </html>
