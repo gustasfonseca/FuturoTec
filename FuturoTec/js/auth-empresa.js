@@ -1,9 +1,12 @@
 // COLOQUE SUAS CREDENCIAIS DO FIREBASE AQUI
 const firebaseConfig = {
-    apiKey: "SUA_API_KEY",
-    authDomain: "SEU_AUTH_DOMAIN",
-    projectId: "SEU_PROJECT_ID",
-    // ... outras chaves
+  apiKey: "AIzaSyA8Q9cKB4oVmFM6ilHK_70h8JDvgsOQhLY",
+  authDomain: "futurotec-e3a69.firebaseapp.com",
+  projectId: "futurotec-e3a69",
+  storageBucket: "futurotec-e3a69.firebasestorage.app",
+  messagingSenderId: "234233783827",
+  appId: "1:234233783827:web:bf9376dee78d8924ef01e6",
+  measurementId: "G-C7EEMP1146"
 };
 
 // Inicializa o Firebase
