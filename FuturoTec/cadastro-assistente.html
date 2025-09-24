@@ -6,17 +6,8 @@
         <title>Cadastro - FuturoTEC</title>
         <meta name="description" content="Plataforma que conecta estudantes da ETEC com empresas parceiras." />
         <meta name="author" content="FuturoTEC"/>
-
-        <!-- Meta tags para compartilhamento (Open Graph / Twitter) -->
-        <meta property="og:title" content="FuturoTEC - Conectando talentos da ETEC" />
-        <meta property="og:description" content="Plataforma que conecta estudantes da ETEC com empresas parceiras." />
-        <meta property="og:type" content="website"/>
-        <meta property="og:image" content="https://placehold.co/1200x630/1A2B3C/FFFFFF?text=FuturoTEC"/>
-        <meta name="twitter:card" content="summary_large_image"/>
-        <meta name="twitter:image" content="https://placehold.co/1200x630/1A2B3C/FFFFFF?text=FuturoTEC"/>
         <link rel="stylesheet" href="css/styles.css">
         <link rel="stylesheet" href="css/auth.css">
-    
     </head>
 <body>
     <div class="app">
@@ -29,15 +20,24 @@
                 <form id="form-assistente" class="auth-form">
                     <div class="form-group">
                         <label for="nome-assistente">Nome:</label>
-                        <input type="text" id="nome-assistente" name="nome" placeholder="Nome:" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="etec-assistente">ETEC:</label>
-                        <input type="text" id="etec-assistente" name="etec" placeholder="Código da ETEC:" required>
+                        <input type="text" id="nome-assistente" name="nome" placeholder="Seu nome:" required>
                     </div>
                     <div class="form-group">
                         <label for="email-assistente">Email:</label>
-                        <input type="email" id="email-assistente" name="email" placeholder="Email:" required>
+                        <input type="email" id="email-assistente" name="email" placeholder="Email de login:" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="nome-etec">Nome ou Código da Etec:</label>
+                        <input type="text" id="nome-etec" name="nome-etec" placeholder="Digite o nome ou código da Etec" required>
+                        <div id="etec-results" class="search-results"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="email-etec">Email da Etec:</label>
+                        <input type="email" id="email-etec" name="email-etec" placeholder="Email de contato da Etec:" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="endereco-etec">Endereço da Etec:</label>
+                        <input type="text" id="endereco-etec" name="endereco-etec" readonly>
                     </div>
                     <div class="form-group password-group">
                         <label for="senha-assistente">Senha:</label>
@@ -60,6 +60,7 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
     <script src="js/auth-assistente.js"></script>
+    <script src="https://unpkg.com/feather-icons"></script>
     <script> feather.replace(); </script>
 </body>
 </html>
