@@ -1,4 +1,4 @@
-/* auth.css */
+/* auth.css - ATUALIZADO */
 
 /* Seção principal de login/cadastro */
 .auth-section {
@@ -60,14 +60,17 @@
     margin-bottom: 25px;
 }
 
-/* Grupo de campo de entrada */
+/* Grupo de campo de entrada - MODIFICADO */
 .form-group {
     text-align: left;
     margin-bottom: 15px;
+    position: relative;
+    /* ADICIONADO: Necessário para posicionar a lista de resultados */
 }
 
 .form-group label {
-    display: none; /* Rótulos escondidos para manter o estilo minimalista */
+    display: none;
+    /* Rótulos escondidos para manter o estilo minimalista */
 }
 
 .form-group input {
@@ -136,4 +139,58 @@
 .forgot-password:hover,
 .login-link a:hover {
     text-decoration: underline;
+}
+
+
+/* --- CÓDIGO ADICIONADO PARA A BUSCA DE ETECs --- */
+
+/* Estilo para o container dos resultados da busca. */
+.search-results {
+    position: absolute;
+    /* Posiciona os resultados flutuando abaixo do input */
+    top: 100%;
+    /* Começa exatamente onde o grupo de formulário termina */
+    left: 0;
+    right: 0;
+    background-color: #ffffff;
+    /* Fundo branco para ser visível */
+    border: 1px solid #ccc;
+    border-radius: 0 0 8px 8px;
+    /* Bordas arredondadas na parte inferior */
+    border-top: none;
+    z-index: 10;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+/* Estilo para cada item individual na lista de resultados. */
+.etec-result-item {
+    padding: 12px 15px;
+    cursor: pointer;
+    text-align: left;
+    /* Alinha o texto à esquerda */
+    border-bottom: 1px solid #eee;
+}
+
+/* Efeito visual ao passar o mouse sobre um item */
+.etec-result-item:hover {
+    background-color: #f0f0f0;
+}
+
+.etec-result-item:last-child {
+    border-bottom: none;
+}
+
+/* Estilos para o texto dentro do item */
+.etec-result-item h4 {
+    margin: 0 0 4px 0;
+    font-size: 1em;
+    color: #333;
+    font-weight: 600;
+}
+
+.etec-result-item p {
+    margin: 0;
+    font-size: 0.85em;
+    color: #666;
 }
