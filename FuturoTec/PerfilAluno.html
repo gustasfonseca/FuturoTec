@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Meu Perfil - FuturoTEC</title>
+    <link rel="stylesheet" href="css/perfil.css">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+
+<body>
+    <div class="app">
+        <header class="header">
+            <div class="container">
+                <div class="nav-wrapper">
+                    <div class="logo">
+                        <img src="img/FuturoTecInicial.jpeg" alt="FuturoTEC Logo">
+                    </div>
+                    <nav class="nav-desktop">
+                        <a href="InicialAluno.html" class="nav-link">Início</a>
+                        <a href="InicialAluno.html#cursos" class="nav-link">Cursos</a>
+                        <a href="#sobre" class="nav-link">Vagas</a>
+                        <a href="cadastro.html" class="nav-link">Candidaturas</a>
+                    </nav>
+                    <a href="MeuPerfil.html" class="login-btn">Meu Perfil</a>
+                </div>
+            </div>
+        </header>
+
+        <main class="profile-page-container">
+            <div class="profile-header">
+                <h1>Seu Perfil</h1>
+                <p>Aqui você pode ver e editar seus dados de cadastro.</p>
+            </div>
+
+            <div class="profile-grid">
+                <aside class="profile-info">
+                    <h3>Dados Pessoais</h3>
+                    <p>Mantenha seus dados de contato sempre atualizados.</p>
+                </aside>
+
+                <section class="profile-form-card">
+                    <div class="user-summary">
+                        <div class="profile-picture">
+                            <img src="https://i.imgur.com/m3d5v8B.png" alt="Foto de Perfil">
+                            <button class="change-photo-btn">trocar foto</button>
+                        </div>
+                        <div class="user-details">
+                            <h2 id="user-name">Carregando...</h2>
+                            <p class="email" id="user-email">Carregando...</p>
+                        </div>
+                    </div>
+                    <hr>
+
+                    <form id="profile-form">
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="email" id="email" disabled>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="nome-completo" class="required">Nome Completo</label>
+                            <input type="text" id="nome-completo" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="celular" class="required">Número de telefone</label>
+                            <input type="tel" id="celular" placeholder="(11) 90000-0000" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="nascimento" class="required">Data de nascimento</label>
+                            <input type="date" id="nascimento" required>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="submit" class="save-button">Salvar Alterações</button>
+                        </div>
+                    </form>
+                </section>
+            </div>
+        </main>
+
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+    <script src="js/auth-candidato.js"></script>
+</body>
+</html>
