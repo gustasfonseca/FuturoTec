@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minhas Vagas | FuturoTEC</title>
+    <link rel="stylesheet" href="css/styles.css" />
+    <link rel="stylesheet" href="css/empresa.css" />
+    <script src="https://unpkg.com/feather-icons"></script>
+</head>
+<body>
+    <script>
+        feather.replace();
+    </script>
+
+   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <script>
+        const firebaseConfig = { 
+            apiKey: "AIzaSyA8Q9cKB4oVmFM6ilHK_70h8JDvgsOQhLY",
+            authDomain: "futurotec-e3a69.firebaseapp.com",
+            projectId: "futurotec-e3a69",
+            storageBucket: "futurotec-e3a69.firebasestorage.app",
+            messagingSenderId: "234233783827",
+            appId: "1:234233783827:web:bf9376dee78d8924ef01e6",
+            measurementId: "G-C7EEMP1146"}; 
+            firebase.initializeApp(firebaseConfig);
+    </script>
+    
+    <script src="js/empresa.js"></script> </body>
+    <div class="app">
+        <header class="header">
+            <div class="container">
+                <div class="nav-wrapper">
+                    <div class="logo">
+                        <img src="img/FuturoTecInicial.jpeg" alt="FuturoTEC Logo" />
+                    </div>
+                    <nav class="nav-desktop company-nav">
+                        <a href="InicialEmpresa.html" class="nav-link">Início</a>
+                        <a href="MinhasVagas.html" class="nav-link active">Minhas Vagas</a>
+                        <a href="CriarVagaEmpresa.html" class="nav-link">Criar Vaga</a>
+                        <a href="#" class="nav-link">Candidaturas</a>
+                    </nav>
+                    <div class="nav-actions">
+                        <a href="#" class="logout-btn">Meu Perfil</a>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <main class="my-jobs-section">
+            <div class="container">
+                <h2>Minhas Vagas Publicadas</h2>
+                <p>Gerencie as vagas que sua empresa criou.</p>
+                
+                <div id="vagas-container" class="vagas-grid">
+                    </div>
+            </div>
+        </main>
+
+        <div id="edit-modal" class="modal-overlay" style="display: none;">
+            <div class="modal-content">
+                <form id="edit-job-form">
+                    <h2>Editar Vaga</h2>
+                    <input type="hidden" id="edit-vaga-id">
+                    
+                    <div class="form-group">
+                        <label for="edit-titulo">Título da Vaga</label>
+                        <input type="text" id="edit-titulo" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="edit-descricao">Descrição</label>
+                        <textarea id="edit-descricao" rows="5" required></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="edit-requisitos">Requisitos</label>
+                        <textarea id="edit-requisitos" rows="4" required></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="edit-cargaHoraria">Carga Horária</label>
+                        <input type="text" id="edit-cargaHoraria" required>
+                    </div>
+                    
+                    <div class="modal-actions">
+                        <button type="submit" class="submit-btn">Salvar Alterações</button>
+                        <button type="button" id="cancel-edit-btn" class="cancel-btn">Cancelar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+       <footer class="footer">
+            </footer>
+    </div>
+</html>
