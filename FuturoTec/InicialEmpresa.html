@@ -8,23 +8,41 @@
     <link rel="stylesheet" href="css/empresa.css" />
   </head>
   <body>
+      <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+       <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+       <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+        <script>
+        // Use a mesma configuração do seu projeto
+        const firebaseConfig = {
+          apiKey: "AIzaSyA8Q9cKB4oVmFM6ilHK_70h8JDvgsOQhLY",
+          authDomain: "futurotec-e3a69.firebaseapp.com",
+          projectId: "futurotec-e3a69",
+          storageBucket: "futurotec-e3a69.firebasestorage.app",
+          messagingSenderId: "234233783827",
+          appId: "1:234233783827:web:bf9376dee78d8924ef01e6",
+          measurementId: "G-C7EEMP1146"
+        };
+        firebase.initializeApp(firebaseConfig);
+    </script>
+    
+    <script src="js/empresa.js"></script>
     <div class="app">
       <header class="header">
-            <div class="container">
+            <div class="container"> 
                 <div class="nav-wrapper">
                 <div class="logo">
                     <img src="img/FuturoTecInicial.jpeg" alt="FuturoTEC Logo" />
                 </div>
 
                 <nav class="nav-desktop company-nav">
-                    <a href="#" class="nav-link active">Início</a>
-                    <a href="minhas-vagas.html" class="nav-link">Minhas Vagas</a>
-                    <a href="criar-vaga.html" class="nav-link">Criar Vaga</a>
-                    <a href="#" class="nav-link">Candidaturas</a>
+                    <a href="InicialEmpresa.html" class="nav-link active">Início</a>
+                    <a href="MinhasVagas.html" class="nav-link">Minhas Vagas</a>
+                    <a href="CriarVagaEmpresa.html" class="nav-link ">Criar Vaga</a>
+                    <a href="EmpresaCandidatos.html" class="nav-link">Candidaturas</a>
                 </nav>
 
                 <div class="nav-actions">
-                    <a href="logout.html" class="logout-btn">Meu Perfil</a>
+                    <a href="PerfilEmpresa.html" class="logout-btn">Meu Perfil</a>
                 </div>
                 </div>
             </div>
@@ -146,6 +164,5 @@
         </div>
       </footer>
     </div>
-    <script type="module" src="js/empresa.js"></script>
-  </body>
+</body>
 </html>
