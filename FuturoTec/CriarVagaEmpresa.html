@@ -54,6 +54,17 @@
                             <textarea id="requisitos" name="requisitos" rows="4" placeholder="Liste os requisitos, separados por vírgula ou em tópicos." required></textarea>
                         </div>
 
+                        <div class="form-group autocomplete-container">
+                            <label for="curso-vaga">Cursos Requeridos (selecione um ou mais)</label>
+                            
+                            <div id="cursos-selecionados" class="selected-tags-container">
+                                </div>
+                            
+                            <input type="text" id="curso-vaga" name="curso-nome" placeholder="Busque e selecione o curso (Ex: Técnico em Informática)">
+                            
+                            <div id="sugestoes-curso-vaga" class="autocomplete-list"></div>
+                            
+                            </div>
                         <div class="form-group">
                             <label for="cargaHoraria">Carga Horária</label>
                             <input type="text" id="cargaHoraria" name="cargaHoraria" placeholder="Ex: 8h diárias, 40h semanais" required>
@@ -111,6 +122,7 @@
     <script>
         // COLE A CONFIGURAÇÃO DO SEU PROJETO FIREBASE AQUI
         const firebaseConfig = {
+             // ... suas chaves aqui
             apiKey: "AIzaSyA8Q9cKB4oVmFM6ilHK_70h8JDvgsOQhLY",
             authDomain: "futurotec-e3a69.firebaseapp.com",
             projectId: "futurotec-e3a69",
