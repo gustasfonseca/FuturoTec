@@ -1,4 +1,4 @@
-/* auth.css - ATUALIZADO */
+/* auth.css - COMPLETO E FINAL COM ESTILO UNIFICADO PARA AUTOCOMPLETE */
 
 /* Seção principal de login/cadastro */
 .auth-section {
@@ -60,12 +60,12 @@
     margin-bottom: 25px;
 }
 
-/* Grupo de campo de entrada - MODIFICADO */
+/* Grupo de campo de entrada */
 .form-group {
     text-align: left;
     margin-bottom: 15px;
     position: relative;
-    /* ADICIONADO: Necessário para posicionar a lista de resultados */
+    /* ESSENCIAL: Permite que a lista de resultados flutue (position: absolute) */
 }
 
 .form-group label {
@@ -142,46 +142,48 @@
 }
 
 
-/* --- CÓDIGO ADICIONADO PARA A BUSCA DE ETECs --- */
+/* --- ESTILOS UNIFICADOS PARA AUTOCOMPLETE (CURSOS e ETECs) --- */
 
-/* Estilo para o container dos resultados da busca. */
-.search-results {
+/* Estilo para o container dos resultados (aplicado a .search-results e .autocomplete-list) */
+.search-results,
+.autocomplete-list {
     position: absolute;
-    /* Posiciona os resultados flutuando abaixo do input */
     top: 100%;
-    /* Começa exatamente onde o grupo de formulário termina */
     left: 0;
     right: 0;
     background-color: #ffffff;
-    /* Fundo branco para ser visível */
     border: 1px solid #ccc;
     border-radius: 0 0 8px 8px;
-    /* Bordas arredondadas na parte inferior */
     border-top: none;
     z-index: 10;
     max-height: 200px;
     overflow-y: auto;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* Estilo para cada item individual na lista de resultados. */
-.etec-result-item {
+/* Estilo para cada item individual na lista (aplicado a .etec-result-item e .autocomplete-item) */
+.etec-result-item,
+.autocomplete-item {
     padding: 12px 15px;
     cursor: pointer;
     text-align: left;
-    /* Alinha o texto à esquerda */
     border-bottom: 1px solid #eee;
+    color: #333; /* Garante visibilidade do texto */
+    font-weight: 500;
 }
 
 /* Efeito visual ao passar o mouse sobre um item */
-.etec-result-item:hover {
+.etec-result-item:hover,
+.autocomplete-item:hover {
     background-color: #f0f0f0;
 }
 
-.etec-result-item:last-child {
+.etec-result-item:last-child,
+.autocomplete-item:last-child {
     border-bottom: none;
 }
 
-/* Estilos para o texto dentro do item */
+/* Estilos específicos para ETEC (se usarem tags diferentes) */
 .etec-result-item h4 {
     margin: 0 0 4px 0;
     font-size: 1em;
