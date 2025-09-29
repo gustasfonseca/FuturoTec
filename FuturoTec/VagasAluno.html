@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <title>Vagas Disponíveis | FuturoTEC</title>
+</head>
+<body>
+    <main class="vagas-disponiveis">
+        <div class="container">
+            <h2>Vagas de Estágio e Emprego</h2>
+            <p>Confira as oportunidades disponíveis e candidate-se!</p>
+            
+            <div id="vagas-container" class="vagas-grid">
+                </div>
+            
+            </div>
+    </main>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <script>
+        // COPIE SUA CONFIGURAÇÃO AQUI
+        const firebaseConfig = {
+  apiKey: "AIzaSyA8Q9cKB4oVmFM6ilHK_70h8JDvgsOQhLY",
+  authDomain: "futurotec-e3a69.firebaseapp.com",
+  projectId: "futurotec-e3a69",
+  storageBucket: "futurotec-e3a69.firebasestorage.app",
+  messagingSenderId: "234233783827",
+  appId: "1:234233783827:web:bf9376dee78d8924ef01e6",
+  measurementId: "G-C7EEMP1146"
+}; 
+        firebase.initializeApp(firebaseConfig);
+    </script>
+    <script src="js/aluno.js"></script>
+</body>
+</html>

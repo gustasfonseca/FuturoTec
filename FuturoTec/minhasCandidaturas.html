@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minhas Candidaturas | FuturoTEC</title>
+    <link rel="stylesheet" href="css/styles.css" />
+    <link rel="stylesheet" href="css/aluno.css" /> <!-- Certifique-se de ter um CSS para o Aluno -->
+    <script src="https://unpkg.com/feather-icons"></script>
+</head>
+<body>
+
+    <!-- Scripts de Firebase devem vir ANTES do conteúdo para autenticação rápida -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <script>
+        // COLE A CONFIGURAÇÃO DO SEU PROJETO FIREBASE AQUI
+        const firebaseConfig = {
+            apiKey: "AIzaSyA8Q9cKB4oVmFM6ilHK_70h8JDvgsOQhLY",
+            authDomain: "futurotec-e3a69.firebaseapp.com",
+            projectId: "futurotec-e3a69",
+            storageBucket: "futurotec-e3a69.firebasestorage.app",
+            messagingSenderId: "234233783827",
+            appId: "1:234233783827:web:bf9376dee78d8924ef01e6",
+            measurementId: "G-C7EEMP1146"
+        };
+        firebase.initializeApp(firebaseConfig);
+    </script>
+    
+    <div class="app">
+        <header class="header">
+            <div class="container">
+                <div class="nav-wrapper">
+                    <div class="logo">
+                        <img src="img/FuturoTecInicial.jpeg" alt="FuturoTEC Logo" />
+                    </div>
+                    <!-- Adapte esta navegação para a do Aluno -->
+                    <nav class="nav-desktop student-nav">
+                        <a href="InicialAluno.html" class="nav-link">Início</a>
+                        <a href="VagasAluno.html" class="nav-link">Vagas Disponíveis</a>
+                        <a href="MinhasCandidaturas.html" class="nav-link active">Minhas Candidaturas</a>
+                    </nav>
+                    <div class="nav-actions">
+                        <a href="#" class="logout-btn">Sair</a>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <main class="candidacies-section">
+            <div class="container">
+                <h2 class="section-title">Acompanhamento de Candidaturas</h2>
+                <p class="section-subtitle">Aqui você pode ver o status das vagas que você se candidatou.</p>
+                
+                <!-- O JavaScript vai preencher este DIV -->
+                <div id="candidaturas-container" class="candidaturas-list">
+                    <p class="info-message">Carregando suas candidaturas...</p>
+                </div>
+                
+            </div>
+        </main>
+
+        <footer class="footer">
+            <div class="container footer-grid">
+                <div class="footer-info">
+                    <h4>FuturoTEC</h4>
+                    <p class="copyright">© 2025 FuturoTEC. Todos os direitos reservados.</p>
+                </div>
+            </div>
+        </footer>
+    </div>
+    
+    <script>
+        feather.replace();
+    </script>
+    <script src="js/aluno.js"></script>
+</body>
+</html>
