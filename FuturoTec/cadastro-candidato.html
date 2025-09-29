@@ -7,7 +7,6 @@
         <meta name="description" content="Plataforma que conecta estudantes da ETEC com empresas parceiras." />
         <meta name="author" content="FuturoTEC"/>
 
-        <!-- Meta tags para compartilhamento (Open Graph / Twitter) -->
         <meta property="og:title" content="FuturoTEC - Conectando talentos da ETEC" />
         <meta property="og:description" content="Plataforma que conecta estudantes da ETEC com empresas parceiras." />
         <meta property="og:type" content="website"/>
@@ -45,6 +44,15 @@
                         <div class="form-group">
                             <label for="data-nascimento-candidato">Data de nascimento:</label>
                             <input type="date" id="data-nascimento-candidato" name="dataNascimento" placeholder="Data de nascimento:" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="curso-candidato">Curso:</label>
+                            <input type="text" id="curso-candidato" name="cursoNome" placeholder="Digite o nome do curso (ex: Administração)" autocomplete="off" required>
+                            
+                            <input type="hidden" id="curso-id-candidato" name="cursoId" required>
+
+                            <div id="sugestoes-curso" class="autocomplete-list"></div>
                         </div>
                         <div class="form-group password-group">
                             <label for="senha-candidato">Senha:</label>
