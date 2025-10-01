@@ -1,33 +1,43 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-    <head>
-        <meta charset="UTF-8"/>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-        <title>Cadastro - FuturoTEC</title>
-        <meta name="description" content="Plataforma que conecta estudantes da ETEC com empresas parceiras." />
-        <meta name="author" content="FuturoTEC"/>
 
-        <!-- Meta tags para compartilhamento (Open Graph / Twitter) -->
-        <meta property="og:title" content="FuturoTEC - Conectando talentos da ETEC" />
-        <meta property="og:description" content="Plataforma que conecta estudantes da ETEC com empresas parceiras." />
-        <meta property="og:type" content="website"/>
-        <meta property="og:image" content="https://placehold.co/1200x630/1A2B3C/FFFFFF?text=FuturoTEC"/>
-        <meta name="twitter:card" content="summary_large_image"/>
-        <meta name="twitter:image" content="https://placehold.co/1200x630/1A2B3C/FFFFFF?text=FuturoTEC"/>
-        <link rel="stylesheet" href="css/styles.css">
-        <link rel="stylesheet" href="css/auth.css">
-    
-    </head>
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login Candidato - FuturoTEC</title>
+    <meta name="description" content="Plataforma que conecta estudantes da ETEC com empresas parceiras." />
+    <meta name="author" content="FuturoTEC" />
+
+    <meta property="og:title" content="FuturoTEC - Conectando talentos da ETEC" />
+    <meta property="og:description" content="Plataforma que conecta estudantes da ETEC com empresas parceiras." />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="https://placehold.co/1200x630/1A2B3C/FFFFFF?text=FuturoTEC" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content="https://placehold.co/1200x630/1A2B3C/FFFFFF?text=FuturoTEC" />
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/auth.css">
+
+</head>
+
 <body>
     <div class="app">
         <header class="header">
-            </header>
+        </header>
 
         <main class="auth-section">
             <div class="auth-card">
                 <h2 class="auth-title">Login</h2>
                 <h3>Login do Candidato</h3>
-                
+
+                <button id="btn-google-login" class="google-btn"
+                    style="margin-bottom: 20px; width: 100%; padding: 10px; border: none; background-color: #4285F4; color: white; border-radius: 5px; cursor: pointer; display: flex; align-items: center; justify-content: center;">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/4/4a/Logo_2013_Google.png"
+                        alt="Google Logo" style="width: 20px; vertical-align: middle; margin-right: 10px;">
+                    Entrar com o Google
+                </button>
+
+                <hr style="border-top: 1px solid #eee; margin: 20px 0;">
+
                 <form id="form-login-candidato" class="auth-form">
                     <div class="form-group">
                         <label for="email-login-candidato">Email:</label>
@@ -36,7 +46,8 @@
                     <div class="form-group password-group">
                         <label for="senha-login-candidato">Senha:</label>
                         <input type="password" id="senha-login-candidato" name="senha" placeholder="Senha:" required>
-                        <span class="password-toggle" data-target="senha-login-candidato"><i data-feather="eye"></i></span>
+                        <span class="password-toggle" data-target="senha-login-candidato"><i
+                                data-feather="eye"></i></span>
                     </div>
                     <p class="forgot-password"><a href="#">Esqueceu sua senha?</a></p>
                     <button type="submit" class="submit-btn">Entrar</button>
@@ -46,7 +57,7 @@
         </main>
 
         <footer class="footer">
-            </footer>
+        </footer>
     </div>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
@@ -55,4 +66,5 @@
     <script src="https://unpkg.com/feather-icons"></script>
     <script> feather.replace(); </script>
 </body>
+
 </html>
