@@ -1,4 +1,6 @@
-// auth-empresa.js
+// =======================================================
+// === CONFIGURAÇÃO INICIAL DO FIREBASE ===
+// =======================================================
 
 // COLOQUE SUAS CREDENCIAIS DO FIREBASE AQUI
 const firebaseConfig = {
@@ -11,13 +13,25 @@ const firebaseConfig = {
     measurementId: "G-C7EEMP1146"
 };
 
-// Inicializa o Firebase e define as variáveis globais
+// **Removida:** const API_BASE_URL = 'http://localhost:8080'; (Não será mais usada para exclusão)
+
+// Inicializa o Firebase
 firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth(); // Variável global essencial para a recuperação de senha
+
+// Define as variáveis globais essenciais
+const auth = firebase.auth(); 
 const db = firebase.firestore();
 
+// Correção para o TypeError: `firebase.storage is not a function`
+// Se o SDK foi carregado no HTML, esta linha agora funcionará.
+let storage = null;
+if (typeof firebase.storage === 'function') {
+    storage = firebase.storage();
+}
+
+
 // =======================================================
-// === FUNÇÃO DE LOGIN COM O GOOGLE ===
+// === FUNÇÕES DE AUTENTICAÇÃO (MANTIDAS) ===
 // =======================================================
 
 async function loginComGoogleEmpresa() {
@@ -55,22 +69,15 @@ async function loginComGoogleEmpresa() {
     }
 }
 
-// =======================================================
-// === FUNÇÃO DE RECUPERAÇÃO DE SENHA PARA EMPRESA (IMPLEMENTAÇÃO) ===
-// =======================================================
-
 async function recuperarSenhaEmpresa() {
-    // 1. Pede o email do usuário (a mensagem no prompt está correta para Empresa)
     const email = prompt("Por favor, digite seu e-mail de Empresa para redefinir a senha:");
 
-    // 2. Verifica se o usuário digitou algo
     if (!email) {
         alert("Operação cancelada ou e-mail não fornecido.");
         return;
     }
 
     try {
-        // 3. Envia o e-mail de redefinição de senha USANDO O OBJETO 'auth' GLOBAL
         await auth.sendPasswordResetEmail(email);
 
         alert(`✅ E-mail de redefinição de senha enviado para ${email}. Verifique sua caixa de entrada e a pasta de Spam!`);
@@ -78,13 +85,12 @@ async function recuperarSenhaEmpresa() {
     } catch (error) {
         console.error("Erro ao enviar e-mail de redefinição:", error);
 
-        // Mensagens de erro amigáveis baseadas no código do Firebase
         let errorMessage = "Erro ao solicitar a redefinição de senha. Verifique se o e-mail está correto e tente novamente.";
         
         if (error.code === 'auth/user-not-found') {
             errorMessage = "Não encontramos uma conta para este e-mail.";
         } else if (error.code === 'auth/invalid-email') {
-             errorMessage = "O formato do e-mail é inválido.";
+            errorMessage = "O formato do e-mail é inválido.";
         }
 
         alert(`❌ Erro: ${errorMessage}`);
@@ -92,23 +98,123 @@ async function recuperarSenhaEmpresa() {
 }
 
 
+// =======================================================
+// === FUNÇÃO DE EXCLUSÃO DE CONTA (Empresa) - CORRIGIDA ===
+// =======================================================
+// Esta função substitui a versão que falhava ao chamar http://localhost:8080/perfil
+
+async function excluirContaEmpresa(user) {
+    if (!user) {
+        alert("Erro: Nenhuma empresa logada.");
+        return;
+    }
+
+    const userId = user.uid;
+    const userEmail = user.email;
+
+    // 1. Confirmação de Segurança (Digitando o E-mail)
+    const confirmacaoEmail = prompt(`ATENÇÃO: A exclusão da conta da empresa é PERMANENTE. Você perderá todos os dados (perfil, vagas e candidaturas associadas).
+
+Para confirmar a exclusão, digite seu EMAIL (${userEmail}) no campo abaixo:`);
+
+    if (confirmacaoEmail !== userEmail) {
+        alert("E-mail digitado incorretamente ou operação cancelada.");
+        return;
+    }
+
+    // 2. Confirmação de Segurança (Digitando a Senha do site para Reautenticação)
+    const confirmacaoSenha = prompt("Por favor, digite sua SENHA (do site) para confirmar a exclusão. (REQUERIDO PELO FIREBASE):");
+    if (!confirmacaoSenha) {
+        alert("Exclusão cancelada. É necessário informar a senha.");
+        return;
+    }
+
+    try {
+        // PASSO A: RE-AUTENTICAÇÃO (CRÍTICO PARA SEGURANÇA)
+        const credential = firebase.auth.EmailAuthProvider.credential(userEmail, confirmacaoSenha);
+        await user.reauthenticateWithCredential(credential);
+        console.log("[Exclusão Empresa] Reautenticação bem-sucedida.");
+
+        // PASSO B: EXCLUIR DADOS RELACIONADOS (Vagas e Candidaturas)
+        // Usamos um 'batch' para garantir que as exclusões sejam atômicas.
+        console.log("[Exclusão Empresa] Iniciando exclusão de vagas e candidaturas relacionadas...");
+        const vagasSnapshot = await db.collection('vagas')
+            .where('empresaId', '==', userId)
+            .get();
+
+        const batch = db.batch();
+        
+        for (const doc of vagasSnapshot.docs) {
+            const vagaId = doc.id;
+            
+            // 1. Excluir candidaturas (registros na coleção 'candidaturas')
+            const candidaturasSnapshot = await db.collection('candidaturas')
+                .where('vagaId', '==', vagaId)
+                .get();
+            
+            candidaturasSnapshot.docs.forEach(candidaturaDoc => {
+                batch.delete(candidaturaDoc.ref);
+            });
+            
+            // 2. Excluir a própria vaga
+            batch.delete(doc.ref);
+        }
+        await batch.commit();
+        console.log(`[Exclusão Empresa] ${vagasSnapshot.size} vagas e suas candidaturas relacionadas excluídas.`);
+        
+        // PASSO C: EXCLUIR DADOS DO PERFIL (Coleção 'usuarios')
+        console.log("[Exclusão Empresa] Excluindo perfil da empresa...");
+        await db.collection('usuarios').doc(userId).delete();
+        console.log("[Exclusão Empresa] Perfil da empresa excluído.");
+
+        // PASSO D: EXCLUIR O USUÁRIO DO FIREBASE AUTH (LIBERA O E-MAIL)
+        // Isso impede que o e-mail fique preso, gerando o erro de cadastro
+        await user.delete();
+        console.log("[Exclusão Empresa] Usuário excluído do Firebase Auth. E-mail liberado.");
+
+        alert("✅ Sua conta de empresa foi excluída permanentemente. Você será redirecionado.");
+        window.location.href = 'login-empresa.html'; 
+
+    } catch (error) {
+        console.error("Erro ao excluir a conta da empresa:", error);
+        
+        let errorMessage = "Ocorreu um erro ao tentar excluir sua conta.";
+        
+        if (error.code === 'auth/wrong-password') {
+             errorMessage = "Senha incorreta. A exclusão da conta foi cancelada.";
+        } else if (error.code === 'auth/requires-recent-login') {
+            errorMessage = "Erro de Segurança: Você precisa ter feito login *recentemente* (saia e entre novamente) e tente excluir a conta em seguida.";
+        } else if (error.code === 'auth/user-not-found') {
+             errorMessage = "Usuário não encontrado. Possível problema de autenticação.";
+        }
+        
+        alert(`❌ ${errorMessage} (Detalhes técnicos no console)`);
+    }
+}
+
+
+// =======================================================
+// === LÓGICA DE DOM (MANTIDA) ===
+// =======================================================
 document.addEventListener('DOMContentLoaded', () => {
     // Lógica de exibir/esconder senha (mantida)
     const passwordToggles = document.querySelectorAll('.password-toggle');
     passwordToggles.forEach(toggle => {
-        toggle.addEventListener('click', () => {
-            const targetId = toggle.getAttribute('data-target');
-            const passwordInput = document.getElementById(targetId);
-            const icon = toggle.querySelector('i');
-            if (passwordInput.type === 'password') {
-                passwordInput.type = 'text';
-                icon.setAttribute('data-feather', 'eye-off');
-            } else {
-                passwordInput.type = 'password';
-                icon.setAttribute('data-feather', 'eye');
-            }
-            feather.replace();
-        });
+        const targetId = toggle.getAttribute('data-target');
+        const passwordInput = document.getElementById(targetId);
+        const icon = toggle.querySelector('i');
+        if (passwordInput && icon) { 
+            toggle.addEventListener('click', () => {
+                if (passwordInput.type === 'password') {
+                    passwordInput.type = 'text';
+                    icon.setAttribute('data-feather', 'eye-off');
+                } else {
+                    passwordInput.type = 'password';
+                    icon.setAttribute('data-feather', 'eye');
+                }
+                if (typeof feather !== 'undefined') feather.replace();
+            });
+        }
     });
 
     // Lógica de Cadastro (mantida)
@@ -179,7 +285,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // MANIPULADOR DE EVENTOS PARA O BOTÃO DO GOOGLE (mantido)
+    // MANIPULADOR DE EVENTOS PARA O BOTÃO DO GOOGLE (PONTO CHAVE)
     const btnGoogleLogin = document.getElementById('btn-google-login-empresa');
     if (btnGoogleLogin) {
         btnGoogleLogin.addEventListener('click', async (e) => {
@@ -196,12 +302,81 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
     
-    // === CONEXÃO DO BOTÃO DE RECUPERAÇÃO DE SENHA (CRÍTICO) ===
+    // CONEXÃO DO BOTÃO DE RECUPERAÇÃO DE SENHA (mantido)
     const btnEsqueciSenha = document.getElementById('btn-esqueci-senha-empresa');
     if (btnEsqueciSenha) {
         btnEsqueciSenha.addEventListener('click', (e) => {
-            e.preventDefault(); // Impede que o link recarregue a página
-            recuperarSenhaEmpresa(); // Chama a função implementada acima
+            e.preventDefault();
+            recuperarSenhaEmpresa();
+        });
+    }
+    
+    // =======================================================
+    // === LÓGICA DA PÁGINA DE PERFIL DA EMPRESA (CARREGAR/SALVAR/EXCLUIR) ===
+    // =======================================================
+    const formPerfilEmpresa = document.getElementById('profile-form-empresa');
+    
+    if (formPerfilEmpresa) {
+        const btnExcluirConta = document.getElementById('btn-excluir-conta-empresa');
+
+        const carregarDadosDaEmpresa = async (userId) => {
+            try {
+                const doc = await db.collection('usuarios').doc(userId).get();
+                if (!doc.exists) { return; }
+
+                const data = doc.data();
+
+                document.getElementById('user-name').textContent = data.nome || 'Nome da Empresa';
+                document.getElementById('user-email').textContent = data.email || '';
+                document.getElementById('email').value = data.email || '';
+                document.getElementById('nome-empresa').value = data.nome || '';
+                document.getElementById('cnpj-empresa').value = data.cnpj || '';
+
+                if (data.logoUrl) {
+                    document.getElementById('profile-img').src = data.logoUrl;
+                }
+
+            } catch (error) {
+                console.error("Erro ao carregar dados:", error);
+            }
+        };
+
+        const salvarDadosDoPerfil = async (userId) => {
+            const dadosParaSalvar = {
+                nome: document.getElementById('nome-empresa').value,
+                cnpj: document.getElementById('cnpj-empresa').value,
+                dataAtualizacao: firebase.firestore.FieldValue.serverTimestamp()
+            };
+
+            try {
+                await db.collection('usuarios').doc(userId).set(dadosParaSalvar, { merge: true });
+                alert("Alterações salvas com sucesso!");
+                document.getElementById('user-name').textContent = dadosParaSalvar.nome;
+            } catch (error) {
+                console.error("Erro ao salvar:", error);
+                alert(`Erro ao salvar: ${error.message}`);
+            }
+        };
+
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                carregarDadosDaEmpresa(user.uid);
+                
+                formPerfilEmpresa.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    salvarDadosDoPerfil(user.uid);
+                });
+                
+                if (btnExcluirConta) {
+                    btnExcluirConta.addEventListener('click', () => {
+                        excluirContaEmpresa(user); 
+                    });
+                }
+
+            } else {
+                alert("Você precisa estar logado para acessar esta página.");
+                window.location.href = 'login-empresa.html';
+            }
         });
     }
 });
