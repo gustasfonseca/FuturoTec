@@ -20,32 +20,27 @@ const db = firebase.firestore();
 let allEtecs = [];
 
 // =======================================================
-// === FUNÇÃO DE LOGIN COM O GOOGLE (CORRIGIDA) ===
-// Garante que a conta já exista e tenha o role 'assistente_tecnico'
+// === FUNÇÃO DE LOGIN COM O GOOGLE ===
 // =======================================================
 
 async function loginComGoogleAssistente() {
     const provider = new firebase.auth.GoogleAuthProvider();
 
     try {
-        // 1. Inicia o pop-up de login e autentica o usuário no Firebase Auth
         const result = await auth.signInWithPopup(provider);
         const user = result.user;
 
         console.log("Login do Google bem-sucedido no Auth:", user);
 
-        // 2. Verifica o perfil na sua coleção 'usuarios' do Firestore
         const userRef = db.collection('usuarios').doc(user.uid);
         const userSnap = await userRef.get();
         const userData = userSnap.data();
 
         if (!userSnap.exists) {
-            // SE O DOCUMENTO NO FIRESTORE NÃO EXISTE: BLOQUEAR LOGIN!
             await auth.signOut();
             throw new Error("Conta não encontrada. Por favor, cadastre-se usando o formulário de e-mail/senha primeiro.");
 
         } else if (userData.role !== 'assistente_tecnico') {
-            // Bloqueia se o role não for 'assistente_tecnico'
             await auth.signOut();
             throw new Error(`Acesso negado. Esta conta está registrada como ${userData.role}. Use o login correto.`);
         }
@@ -54,7 +49,6 @@ async function loginComGoogleAssistente() {
         return user;
 
     } catch (error) {
-        // Trata o erro de pop-up, conta não encontrada ou role incorreto
         console.error("Erro no login com o Google:", error);
 
         const errorMessage = error.message.includes("Conta não encontrada")
@@ -69,28 +63,58 @@ async function loginComGoogleAssistente() {
 }
 
 
+// =======================================================
+// === FUNÇÃO DE RECUPERAÇÃO DE SENHA PARA ASSISTENTE TÉCNICO (CRÍTICA) ===
+// =======================================================
+
+async function recuperarSenhaAssistente() {
+    // 1. Pede o email do usuário
+    const email = prompt("Por favor, digite seu e-mail de Assistente Técnico para redefinir a senha:");
+
+    if (!email) {
+        alert("Operação cancelada ou e-mail não fornecido.");
+        return;
+    }
+
+    try {
+        // 2. Envia o e-mail de redefinição de senha usando o objeto 'auth'
+        await auth.sendPasswordResetEmail(email);
+
+        alert(`✅ E-mail de redefinição de senha enviado para ${email}. Verifique sua caixa de entrada e a pasta de Spam!`);
+
+    } catch (error) {
+        console.error("Erro ao enviar e-mail de redefinição:", error);
+
+        let errorMessage = "Erro ao solicitar a redefinição de senha. Verifique se o e-mail está correto e tente novamente.";
+
+        if (error.code === 'auth/user-not-found') {
+            errorMessage = "Não encontramos uma conta para este e-mail.";
+        } else if (error.code === 'auth/invalid-email') {
+             errorMessage = "O formato do e-mail é inválido.";
+        }
+
+        alert(`❌ Erro: ${errorMessage}`);
+    }
+}
+
+
 // --- FUNÇÕES AUXILIARES ---
 
-// Função para buscar todas as Etecs uma única vez
 async function fetchAllEtecs() {
     try {
-        // A busca é pública, mas em caso de falha de regras do Firestore, ela falhará aqui.
+        // Esta função requer permissão de leitura pública (allow read: if true;) na coleção 'etecs' no Firebase Rules
         const snapshot = await db.collection('etecs').get();
         allEtecs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         console.log("Dados de todas as Etecs carregados.");
     } catch (error) {
         console.error("Erro ao carregar dados das Etecs:", error);
-        // Exibe um erro crítico para o usuário se as Etecs não puderem ser carregadas
         alert("Erro ao carregar lista de ETECs. Verifique as Regras do Firestore.");
     }
 }
 
-// Função para carregar e exibir os dados na página de perfil
 async function preencherDadosDoPerfil() {
-    // Esta função é específica para páginas que exigem login (como Perfil)
     firebase.auth().onAuthStateChanged(async (user) => {
         if (user) {
-            // --- USUÁRIO ESTÁ LOGADO ---
             const uid = user.uid;
             try {
                 const userDoc = await db.collection('usuarios').doc(uid).get();
@@ -120,7 +144,6 @@ async function preencherDadosDoPerfil() {
                 alert("Ocorreu um erro ao carregar seu perfil.");
             }
         } else {
-            // --- USUÁRIO NÃO ESTÁ LOGADO ---
             console.log("Nenhum usuário logado. Redirecionando para a página de login.");
             window.location.href = 'login-assistente.html';
         }
@@ -131,17 +154,14 @@ async function preencherDadosDoPerfil() {
 // --- LÓGICA PRINCIPAL EXECUTADA QUANDO A PÁGINA CARREGA ---
 
 document.addEventListener('DOMContentLoaded', async () => {
-    // Carrega os dados das Etecs (necessário para todas as páginas que usam o autocomplete, incluindo cadastro)
+    // Carrega a lista de ETECs (necessário para o autocomplete)
     await fetchAllEtecs();
-
-    // --- LÓGICA ESPECÍFICA PARA CADA PÁGINA ---
 
     // Lógica da PÁGINA DE PERFIL
     if (document.getElementById('profile-form-assistente')) {
         console.log("Página de perfil detectada. Carregando dados...");
-        preencherDadosDoPerfil(); // Carrega os dados do usuário
+        preencherDadosDoPerfil();
 
-        // Adiciona a funcionalidade de salvar alterações
         const formPerfil = document.getElementById('profile-form-assistente');
         formPerfil.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -176,7 +196,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // Lógica da PÁGINA DE CADASTRO (Corrigida e separada da lógica de autenticação de perfil)
+    // Lógica da PÁGINA DE CADASTRO
     if (document.getElementById('form-assistente')) {
         const formCadastro = document.getElementById('form-assistente');
         const inputEtec = document.getElementById('nome-etec');
@@ -188,13 +208,11 @@ document.addEventListener('DOMContentLoaded', async () => {
             inputEtec.addEventListener('input', (e) => {
                 const query = e.target.value.trim().toLowerCase();
                 etecResultsContainer.innerHTML = '';
-                // Limpa o endereço ao começar a digitar
-                inputEnderecoEtec.value = '';
+                inputEnderecoEtec.value = ''; // Limpa o endereço ao digitar
 
                 if (query.length < 2) return;
 
                 const filteredEtecs = allEtecs.filter(etec =>
-                    // Procura pelo nome OU código
                     etec.nome.toLowerCase().includes(query) || etec.cod.includes(query)
                 );
 
@@ -203,20 +221,28 @@ document.addEventListener('DOMContentLoaded', async () => {
                     etecItem.classList.add('etec-result-item');
                     etecItem.innerHTML = `<h4>${etecData.cod} - ${etecData.nome}</h4><p>${etecData.endereco}</p>`;
                     etecItem.addEventListener('click', () => {
-                        inputEtec.value = `${etecData.cod} - ${etecData.nome}`; // Exibe Código e Nome
+                        inputEtec.value = `${etecData.cod} - ${etecData.nome}`; 
                         inputEnderecoEtec.value = etecData.endereco;
-                        inputEtec.dataset.etecId = etecData.id; // Armazena o ID
-                        etecResultsContainer.innerHTML = '';
+                        inputEtec.dataset.etecId = etecData.id; 
+                        etecResultsContainer.innerHTML = ''; // Esconde os resultados
                     });
                     etecResultsContainer.appendChild(etecItem);
                 });
             });
         }
 
-        // Esconde o autocomplete ao clicar fora
+        // Esconde o autocomplete ao clicar fora (COM CORREÇÃO DE ERRO)
         document.addEventListener('click', (e) => {
-            if (inputEtec && etecResultsContainer && !inputEtec.contains(e.target) && !etecResultsContainer.contains(e.target)) {
-                etecResultsContainer.innerHTML = '';
+            // Verifica se e.target é um elemento DOM válido
+            if (!e.target || !(e.target instanceof Element)) { 
+                return;
+            }
+
+            if (inputEtec && etecResultsContainer) {
+                // Se o clique não foi no input E não foi no container de resultados, fecha.
+                if (!inputEtec.contains(e.target) && !etecResultsContainer.contains(e.target)) {
+                    etecResultsContainer.innerHTML = '';
+                }
             }
         });
 
@@ -229,8 +255,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             const confirmarSenha = document.getElementById('confirmar-senha-assistente').value;
             const nome = document.getElementById('nome-assistente').value;
             const nomeEtec = document.getElementById('nome-etec').value;
-            const emailEtec = document.getElementById('email-etec').value;
-            const etecId = inputEtec.dataset.etecId; // Pega o ID armazenado no dataset
+            // O campo 'email-etec' foi removido e não está mais sendo capturado aqui
+            const etecId = inputEtec.dataset.etecId; 
 
             if (senha !== confirmarSenha) return alert("As senhas não coincidem.");
             if (!etecId) return alert("Selecione a ETEC na lista de sugestões.");
@@ -238,20 +264,18 @@ document.addEventListener('DOMContentLoaded', async () => {
             try {
                 const userCredential = await auth.createUserWithEmailAndPassword(email, senha);
 
-                // Busca a ETEC apenas para confirmar os dados, embora o ID já tenha sido pego
                 const etecFound = allEtecs.find(etec => etec.id === etecId);
 
                 await db.collection('usuarios').doc(userCredential.user.uid).set({
                     role: 'assistente_tecnico',
                     nome: nome,
                     email: email,
-                    email_etec: emailEtec,
-                    etec_id: etecId, // Usa o ID garantido
-                    etec_nome: etecFound ? etecFound.nome : nomeEtec, // Armazena o nome da ETEC também
+                    // email_etec: REMOVIDO
+                    etec_id: etecId, 
+                    etec_nome: etecFound ? etecFound.nome : nomeEtec, 
                     dataCriacao: firebase.firestore.FieldValue.serverTimestamp()
                 });
 
-                // DESLOGA APÓS O CADASTRO PARA FORÇAR O LOGIN
                 await auth.signOut();
 
                 alert("Cadastro realizado com sucesso! Por favor, faça login.");
@@ -318,10 +342,18 @@ document.addEventListener('DOMContentLoaded', async () => {
                 passwordInput.type = 'password';
                 icon.setAttribute('data-feather', 'eye');
             }
-            // Verifica se feather-icons está carregado antes de chamar replace
             if (typeof feather !== 'undefined' && feather.replace) {
                 feather.replace();
             }
         });
     });
+
+    // === CONEXÃO DO BOTÃO DE RECUPERAÇÃO DE SENHA (CRÍTICA) ===
+    const btnEsqueciSenha = document.getElementById('btn-esqueci-senha-assistente');
+    if (btnEsqueciSenha) {
+        btnEsqueciSenha.addEventListener('click', (e) => {
+            e.preventDefault(); // Impede que o link recarregue a página
+            recuperarSenhaAssistente(); // Chama a função de redefinição
+        });
+    }
 });
