@@ -1,311 +1,189 @@
-// index.js - VERSÃO COMPLETA E CORRIGIDA
+// index.js
+
 const express = require('express');
+const cors = require('cors');
 const admin = require('firebase-admin');
 
-// --- CONFIGURAÇÃO INICIAL DO FIREBASE ---
-try {
-    const serviceAccount = require('./serviceAccountKey.json');
-    admin.initializeApp({
-        credential: admin.credential.cert(serviceAccount)
-    });
-    console.log('✅ Firebase inicializado com sucesso!');
-} catch (error) {
-    console.error('❌ Erro ao inicializar o Firebase:', error.message);
-    console.log("🚨 Verifique se o arquivo 'serviceAccountKey.json' está na pasta correta.");
-    process.exit(1);
-}
+// 1. Inicialização do Firebase Admin SDK
+// IMPORTANTE: O arquivo serviceAccountKey.json deve estar na raiz do seu projeto backend
+const serviceAccount = require('./serviceAccountKey.json');
+
+admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount),
+    // Adicione a URL do seu Database ou Storage Bucket se necessário
+    databaseURL: "https://futurotec-e3a69.firebaseio.com" // Exemplo
+});
 
 const db = admin.firestore();
 const app = express();
-app.use(express.json());
+const PORT = 8080;
 
-// --- MIDDLEWARE DE AUTENTICAÇÃO E PERMISSÃO ---
+// Configurações do Express
+app.use(cors()); // Permite requisições de outros domínios (como o frontend em localhost)
+app.use(express.json()); // Permite o uso de JSON no corpo das requisições
+
+// =======================================================
+// === Middlewares de Autenticação e Autorização (CRÍTICO) ===
+// =======================================================
 
 /**
  * Middleware para verificar o token de autenticação do Firebase.
- * Aplica-se a todas as rotas abaixo.
+ * @param {object} req - Objeto de requisição.
+ * @param {object} res - Objeto de resposta.
+ * @param {function} next - Próxima função middleware.
  */
-const verifyFirebaseToken = async (req, res, next) => {
+async function verifyFirebaseToken(req, res, next) {
     const authHeader = req.headers.authorization;
+    
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
-        return res.status(401).json({ sucesso: false, erro: 'Acesso não autorizado. Token não fornecido.' });
+        return res.status(401).json({ erro: 'Acesso negado. Token não fornecido ou formato incorreto.' });
     }
+
     const idToken = authHeader.split('Bearer ')[1];
+
     try {
         const decodedToken = await admin.auth().verifyIdToken(idToken);
-        req.user = decodedToken;
+        req.user = decodedToken; // Adiciona as informações do usuário logado à requisição
         next();
     } catch (error) {
-        console.error('Erro ao verificar o token:', error);
-        return res.status(403).json({ sucesso: false, erro: 'Token inválido ou expirado.' });
+        console.error("Erro ao verificar token:", error.message);
+        // O erro 'auth/argument-error' é comum se o token for inválido/expirado
+        if (error.code === 'auth/id-token-expired') {
+            return res.status(401).json({ erro: 'Sessão expirada. Faça login novamente.' });
+        }
+        return res.status(403).json({ erro: 'Token inválido ou acesso negado.' });
     }
-};
-
-app.use(verifyFirebaseToken);
+}
 
 /**
- * Middleware para verificar o papel (role) do usuário.
- * Usado para proteger rotas específicas para empresas ou assistentes.
+ * Middleware para verificar se o usuário tem a role necessária.
+ * @param {Array<string>} allowedRoles - Roles permitidas (ex: ['aluno', 'empresa']).
  */
-const checkRole = (allowedRoles) => async (req, res, next) => {
+function checkRole(allowedRoles) {
+    return async (req, res, next) => {
+        // Assume que verifyFirebaseToken já foi executado e req.user existe
+        if (!req.user || !req.user.uid) {
+            return res.status(403).json({ erro: 'Usuário não autenticado.' });
+        }
+
+        try {
+            const userDoc = await db.collection('usuarios').doc(req.user.uid).get();
+            const role = userDoc.exists ? userDoc.data().role : null;
+
+            if (role && allowedRoles.includes(role)) {
+                // Adiciona a role para uso futuro (opcional)
+                req.user.role = role; 
+                next();
+            } else {
+                return res.status(403).json({ erro: `Acesso negado. Role necessária: ${allowedRoles.join(' ou ')}.` });
+            }
+        } catch (error) {
+            console.error("Erro ao verificar role:", error.message);
+            return res.status(500).json({ erro: 'Erro interno ao verificar permissões.' });
+        }
+    };
+}
+
+
+// =======================================================
+// === Rota de Teste (OPCIONAL) ===
+// =======================================================
+
+app.get('/', (req, res) => {
+    res.send('Servidor FuturoTEC Backend Online!');
+});
+
+
+// =======================================================
+// === Endpoint de Exclusão de Conta (DELETE /perfil) ===
+// (Protegido pelo verifyFirebaseToken e checkRole)
+// =======================================================
+
+// Aplica o middleware de autenticação em todas as rotas que precisam de login
+app.use(verifyFirebaseToken); 
+
+// Endpoint para ALUNOS (Role: aluno)
+app.delete('/perfil', checkRole(['aluno']), async (req, res) => {
     try {
         const uid = req.user.uid;
-        const userDoc = await db.collection('usuarios').doc(uid).get();
-        const userData = userDoc.data();
+        const batch = db.batch();
 
-        if (!userDoc.exists || !allowedRoles.includes(userData.role)) {
-            return res.status(403).json({ sucesso: false, erro: 'Ação não permitida para o seu tipo de perfil.' });
-        }
-        req.profile = userData;
-        next();
+        // 1. Apaga o perfil do aluno no Firestore
+        const userRef = db.collection('usuarios').doc(uid);
+        batch.delete(userRef);
+
+        // 2. Apaga candidaturas do aluno
+        const candidaturasSnapshot = await db.collection('candidaturas').where('idAluno', '==', uid).get();
+        candidaturasSnapshot.docs.forEach(doc => {
+            batch.delete(doc.ref);
+        });
+        
+        await batch.commit();
+        console.log(`Dados do Firestore do aluno ${uid} apagados (perfil e candidaturas).`);
+
+        // 3. Apaga o usuário do Auth
+        await admin.auth().deleteUser(uid);
+        console.log(`Usuário aluno ${uid} apagado do Auth.`);
+
+        res.status(200).json({ sucesso: true, mensagem: 'Conta de aluno excluída com sucesso.' });
     } catch (error) {
-        res.status(500).json({ sucesso: false, erro: 'Erro ao verificar o papel do usuário.' });
+        console.error(`Erro ao excluir conta de aluno ${req.user.uid}:`, error.message);
+        res.status(500).json({ sucesso: false, erro: 'Erro ao excluir a conta do aluno. Tente fazer login novamente e repita o processo.' });
     }
-};
+});
 
-// --- Endpoints de Perfis ---
-
-/**
- * Cria ou atualiza um perfil de usuário (aluno, empresa ou assistente_tecnico).
- * POST /perfil
- */
-app.post('/perfil', async (req, res) => {
+// Endpoint para EMPRESAS (Role: empresa)
+app.delete('/perfil', checkRole(['empresa']), async (req, res) => {
     try {
         const uid = req.user.uid;
-        const { role, dados } = req.body;
+        const batch = db.batch();
 
-        if (!role || !dados) {
-            return res.status(400).json({ sucesso: false, erro: "Corpo da requisição inválido. 'role' e 'dados' são obrigatórios." });
+        // 1. Apaga o perfil da empresa no Firestore
+        const userRef = db.collection('usuarios').doc(uid);
+        batch.delete(userRef);
+        
+        // 2. Apaga TODAS AS VAGAS criadas pela empresa
+        const vagasSnapshot = await db.collection('vagas').where('empresaId', '==', uid).get();
+        const vagasIds = [];
+        vagasSnapshot.docs.forEach(doc => {
+            batch.delete(doc.ref);
+            vagasIds.push(doc.id);
+        });
+        console.log(`Vagas (${vagasIds.length}) da empresa ${uid} marcadas para exclusão.`);
+
+        // 3. Apaga TODAS AS CANDIDATURAS relacionadas a essas vagas
+        if (vagasIds.length > 0) {
+            // Nota: Se a lista vagasIds for muito grande, o Firestore pode falhar.
+            const candidaturasSnapshot = await db.collection('candidaturas').where('idVaga', 'in', vagasIds).get();
+            candidaturasSnapshot.docs.forEach(doc => {
+                batch.delete(doc.ref);
+            });
+            console.log(`Candidaturas relacionadas às vagas da empresa ${uid} marcadas para exclusão.`);
         }
-        const rolesValidos = ['aluno', 'empresa', 'assistente_tecnico'];
-        if (!rolesValidos.includes(role)) {
-            return res.status(400).json({ sucesso: false, erro: "O 'role' de perfil é inválido." });
-        }
+        
+        // 4. Se houver logo no Storage, apagar (Exemplo - Remova se não tiver a funcionalidade)
+        // const bucket = admin.storage().bucket();
+        // await bucket.file(`logos/${uid}`).delete().catch(e => console.log('Logo não encontrada para apagar.', e.message));
 
-        dados.email = req.user.email;
+        await batch.commit();
+        console.log(`Dados do Firestore da empresa ${uid} apagados (perfil, vagas e candidaturas).`);
 
-        const dadosPerfil = {
-            ...dados,
-            role: role,
-            dataAtualizacao: admin.firestore.FieldValue.serverTimestamp()
-        };
+        // 5. Apaga o usuário do Auth
+        await admin.auth().deleteUser(uid);
+        console.log(`Usuário empresa ${uid} apagado do Auth.`);
 
-        await db.collection('usuarios').doc(uid).set(dadosPerfil, { merge: true });
-        res.status(201).json({ sucesso: true, mensagem: `Perfil de ${role} criado/atualizado com sucesso para o UID ${uid}` });
+        res.status(200).json({ sucesso: true, mensagem: 'Conta de empresa excluída com sucesso.' });
     } catch (error) {
-        res.status(500).json({ sucesso: false, erro: error.message });
+        console.error(`Erro ao excluir conta de empresa ${req.user.uid}:`, error.message);
+        res.status(500).json({ sucesso: false, erro: 'Erro ao excluir a conta da empresa. Tente fazer login novamente e repita o processo.' });
     }
 });
 
-/**
- * Obtém os dados de um perfil específico da coleção "usuarios".
- * GET /perfil/:uid
- */
-app.get('/perfil/:uid', async (req, res) => {
-    try {
-        const { uid } = req.params;
-        const docRef = db.collection('usuarios').doc(uid);
-        const doc = await docRef.get();
+// =======================================================
+// === Inicialização do Servidor ===
+// =======================================================
 
-        if (doc.exists) {
-            res.status(200).json({ id: doc.id, ...doc.data() });
-        } else {
-            res.status(404).json({ sucesso: false, erro: "Perfil não encontrado" });
-        }
-    } catch (error) {
-        res.status(500).json({ sucesso: false, erro: error.message });
-    }
-});
-
-
-// --- Endpoints de Etecs (apenas para assistente técnico) ---
-
-/**
- * Cria uma nova Etec.
- * POST /etecs
- */
-app.post('/etecs', checkRole(['assistente_tecnico']), async (req, res) => {
-    try {
-        const { nome, cod, endereco } = req.body;
-        if (!nome || !cod) {
-            return res.status(400).json({ sucesso: false, erro: 'Nome e código são obrigatórios para a Etec.' });
-        }
-        const etecData = {
-            nome,
-            cod,
-            endereco,
-            dataCriacao: admin.firestore.FieldValue.serverTimestamp()
-        };
-        const docRef = await db.collection('etecs').add(etecData);
-        res.status(201).json({ sucesso: true, id_etec: docRef.id });
-    } catch (error) {
-        res.status(500).json({ sucesso: false, erro: error.message });
-    }
-});
-
-/**
- * Lista todas as Etecs.
- * GET /etecs
- */
-app.get('/etecs', async (req, res) => {
-    try {
-        const snapshot = await db.collection('etecs').get();
-        const etecs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        res.status(200).json(etecs);
-    } catch (error) {
-        res.status(500).json({ sucesso: false, erro: error.message });
-    }
-});
-
-
-// --- Endpoints de Vagas ---
-
-/**
- * Cria uma nova vaga. Apenas perfis de empresa podem usar.
- * POST /vagas
- */
-app.post('/vagas', checkRole(['empresa']), async (req, res) => {
-    try {
-        const empresaId = req.user.uid;
-        const perfilEmpresa = req.profile; // Dados do perfil da empresa vêm do middleware
-
-        const vagaData = {
-            ...req.body,
-            empresaId: empresaId,
-            nomeEmpresa: perfilEmpresa.nome,
-            dataPublicacao: admin.firestore.FieldValue.serverTimestamp(),
-            status: 'aberta'
-        };
-
-        const docRef = await db.collection('vagas').add(vagaData);
-        res.status(201).json({ sucesso: true, id_vaga: docRef.id });
-    } catch (error) {
-        res.status(500).json({ sucesso: false, erro: error.message });
-    }
-});
-
-/**
- * Lista todas as vagas. Acesso liberado para todos os usuários autenticados.
- * GET /vagas
- */
-app.get('/vagas', async (req, res) => {
-    try {
-        const snapshot = await db.collection('vagas').get();
-        const vagas = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        res.status(200).json(vagas);
-    } catch (error) {
-        res.status(500).json({ sucesso: false, erro: error.message });
-    }
-});
-
-/**
- * Obtém os detalhes de uma vaga específica.
- * GET /vagas/:id
- */
-app.get('/vagas/:id', async (req, res) => {
-    try {
-        const { id } = req.params;
-        const doc = await db.collection('vagas').doc(id).get();
-        if (!doc.exists) {
-            return res.status(404).json({ sucesso: false, erro: 'Vaga não encontrada.' });
-        }
-        res.status(200).json({ id: doc.id, ...doc.data() });
-    } catch (error) {
-        res.status(500).json({ sucesso: false, erro: error.message });
-    }
-});
-
-/**
- * NOVO: Atualiza uma vaga. Apenas a empresa que a criou pode editar.
- * PUT /vagas/:id
- */
-app.put('/vagas/:id', checkRole(['empresa']), async (req, res) => {
-    try {
-        const { id } = req.params;
-        const vagaRef = db.collection('vagas').doc(id);
-        const vagaDoc = await vagaRef.get();
-
-        if (!vagaDoc.exists || vagaDoc.data().empresaId !== req.user.uid) {
-            return res.status(403).json({ sucesso: false, erro: 'Ação não permitida.' });
-        }
-
-        await vagaRef.update(req.body);
-        res.status(200).json({ sucesso: true, mensagem: 'Vaga atualizada com sucesso.' });
-    } catch (error) {
-        res.status(500).json({ sucesso: false, erro: error.message });
-    }
-});
-
-/**
- * NOVO: Exclui uma vaga. Apenas a empresa que a criou pode excluir.
- * DELETE /vagas/:id
- */
-app.delete('/vagas/:id', checkRole(['empresa']), async (req, res) => {
-    try {
-        const { id } = req.params;
-        const vagaRef = db.collection('vagas').doc(id);
-        const vagaDoc = await vagaRef.get();
-
-        if (!vagaDoc.exists || vagaDoc.data().empresaId !== req.user.uid) {
-            return res.status(403).json({ sucesso: false, erro: 'Ação não permitida.' });
-        }
-
-        await vagaRef.delete();
-        res.status(200).json({ sucesso: true, mensagem: 'Vaga excluída com sucesso.' });
-    } catch (error) {
-        res.status(500).json({ sucesso: false, erro: error.message });
-    }
-});
-
-// --- Endpoints de Candidaturas (NOVO) ---
-
-/**
- * NOVO: Permite a um aluno candidatar-se a uma vaga.
- * POST /candidatar/:id_vaga
- */
-app.post('/candidatar/:id_vaga', checkRole(['aluno']), async (req, res) => {
-    try {
-        const { id_vaga } = req.params;
-        const alunoId = req.user.uid;
-        const alunoPerfil = req.profile;
-        const candidaturaData = {
-            idVaga: id_vaga,
-            idAluno: alunoId,
-            nomeAluno: alunoPerfil.nome,
-            dataCandidatura: admin.firestore.FieldValue.serverTimestamp()
-        };
-        await db.collection('candidaturas').add(candidaturaData);
-        res.status(201).json({ sucesso: true, mensagem: 'Candidatura realizada com sucesso.' });
-    } catch (error) {
-        res.status(500).json({ sucesso: false, erro: error.message });
-    }
-});
-
-/**
- * NOVO: Lista todas as candidaturas para uma vaga específica. Apenas a empresa da vaga pode ver.
- * GET /vagas/:id_vaga/candidaturas
- */
-app.get('/vagas/:id_vaga/candidaturas', checkRole(['empresa']), async (req, res) => {
-    try {
-        const { id_vaga } = req.params;
-        const empresaId = req.user.uid;
-
-        const vagaDoc = await db.collection('vagas').doc(id_vaga).get();
-        if (!vagaDoc.exists || vagaDoc.data().empresaId !== empresaId) {
-            return res.status(403).json({ sucesso: false, erro: 'Ação não permitida.' });
-        }
-
-        const candidaturasSnapshot = await db.collection('candidaturas').where('idVaga', '==', id_vaga).get();
-        const candidaturas = candidaturasSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        res.status(200).json(candidaturas);
-    } catch (error) {
-        res.status(500).json({ sucesso: false, erro: error.message });
-    }
-});
-
-
-// --- Roda o Servidor ---
-const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
-    console.log(`🚀 Servidor rodando na porta ${PORT}`);
+    console.log(`✅ Firebase inicializado com sucesso!`);
+    console.log(`🚀 Servidor rodando em http://localhost:${PORT}`);
 });
