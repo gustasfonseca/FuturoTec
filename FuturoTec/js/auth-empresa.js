@@ -11,47 +11,37 @@ const firebaseConfig = {
     measurementId: "G-C7EEMP1146"
 };
 
-// Inicializa o Firebase
+// Inicializa o Firebase e define as variáveis globais
 firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
+const auth = firebase.auth(); // Variável global essencial para a recuperação de senha
 const db = firebase.firestore();
 
 // =======================================================
-// === FUNÇÃO DE LOGIN COM O GOOGLE (CORRIGIDA) ===
-// Garante que a conta já exista e tenha o role 'empresa'
+// === FUNÇÃO DE LOGIN COM O GOOGLE ===
 // =======================================================
 
 async function loginComGoogleEmpresa() {
     const provider = new firebase.auth.GoogleAuthProvider();
 
     try {
-        // 1. Inicia o pop-up de login e autentica o usuário no Firebase Auth
         const result = await auth.signInWithPopup(provider);
         const user = result.user;
 
-        console.log("Login do Google bem-sucedido no Auth:", user);
-
-        // 2. Verifica o perfil na sua coleção 'usuarios' do Firestore
         const userRef = db.collection('usuarios').doc(user.uid);
         const userSnap = await userRef.get();
         const userData = userSnap.data();
 
         if (!userSnap.exists) {
-            // SE O DOCUMENTO NO FIRESTORE NÃO EXISTE: BLOQUEAR LOGIN!
             await auth.signOut();
             throw new Error("Conta não encontrada. Por favor, cadastre-se usando o formulário de e-mail/senha primeiro.");
-
         } else if (userData.role !== 'empresa') {
-            // Bloqueia se o role não for 'empresa'
             await auth.signOut();
             throw new Error(`Acesso negado. Esta conta está registrada como ${userData.role}. Use o login correto.`);
         }
 
-        console.log("Perfil de empresa existente no Firestore. Login permitido.");
         return user;
 
     } catch (error) {
-        // Trata o erro de pop-up, conta não encontrada ou role incorreto
         console.error("Erro no login com o Google:", error);
 
         const errorMessage = error.message.includes("Conta não encontrada")
@@ -62,6 +52,42 @@ async function loginComGoogleEmpresa() {
 
         alert(errorMessage);
         throw error;
+    }
+}
+
+// =======================================================
+// === FUNÇÃO DE RECUPERAÇÃO DE SENHA PARA EMPRESA (IMPLEMENTAÇÃO) ===
+// =======================================================
+
+async function recuperarSenhaEmpresa() {
+    // 1. Pede o email do usuário (a mensagem no prompt está correta para Empresa)
+    const email = prompt("Por favor, digite seu e-mail de Empresa para redefinir a senha:");
+
+    // 2. Verifica se o usuário digitou algo
+    if (!email) {
+        alert("Operação cancelada ou e-mail não fornecido.");
+        return;
+    }
+
+    try {
+        // 3. Envia o e-mail de redefinição de senha USANDO O OBJETO 'auth' GLOBAL
+        await auth.sendPasswordResetEmail(email);
+
+        alert(`✅ E-mail de redefinição de senha enviado para ${email}. Verifique sua caixa de entrada e a pasta de Spam!`);
+
+    } catch (error) {
+        console.error("Erro ao enviar e-mail de redefinição:", error);
+
+        // Mensagens de erro amigáveis baseadas no código do Firebase
+        let errorMessage = "Erro ao solicitar a redefinição de senha. Verifique se o e-mail está correto e tente novamente.";
+        
+        if (error.code === 'auth/user-not-found') {
+            errorMessage = "Não encontramos uma conta para este e-mail.";
+        } else if (error.code === 'auth/invalid-email') {
+             errorMessage = "O formato do e-mail é inválido.";
+        }
+
+        alert(`❌ Erro: ${errorMessage}`);
     }
 }
 
@@ -85,7 +111,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Lógica de Cadastro (CORRIGIDA para deslogar)
+    // Lógica de Cadastro (mantida)
     const formEmpresa = document.getElementById('form-empresa');
     if (formEmpresa) {
         formEmpresa.addEventListener('submit', async (e) => {
@@ -114,7 +140,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 };
                 await db.collection('usuarios').doc(user.uid).set(perfilData);
 
-                // CORREÇÃO: Desloga após o cadastro para forçar o login
                 await auth.signOut();
 
                 alert("Cadastro de Empresa realizado com sucesso! Por favor, faça login.");
@@ -154,7 +179,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // MANIPULADOR DE EVENTOS PARA O BOTÃO DO GOOGLE (NOVO)
+    // MANIPULADOR DE EVENTOS PARA O BOTÃO DO GOOGLE (mantido)
     const btnGoogleLogin = document.getElementById('btn-google-login-empresa');
     if (btnGoogleLogin) {
         btnGoogleLogin.addEventListener('click', async (e) => {
@@ -168,6 +193,15 @@ document.addEventListener('DOMContentLoaded', () => {
             } catch (error) {
                 // Erro já tratado na função
             }
+        });
+    }
+    
+    // === CONEXÃO DO BOTÃO DE RECUPERAÇÃO DE SENHA (CRÍTICO) ===
+    const btnEsqueciSenha = document.getElementById('btn-esqueci-senha-empresa');
+    if (btnEsqueciSenha) {
+        btnEsqueciSenha.addEventListener('click', (e) => {
+            e.preventDefault(); // Impede que o link recarregue a página
+            recuperarSenhaEmpresa(); // Chama a função implementada acima
         });
     }
 });
