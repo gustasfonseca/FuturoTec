@@ -64,6 +64,43 @@ async function loginComGoogleCandidato() {
     }
 }
 
+// =======================================================
+// === NOVO: FUNÇÃO DE RECUPERAÇÃO DE SENHA ===
+// =======================================================
+
+async function recuperarSenhaCandidato() {
+    // 1. Pede o email do usuário
+    const email = prompt("Por favor, digite seu e-mail de Candidato/Aluno para redefinir a senha:");
+
+    // Verifica se o usuário digitou algo
+    if (!email) {
+        alert("Operação cancelada ou e-mail não fornecido.");
+        return;
+    }
+
+    try {
+        // 2. Envia o e-mail de redefinição de senha usando Firebase Auth
+        await auth.sendPasswordResetEmail(email);
+
+        alert(`✅ E-mail de redefinição de senha enviado para ${email}. Verifique sua caixa de entrada e a pasta de Spam!`);
+
+    } catch (error) {
+        console.error("Erro ao enviar e-mail de redefinição:", error);
+
+        // Mensagem de erro amigável para o usuário
+        let errorMessage = "Erro ao solicitar a redefinição de senha. Verifique se o e-mail está correto e tente novamente.";
+        
+        // Trata erros comuns do Firebase
+        if (error.code === 'auth/user-not-found') {
+            errorMessage = "Não encontramos uma conta para este e-mail. Verifique se digitou corretamente.";
+        } else if (error.code === 'auth/invalid-email') {
+             errorMessage = "O formato do e-mail é inválido.";
+        }
+
+        alert(`❌ Erro: ${errorMessage}`);
+    }
+}
+
 
 // --- PONTO DE ENTRADA PRINCIPAL ---
 document.addEventListener('DOMContentLoaded', () => {
@@ -235,7 +272,15 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
-
+    
+    // --- LÓGICA DE RECUPERAÇÃO DE SENHA (CONECTANDO O LINK) ---
+    const btnEsqueciSenha = document.getElementById('btn-esqueci-senha');
+    if (btnEsqueciSenha) {
+        btnEsqueciSenha.addEventListener('click', (e) => {
+            e.preventDefault(); // Impede que o link recarregue a página
+            recuperarSenhaCandidato();
+        });
+    }
 
     // --- 4. LÓGICA DA PÁGINA DE PERFIL ---
     const formPerfil = document.getElementById('profile-form');
