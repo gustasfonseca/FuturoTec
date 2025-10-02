@@ -1,87 +1,96 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Perfil da Empresa - FuturoTEC</title>
-    <link rel="stylesheet" href="css/perfil.css"> 
-    <link rel="stylesheet" href="css/styles.css">
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Perfil da Empresa - FuturoTEC</title>
+    <link rel="stylesheet" href="css/perfil.css"> 
+    <link rel="stylesheet" href="css/styles.css">
 </head>
 
 <body>
-    <div class="app">
-        <header class="header">
-            <div class="container">
-                <div class="nav-wrapper">
-                    <div class="logo">
-                        <img src="img/FuturoTecInicial.jpeg" alt="FuturoTEC Logo">
-                    </div>
-                    <nav class="nav-desktop">
-                        <a href="InicialEmpresa.html" class="nav-link">Início</a>
-                        <a href="Vagas.html" class="nav-link">Vagas</a>
-                        </nav>
-                    <a href="MeuPerfilEmpresa.html" class="login-btn">Meu Perfil</a>
-                </div>
-            </div>
-        </header>
+    <div class="app">
+        <header class="header">
+            <div class="container">
+                <div class="nav-wrapper">
+                    <div class="logo">
+                        <img src="img/FuturoTecInicial.jpeg" alt="FuturoTEC Logo">
+                    </div>
+                    <nav class="nav-desktop">
+                        <a href="InicialEmpresa.html" class="nav-link">Início</a>
+                        <a href="Vagas.html" class="nav-link">Vagas</a>
+                        </nav>
+                    <a href="MeuPerfilEmpresa.html" class="login-btn">Meu Perfil</a>
+                </div>
+            </div>
+        </header>
 
-        <main class="profile-page-container">
-            <div class="profile-header">
-                <h1>Perfil da Empresa</h1>
-                <p>Veja e edite os dados da sua empresa.</p>
-            </div>
+        <main class="profile-page-container">
+            <div class="profile-header">
+                <h1>Perfil da Empresa</h1>
+                <p>Veja e edite os dados da sua empresa.</p>
+            </div>
 
-            <div class="profile-grid">
-                <aside class="profile-info">
-                    <h3>Dados Corporativos</h3>
-                    <p>Mantenha os dados da sua empresa sempre atualizados para os candidatos.</p>
-                </aside>
+            <div class="profile-grid">
+                <aside class="profile-info">
+                    <h3>Dados Corporativos</h3>
+                    <p>Mantenha os dados da sua empresa sempre atualizados para os candidatos.</p>
+                </aside>
 
-                <section class="profile-form-card">
-                    <div class="user-summary">
-                        <div class="profile-picture">
-                            <img id="profile-img" src="https://i.imgur.com/m3d5v8B.png" alt="Logo da Empresa">
-                            <input type="file" id="photo-upload-input" accept="image/*" style="display: none;">
-                            <button id="change-photo-btn" class="change-photo-btn">trocar logo</button>
-                        </div>
-                        <div class="user-details">
-                            <h2 id="user-name">Carregando...</h2>
-                            <p class="email" id="user-email">Carregando...</p>
-                        </div>
-                    </div>
-                    <hr>
+                <section class="profile-form-card">
+                    <div class="user-summary">
+                        <div class="profile-picture">
+                            <img id="profile-img" src="https://i.imgur.com/m3d5v8B.png" alt="Logo da Empresa">
+                            <input type="file" id="photo-upload-input" accept="image/*" style="display: none;">
+                            <button id="change-photo-btn" class="change-photo-btn">trocar logo</button>
+                        </div>
+                        <div class="user-details">
+                            <h2 id="user-name">Carregando...</h2>
+                            <p class="email" id="user-email">Carregando...</p>
+                        </div>
+                    </div>
+                    <hr>
 
-                    <form id="profile-form-empresa">
-                        <div class="form-group">
-                            <label for="email">Email de Login</label>
-                            <input type="email" id="email" disabled>
-                        </div>
+                    <form id="profile-form-empresa">
+                        <div class="form-group">
+                            <label for="email">Email de Login</label>
+                            <input type="email" id="email" disabled>
+                        </div>
 
-                        <div class="form-group">
-                            <label for="nome-empresa" class="required">Nome da Empresa</label>
-                            <input type="text" id="nome-empresa" required>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="cnpj-empresa" class="required">CNPJ</label>
-                            <input type="text" id="cnpj-empresa" required>
-                        </div>
+                        <div class="form-group">
+                            <label for="nome-empresa" class="required">Nome da Empresa</label>
+                            <input type="text" id="nome-empresa" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="cnpj-empresa" class="required">CNPJ</label>
+                            <input type="text" id="cnpj-empresa" required>
+                        </div>
 
-                        <div class="form-actions">
-                            <button type="submit" class="save-button">Salvar Alterações</button>
-                        </div>
-                    </form>
-                </section>
-            </div>
-        </main>
+                        <div class="form-actions">
+                            <button type="submit" class="save-button">Salvar Alterações</button>
+                        </div>
+                    </form>
+                </section>
+            </div>
+        
+            <section class="danger-zone">
+                <h2>Zona de Perigo</h2>
+                <p>A exclusão da conta é uma ação **permanente**. Se você prosseguir, todas as vagas ativas e candidaturas serão removidas do sistema, e sua conta será apagada. Não há como reverter.</p>
+                <button type="button" class="delete-account-btn" id="btn-excluir-conta-empresa">
+                    Excluir Minha Conta Permanentemente
+                </button>
+            </section>
+                </main>
 
-        </div>
+        </div>
 
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script> 
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script> 
 
-    <script src="js/auth-empresa.js"></script>
+    <script src="js/auth-empresa.js"></script>
+    <script src="js/empresa.js"></script>
 </body>
 </html>
