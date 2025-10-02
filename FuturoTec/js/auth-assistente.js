@@ -20,7 +20,77 @@ const db = firebase.firestore();
 let allEtecs = [];
 
 // =======================================================
-// === FUNÇÃO DE LOGIN COM O GOOGLE ===
+// === FUNÇÃO DE EXCLUSÃO DE CONTA (Assistente Técnico) ===
+// =======================================================
+
+async function excluirContaAssistente(user) {
+    if (!user) {
+        alert("Erro: Nenhum assistente logado.");
+        return;
+    }
+
+    const userId = user.uid;
+    const userEmail = user.email;
+
+    // 1. Confirmação de Segurança (Digitando o E-mail)
+    const confirmacaoEmail = prompt(`ATENÇÃO: A exclusão da conta do assistente técnico é PERMANENTE.
+
+Para confirmar a exclusão, digite seu EMAIL (${userEmail}) no campo abaixo:`);
+
+    if (confirmacaoEmail !== userEmail) {
+        alert("E-mail digitado incorretamente ou operação cancelada.");
+        return;
+    }
+
+    // 2. Confirmação de Segurança (Digitando a Senha do site para Reautenticação)
+    const confirmacaoSenha = prompt("Por favor, digite sua SENHA (do site) para confirmar a exclusão. (REQUERIDO PELO FIREBASE):");
+    if (!confirmacaoSenha) {
+        alert("Exclusão cancelada. É necessário informar a senha.");
+        return;
+    }
+
+    try {
+        // PASSO A: RE-AUTENTICAÇÃO (CRÍTICO PARA SEGURANÇA)
+        const credential = firebase.auth.EmailAuthProvider.credential(userEmail, confirmacaoSenha);
+        await user.reauthenticateWithCredential(credential);
+        console.log("[Exclusão Assistente] Reautenticação bem-sucedida.");
+
+        // PASSO B: EXCLUIR DADOS DO PERFIL (Coleção 'usuarios')
+        // Se este perfil estiver associado a outros documentos, eles também devem ser excluídos
+        // mas aqui estamos deletando apenas o perfil principal.
+        console.log("[Exclusão Assistente] Excluindo perfil do assistente...");
+        await db.collection('usuarios').doc(userId).delete();
+        console.log("[Exclusão Assistente] Perfil do assistente excluído.");
+
+        // PASSO C: EXCLUIR O USUÁRIO DO FIREBASE AUTH
+        await user.delete();
+        console.log("[Exclusão Assistente] Usuário excluído do Firebase Auth. E-mail liberado.");
+
+        alert("✅ Sua conta de assistente técnico foi excluída permanentemente. Você será redirecionado.");
+        window.location.href = 'login-assistente.html'; 
+
+    } catch (error) {
+        console.error("Erro ao excluir a conta do assistente técnico:", error);
+        
+        let errorMessage = "Ocorreu um erro ao tentar excluir sua conta.";
+        
+        if (error.code === 'auth/wrong-password') {
+             errorMessage = "Senha incorreta. A exclusão da conta foi cancelada.";
+        } else if (error.code === 'auth/requires-recent-login') {
+            errorMessage = "Erro de Segurança: Você precisa ter feito login *recentemente* (saia e entre novamente) e tente excluir a conta em seguida.";
+        } else if (error.code === 'auth/user-not-found') {
+             errorMessage = "Usuário não encontrado. Possível problema de autenticação.";
+        } else if (error.code === 'permission-denied') {
+             errorMessage = "Erro de Permissão: Verifique as regras de segurança do Firestore (Coleção 'usuarios').";
+        }
+        
+        alert(`❌ ${errorMessage} (Detalhes técnicos no console)`);
+    }
+}
+
+
+// =======================================================
+// === FUNÇÃO DE LOGIN COM O GOOGLE (MANTIDA) ===
 // =======================================================
 
 async function loginComGoogleAssistente() {
@@ -64,7 +134,7 @@ async function loginComGoogleAssistente() {
 
 
 // =======================================================
-// === FUNÇÃO DE RECUPERAÇÃO DE SENHA PARA ASSISTENTE TÉCNICO (CRÍTICA) ===
+// === FUNÇÃO DE RECUPERAÇÃO DE SENHA (MANTIDA) ===
 // =======================================================
 
 async function recuperarSenhaAssistente() {
@@ -98,11 +168,10 @@ async function recuperarSenhaAssistente() {
 }
 
 
-// --- FUNÇÕES AUXILIARES ---
+// --- FUNÇÕES AUXILIARES E LÓGICA DE DOM (MANTIDAS/AJUSTADAS) ---
 
 async function fetchAllEtecs() {
     try {
-        // Esta função requer permissão de leitura pública (allow read: if true;) na coleção 'etecs' no Firebase Rules
         const snapshot = await db.collection('etecs').get();
         allEtecs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         console.log("Dados de todas as Etecs carregados.");
@@ -113,7 +182,8 @@ async function fetchAllEtecs() {
 }
 
 async function preencherDadosDoPerfil() {
-    firebase.auth().onAuthStateChanged(async (user) => {
+    // Usa onAuthStateChanged para garantir que o usuário está carregado
+    auth.onAuthStateChanged(async (user) => {
         if (user) {
             const uid = user.uid;
             try {
@@ -122,10 +192,10 @@ async function preencherDadosDoPerfil() {
                 if (userDoc.exists) {
                     const userData = userDoc.data();
 
-                    document.getElementById('user-name').textContent = userData.nome;
-                    document.getElementById('user-email').textContent = userData.email;
-                    document.getElementById('nome-completo').value = userData.nome;
-                    document.getElementById('email').value = userData.email;
+                    document.getElementById('user-name').textContent = userData.nome || 'Assistente Técnico';
+                    document.getElementById('user-email').textContent = userData.email || 'N/A';
+                    document.getElementById('nome-completo').value = userData.nome || '';
+                    document.getElementById('email').value = userData.email || '';
 
                     if (userData.etec_id) {
                         const etecEncontrada = allEtecs.find(etec => etec.id === userData.etec_id);
@@ -136,6 +206,15 @@ async function preencherDadosDoPerfil() {
                         document.getElementById('user-etec-name').textContent = "Nenhuma ETEC associada";
                         document.getElementById('nome-etec').value = "Nenhuma ETEC associada";
                     }
+                    
+                    // Conecta o botão de exclusão de conta
+                    const btnExcluirConta = document.getElementById('btn-excluir-conta-assistente');
+                    if (btnExcluirConta) {
+                        btnExcluirConta.addEventListener('click', () => {
+                            excluirContaAssistente(user);
+                        });
+                    }
+
                 } else {
                     alert("Erro: não foi possível encontrar seus dados.");
                 }
@@ -196,7 +275,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // Lógica da PÁGINA DE CADASTRO
+    // Lógica da PÁGINA DE CADASTRO (MANTIDA)
     if (document.getElementById('form-assistente')) {
         const formCadastro = document.getElementById('form-assistente');
         const inputEtec = document.getElementById('nome-etec');
@@ -233,13 +312,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         // Esconde o autocomplete ao clicar fora (COM CORREÇÃO DE ERRO)
         document.addEventListener('click', (e) => {
-            // Verifica se e.target é um elemento DOM válido
             if (!e.target || !(e.target instanceof Element)) { 
                 return;
             }
 
             if (inputEtec && etecResultsContainer) {
-                // Se o clique não foi no input E não foi no container de resultados, fecha.
                 if (!inputEtec.contains(e.target) && !etecResultsContainer.contains(e.target)) {
                     etecResultsContainer.innerHTML = '';
                 }
@@ -255,7 +332,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             const confirmarSenha = document.getElementById('confirmar-senha-assistente').value;
             const nome = document.getElementById('nome-assistente').value;
             const nomeEtec = document.getElementById('nome-etec').value;
-            // O campo 'email-etec' foi removido e não está mais sendo capturado aqui
             const etecId = inputEtec.dataset.etecId; 
 
             if (senha !== confirmarSenha) return alert("As senhas não coincidem.");
@@ -270,7 +346,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                     role: 'assistente_tecnico',
                     nome: nome,
                     email: email,
-                    // email_etec: REMOVIDO
                     etec_id: etecId, 
                     etec_nome: etecFound ? etecFound.nome : nomeEtec, 
                     dataCriacao: firebase.firestore.FieldValue.serverTimestamp()
@@ -287,7 +362,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // Lógica da PÁGINA DE LOGIN
+    // Lógica da PÁGINA DE LOGIN (MANTIDA)
     const formLoginAssistente = document.getElementById('form-login-assistente');
     if (formLoginAssistente) {
         formLoginAssistente.addEventListener('submit', async (e) => {
@@ -311,7 +386,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // MANIPULADOR DE EVENTOS PARA O BOTÃO DO GOOGLE
+    // MANIPULADOR DE EVENTOS PARA O BOTÃO DO GOOGLE (MANTIDO)
     const btnGoogleLogin = document.getElementById('btn-google-login-assistente');
     if (btnGoogleLogin) {
         btnGoogleLogin.addEventListener('click', async (e) => {
@@ -328,7 +403,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // Lógica genérica para todas as páginas (mostrar/esconder senha)
+    // Lógica genérica para todas as páginas (mostrar/esconder senha) (MANTIDA)
     document.querySelectorAll('.password-toggle').forEach(toggle => {
         toggle.addEventListener('click', () => {
             const targetId = toggle.getAttribute('data-target');
@@ -348,12 +423,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     });
 
-    // === CONEXÃO DO BOTÃO DE RECUPERAÇÃO DE SENHA (CRÍTICA) ===
+    // === CONEXÃO DO BOTÃO DE RECUPERAÇÃO DE SENHA (MANTIDA) ===
     const btnEsqueciSenha = document.getElementById('btn-esqueci-senha-assistente');
     if (btnEsqueciSenha) {
         btnEsqueciSenha.addEventListener('click', (e) => {
-            e.preventDefault(); // Impede que o link recarregue a página
-            recuperarSenhaAssistente(); // Chama a função de redefinição
+            e.preventDefault(); 
+            recuperarSenhaAssistente(); 
         });
     }
 });
