@@ -278,3 +278,92 @@ form {
         text-align: center;
     }
 }
+/* ===== Estilos Gerais da Página de Perfil ===== */
+.profile-page-container {
+    max-width: 900px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+.profile-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.profile-header h1 {
+    font-size: 2.5rem;
+    margin-bottom: 8px;
+    color: #333;
+}
+
+.profile-header p {
+    font-size: 1.1rem;
+    color: #666;
+}
+
+/* ===== Botão Salvar com a Nova Cor ===== */
+.save-button {
+    background-color: hsl(174, 36%, 45%); /* Nova cor principal */
+    color: white;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.save-button:hover {
+    background-color: hsl(174, 36%, 35%); /* Tom mais escuro para hover */
+}
+
+
+/* ===== Estilos para a ZONA DE PERIGO (Nova Cor Padrão) ===== */
+
+.danger-zone {
+    margin-top: 60px;
+    padding: 24px;
+    border: 1px solid hsl(174, 36%, 85%); /* Borda verde-água clara */
+    border-radius: 8px;
+    background-color: hsl(174, 36%, 95%); /* Fundo verde-água bem claro */
+}
+
+.danger-zone h3 {
+    font-size: 1.5rem;
+    color: hsl(174, 25%, 25%); /* Título verde-água escuro */
+    margin-top: 0;
+    margin-bottom: 8px;
+}
+
+.danger-zone p {
+    font-size: 1rem;
+    color: hsl(174, 25%, 35%); /* Texto principal verde-água escuro */
+    line-height: 1.6;
+    margin-bottom: 20px;
+}
+
+.danger-zone hr {
+    border: none;
+    height: 1px;
+    background-color: hsl(174, 36%, 85%); /* Linha com cor da borda */
+    margin: 24px 0;
+}
+
+.delete-account-btn {
+    background-color: hsl(174, 36%, 45%); /* Nova cor principal */
+    color: white;
+    font-weight: bold;
+    font-size: 1rem;
+    padding: 10px 18px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.delete-account-btn:hover {
+    background-color: hsl(174, 36%, 35%); /* Tom mais escuro para hover */
+    transform: translateY(-2px);
+}
+
