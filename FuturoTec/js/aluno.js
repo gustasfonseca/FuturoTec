@@ -5,22 +5,22 @@ const db = firebase.firestore();
 let currentCandidate = null;
 
 // =================================================================
-// FUNÇÃO PRINCIPAL: CARREGAR VAGAS (JÁ EXISTENTE)
+// FUNÇÃO PRINCIPAL: CARREGAR VAGAS (ATUALIZADA)
 // =================================================================
 
 const loadAvailableJobs = () => {
     const vagasContainer = document.getElementById('vagas-container');
     if (!vagasContainer) return;
 
-    vagasContainer.innerHTML = '<p>Buscando vagas...</p>';
+    vagasContainer.innerHTML = '<p style="color: white; text-align: center;">Buscando vagas...</p>';
 
     db.collection('vagas')
-      .orderBy('criadaEm', 'desc') 
+      .orderBy('criadaEm', 'desc')
       .get()
       .then(snapshot => {
-          vagasContainer.innerHTML = ''; 
+          vagasContainer.innerHTML = '';
           if (snapshot.empty) {
-              vagasContainer.innerHTML = '<p class="info-message">Nenhuma vaga disponível no momento.</p>';
+              vagasContainer.innerHTML = '<p class="info-message" style="color: white;">Nenhuma vaga disponível no momento.</p>';
               return;
           }
 
@@ -28,31 +28,35 @@ const loadAvailableJobs = () => {
               const vaga = doc.data();
               const vagaId = doc.id;
               
-              const vagaCard = document.createElement('div');
-              vagaCard.className = 'job-card';
+              // ALTERAÇÃO AQUI: Mudamos de 'div' para 'article' e a classe para 'vaga-card'
+              const vagaCard = document.createElement('article');
+              vagaCard.className = 'vaga-card'; 
+              
+              // ALTERAÇÃO AQUI: A estrutura HTML interna agora corresponde ao nosso CSS
               vagaCard.innerHTML = `
-                  <h3 class="job-title">${vaga.titulo}</h3>
-                  <p class="company-name">${vaga.empresaNome || 'Empresa'}</p>
-                  <p class="job-description">${vaga.descricao.substring(0, 150)}...</p>
-                  <ul class="job-details">
-                    <li>Carga Horária: ${vaga.cargaHoraria}</li>
-                    <li>Requisitos: ${vaga.requisitos.substring(0, 80)}...</li>
-                  </ul>
-                  <button class="candidatar-btn" data-vaga-id="${vagaId}">Candidatar-se</button>
+                <div class="vaga-info">
+                    <h3>${vaga.titulo || 'Título não informado'}</h3>
+                    <p class="empresa">${vaga.empresaNome || 'Empresa não informada'}</p>
+                    <p class="detalhes">Carga Horária: ${vaga.cargaHoraria || 'Não informada'}</p>
+                    <p class="detalhes">Requisitos: ${(vaga.requisitos || '').substring(0, 80)}...</p>
+                </div>
+                <div class="vaga-action">
+                    <a href="#" class="btn-candidatar" data-vaga-id="${vagaId}">Candidatar-se</a>
+                </div>
               `;
               vagasContainer.appendChild(vagaCard);
           });
           
-          setupCandidacyListeners(); 
+          setupCandidacyListeners();
       })
       .catch(error => {
           console.error("Erro ao buscar vagas: ", error);
-          vagasContainer.innerHTML = '<p class="error-message">Erro ao carregar as vagas.</p>';
+          vagasContainer.innerHTML = '<p class="error-message" style="color: white;">Erro ao carregar as vagas.</p>';
       });
 };
 
 // =================================================================
-// FUNÇÃO: CARREGAR MINHAS CANDIDATURAS (NOVA FUNÇÃO CRUCIAL)
+// FUNÇÃO: CARREGAR MINHAS CANDIDATURAS (ATUALIZADA)
 // =================================================================
 
 const loadMyCandidacies = async () => {
@@ -67,7 +71,6 @@ const loadMyCandidacies = async () => {
     }
 
     try {
-        // 1. Buscar as candidaturas do aluno logado
         const candidaciesSnapshot = await db.collection('candidaturas')
             .where('alunoId', '==', currentCandidate.uid)
             .orderBy('dataCandidatura', 'desc')
@@ -78,42 +81,38 @@ const loadMyCandidacies = async () => {
             return;
         }
         
-        const candidaciesDetails = [];
-        
-        // 2. Iterar sobre cada candidatura e buscar os detalhes da vaga (para exibir)
-        for (const doc of candidaciesSnapshot.docs) {
+        // Usamos Promise.all para carregar todas as vagas em paralelo (mais rápido)
+        const promises = candidaciesSnapshot.docs.map(async (doc) => {
             const candidatura = doc.data();
-            const vagaId = candidatura.vagaId;
-            
-            const vagaDoc = await db.collection('vagas').doc(vagaId).get();
-            
+            const vagaDoc = await db.collection('vagas').doc(candidatura.vagaId).get();
             if (vagaDoc.exists) {
-                const vaga = vagaDoc.data();
-                candidaciesDetails.push({
-                    ...candidatura, 
-                    vaga: vaga
-                });
-            } else {
-                candidaciesDetails.push({
-                    ...candidatura,
-                    vaga: { titulo: 'Vaga Excluída ou Expirada', empresaNome: 'N/A' }
-                });
+                return { ...candidatura, vaga: vagaDoc.data() };
             }
-        }
+            return { ...candidatura, vaga: { titulo: 'Vaga Excluída ou Expirada', empresaNome: 'N/A' } };
+        });
+        
+        const candidaciesDetails = await Promise.all(promises);
 
-        // 3. Renderizar as candidaturas
-        candidaturasContainer.innerHTML = ''; 
+        candidaturasContainer.innerHTML = '';
 
         candidaciesDetails.forEach(item => {
             const vaga = item.vaga;
-            const card = document.createElement('div');
-            card.className = 'candidacy-card'; // Use esta classe para estilizar
+            
+            // ALTERAÇÃO AQUI: Usando 'article' e a classe 'vaga-card'
+            const card = document.createElement('article');
+            card.className = 'vaga-card';
+            
+            // ALTERAÇÃO AQUI: Estrutura HTML interna refeita para corresponder ao CSS
             card.innerHTML = `
-                <h3 class="job-title">${vaga.titulo}</h3>
-                <p class="company-name">Empresa: ${vaga.empresaNome || 'Não Informada'}</p>
-                <p class="candidacy-status">Status: <strong>${item.status || 'Pendente'}</strong></p>
-                <p class="candidacy-date">Candidatado em: ${item.dataCandidatura ? new Date(item.dataCandidatura.toDate()).toLocaleDateString() : 'N/A'}</p>
-                <p class="candidacy-info">${vaga.requisitos ? vaga.requisitos.substring(0, 50) + '...' : ''}</p>
+                <div class="vaga-info">
+                    <h3>${vaga.titulo}</h3>
+                    <p class="empresa">${vaga.empresaNome}</p>
+                    <p class="detalhes">Candidatado em: ${item.dataCandidatura ? new Date(item.dataCandidatura.toDate()).toLocaleDateString() : 'N/A'}</p>
+                </div>
+                <div class="vaga-action status-display">
+                    <span>Status</span>
+                    <strong>${item.status || 'Pendente'}</strong>
+                </div>
             `;
             candidaturasContainer.appendChild(card);
         });
@@ -124,13 +123,16 @@ const loadMyCandidacies = async () => {
     }
 };
 
+
 // =================================================================
-// FUNÇÃO: PROCESSAR CANDIDATURA (JÁ EXISTENTE)
+// FUNÇÃO: PROCESSAR CANDIDATURA (AJUSTADA)
 // =================================================================
 
 const setupCandidacyListeners = () => {
-    document.querySelectorAll('.candidatar-btn').forEach(button => {
+    // ALTERAÇÃO AQUI: O seletor agora busca pela classe .btn-candidatar
+    document.querySelectorAll('.btn-candidatar').forEach(button => {
         button.addEventListener('click', (e) => {
+            e.preventDefault(); // Impede o link de navegar
             const vagaId = e.target.dataset.vagaId;
             if (!currentCandidate) {
                 return alert('Você precisa estar logado para se candidatar!');
@@ -141,14 +143,14 @@ const setupCandidacyListeners = () => {
 };
 
 const handleCandidacy = async (vagaId, button) => {
-    button.disabled = true;
+    button.style.pointerEvents = 'none'; // Desabilita o clique no link
     button.textContent = 'Candidatando...';
 
     try {
         const vagaDoc = await db.collection('vagas').doc(vagaId).get();
         if (!vagaDoc.exists) {
             alert('Vaga não encontrada!');
-            button.disabled = false;
+            button.style.pointerEvents = 'auto';
             button.textContent = 'Candidatar-se';
             return;
         }
@@ -168,9 +170,9 @@ const handleCandidacy = async (vagaId, button) => {
         const candidacyData = {
             vagaId: vagaId,
             alunoId: currentCandidate.uid,
-            empresaId: vaga.empresaId, 
+            empresaId: vaga.empresaId,
             dataCandidatura: firebase.firestore.FieldValue.serverTimestamp(),
-            status: 'Pendente' 
+            status: 'Pendente'
         };
 
         await db.collection('candidaturas').add(candidacyData);
@@ -181,30 +183,33 @@ const handleCandidacy = async (vagaId, button) => {
     } catch (error) {
         console.error("Erro ao processar candidatura:", error);
         alert('Ocorreu um erro ao enviar sua candidatura.');
-        button.disabled = false;
+        button.style.pointerEvents = 'auto';
         button.textContent = 'Candidatar-se';
     }
 };
 
 // =================================================================
-// PONTO PRINCIPAL: AUTENTICAÇÃO E ROTEAMENTO
+// PONTO PRINCIPAL: AUTENTICAÇÃO E ROTEAMENTO (SEM ALTERAÇÕES SIGNIFICATIVAS)
 // =================================================================
 
 auth.onAuthStateChanged((user) => {
     if (user) {
         currentCandidate = user;
         
-        // Redirecionamento de Logout
         const logoutButton = document.querySelector('.logout-btn');
-        if (logoutButton) { // Verifica se o botão existe antes de adicionar o listener
-             logoutButton.addEventListener('click', () => {
-                 auth.signOut().then(() => {
-                    window.location.href = 'login-candidato.html'; 
-                 });
-            });
+        if (logoutButton) {
+            // Previne adicionar múltiplos listeners se o script rodar mais de uma vez
+            if (!logoutButton.dataset.listenerAttached) {
+                logoutButton.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    auth.signOut().then(() => {
+                        window.location.href = 'index.html';
+                    });
+                });
+                logoutButton.dataset.listenerAttached = 'true';
+            }
         }
 
-        // Verifica a página atual para chamar a função correta
         const currentPath = window.location.pathname;
         
         if (currentPath.includes('VagasAluno.html')) {
@@ -212,11 +217,16 @@ auth.onAuthStateChanged((user) => {
         }
         
         if (currentPath.includes('minhasCandidaturas.html')) {
-            loadMyCandidacies(); // <--- AGORA ESTÁ CHAMANDO A FUNÇÃO CORRETA!
+            loadMyCandidacies();
         }
 
     } else {
-        // Redireciona para o login do aluno se não houver usuário
-        window.location.href = 'login-candidato.html'; 
+        // Protegendo as páginas internas
+        const protectedPaths = ['VagasAluno.html', 'minhasCandidaturas.html', 'PerfilAluno.html'];
+        const currentPath = window.location.pathname.split('/').pop();
+
+        if (protectedPaths.includes(currentPath)) {
+            window.location.href = 'index.html';
+        }
     }
 });
