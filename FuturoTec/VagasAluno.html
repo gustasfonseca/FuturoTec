@@ -1,35 +1,89 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Vagas Disponíveis | FuturoTEC</title>
+    <link rel="stylesheet" href="css/styles.css" />
+    
+    <script src="https://unpkg.com/feather-icons"></script>
 </head>
 <body>
-    <main class="vagas-disponiveis">
-        <div class="container">
-            <h2>Vagas de Estágio e Emprego</h2>
-            <p>Confira as oportunidades disponíveis e candidate-se!</p>
-            
-            <div id="vagas-container" class="vagas-grid">
-                </div>
-            
-            </div>
-    </main>
 
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
     <script>
-        // COPIE SUA CONFIGURAÇÃO AQUI
+        // COLE A CONFIGURAÇÃO DO SEU PROJETO FIREBASE AQUI
         const firebaseConfig = {
-  apiKey: "AIzaSyA8Q9cKB4oVmFM6ilHK_70h8JDvgsOQhLY",
-  authDomain: "futurotec-e3a69.firebaseapp.com",
-  projectId: "futurotec-e3a69",
-  storageBucket: "futurotec-e3a69.firebasestorage.app",
-  messagingSenderId: "234233783827",
-  appId: "1:234233783827:web:bf9376dee78d8924ef01e6",
-  measurementId: "G-C7EEMP1146"
-}; 
+            apiKey: "AIzaSyA8Q9cKB4oVmFM6ilHK_70h8JDvgsOQhLY",
+            authDomain: "futurotec-e3a69.firebaseapp.com",
+            projectId: "futurotec-e3a69",
+            storageBucket: "futurotec-e3a69.firebasestorage.app",
+            messagingSenderId: "234233783827",
+            appId: "1:234233783827:web:bf9376dee78d8924ef01e6",
+            measurementId: "G-C7EEMP1146"
+        };
         firebase.initializeApp(firebaseConfig);
+    </script>
+    
+    <div class="app">
+        <header class="header">
+            <div class="container">
+                <div class="nav-wrapper">
+                    <div class="logo">
+                        <img src="img/FuturoTecInicial.jpeg" alt="FuturoTEC Logo" />
+                    </div>
+                    <nav class="nav-desktop student-nav">
+                        <a href="InicialAluno.html" class="nav-link">Início</a>
+                        <a href="InicialAluno.html#cursos" class="nav-link">Cursos</a>
+                        <a href="VagasAluno.html" class="nav-link">Vagas</a>
+                        <a href="minhasCandidaturas.html" class="nav-link">Candidaturas</a>
+                    </nav>
+                    <div class="nav-actions">
+                        
+                        <a href="PerfilAluno.html" class="login-btn">Meu Perfil</a>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <main>
+            <div class="content-container-colored">
+
+                <header class="page-header-colored">
+                    <h2>Vagas de Estágio e Emprego</h2>
+                    <p>Confira as oportunidades disponíveis e candidate-se!</p>
+                </header>
+            
+                <div id="vagas-container" class="vagas-list">
+                    </div>
+
+            </div>
+        </main>
+
+        <footer class="footer">
+            <div class="container footer-grid">
+                <div class="footer-info">
+                    <h4>FuturoTEC</h4>
+                    <p class="copyright">© 2025 FuturoTEC. Todos os direitos reservados.</p>
+                </div>
+                <div class="footer-links">
+                    <h4>Links Úteis</h4>
+                    <ul>
+                        <li><a href="#">Termos de Uso</a></li>
+                        <li><a href="#">Política de Privacidade</a></li>
+                    </ul>
+                </div>
+                <div class="footer-social">
+                    <h4>Conecte-se</h4>
+                    </div>
+            </div>
+        </footer>
+    </div>
+    
+    <script>
+        feather.replace();
     </script>
     <script src="js/aluno.js"></script>
 </body>
