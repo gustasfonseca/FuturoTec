@@ -94,26 +94,31 @@ body {
   border-bottom-color: var(--primary);
 }
 
-.login-btn {
+/* Agrupe os dois botões para terem o mesmo estilo base */
+.login-btn,
+.logout-btn {
   background-color: var(--primary);
   color: var(--primary-foreground);
   border: none;
-  padding: 0.5rem 1rem;
+  padding: 0.6rem 1.5rem;
   border-radius: 0.375rem;
   font-weight: 500;
   cursor: pointer;
+  text-decoration: none; /* Garante que não haverá sublinhado */
   transition: background-color 0.2s ease;
-  display: none;
+  display: inline-block; /* Garante que o padding funcione corretamente */
+}
+
+/* Efeito hover para ambos */
+.login-btn:hover,
+.logout-btn:hover {
+  background-color: var(--primary-hover);
 }
 
 @media (min-width: 768px) {
   .login-btn {
     display: block;
   }
-}
-
-.login-btn:hover {
-  background-color: var(--primary-hover);
 }
 
 /* --- Mobile Menu --- */
@@ -1239,4 +1244,674 @@ body {
 }
 html {
   scroll-behavior: smooth;
+}
+
+/* --- Estilos da Seção Principal --- */
+.candidacies-section {
+    flex-grow: 1;
+    padding: 3rem 0; /* Adiciona um respiro para o conteúdo não colar no topo/rodapé */
+}
+
+/* --- Seção de Vagas de Emprego --- */
+
+/* --- Seção de Vagas de Emprego --- */
+
+/* Esta classe vai envolver o cabeçalho e a lista de vagas */
+/* ==========================================================================
+   COMPONENTES DE PÁGINA GENÉRICOS (COLE ISTO NO SEU CSS)
+   ========================================================================== */
+
+/* Este é o container colorido e centralizado que pode ser usado em qualquer página */
+.content-container-colored {
+  background-color: var(--primary);
+  color: var(--primary-foreground); /* Cor do texto padrão dentro dele será branca */
+  max-width: 900px;
+  margin: 3rem auto; /* 3rem de espaço em cima/embaixo, e 'auto' para centralizar */
+  padding: 3rem 2rem;
+  border-radius: 12px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+/* Este é o cabeçalho padrão para ser usado dentro do container colorido */
+.page-header-colored {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.page-header-colored h2 {
+  font-size: 2.8rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.page-header-colored p {
+  font-size: 1.2rem;
+  opacity: 0.9;
+  margin-top: 0.5rem;
+}
+
+
+/* ==========================================================================
+   CSS BÔNUS: Estilo para o Status da Candidatura
+   ========================================================================== */
+
+/* Estilo para a área que mostra o Status na página de candidaturas */
+.status-display {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background-color: hsl(215, 16%, 95%); /* Um cinza bem claro */
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    min-width: 120px;
+}
+
+.status-display span {
+    font-size: 0.8rem;
+    color: var(--muted-foreground);
+    margin-bottom: 0.25rem;
+}
+
+.status-display strong {
+    font-size: 1.1rem;
+    color: var(--foreground);
+}
+
+/* --- Responsividade --- */
+@media (max-width: 768px) {
+  .content-container-colored {
+    margin: 1.5rem;
+    padding: 2rem 1.5rem;
+  }
+  .page-header-colored h2 {
+    font-size: 2.2rem;
+  }
+}
+
+.vagas-header h2 {
+  font-size: 2.8rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.vagas-header p {
+  font-size: 1.2rem;
+  opacity: 0.9;
+}
+
+.vagas-list {
+  /* A lista que segura os cards de vagas */
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem; /* Espaço entre os cards */
+  /* Removido max-width e margin auto daqui, agora são do .container-vagas-colored */
+}
+
+/* Mantenha o restante do CSS para .vaga-card, .vaga-info, .btn-candidatar etc., pois eles estão corretos. */
+
+/* Ajuste o corpo da página para ter fundo branco */
+body {
+    background-color: var(--background); /* Geralmente branco ou off-white */
+    color: var(--foreground);
+    line-height: 1.6;
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh; /* Garante que o body preencha a tela se o conteúdo for pequeno */
+    display: flex; /* Se você tem header e footer 'sticky' */
+    flex-direction: column; /* Para layouts de página inteira */
+}
+
+/* Se você tinha um .app para o layout principal, ajuste-o também: */
+.app {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    /* Remova background-color: var(--primary); se estiver aqui */
+}
+
+/* Garanta que o main se expanda para empurrar o footer, se houver */
+main {
+    flex-grow: 1; /* Permite que o main ocupe o espaço restante */
+}
+
+/* --- Responsividade para Telas Menores --- */
+@media (max-width: 768px) {
+    .content-container-colored {
+  background-color: var(--primary);
+  color: var(--primary-foreground);
+  max-width: 900px;
+  margin: 3rem auto;
+  /* A LINHA MAIS IMPORTANTE É ESTA ABAIXO: */
+  padding: 3rem; /* Adiciona 3rem de espaço em todos os lados */
+  border-radius: 12px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  
+}
+}
+.vaga-card {
+  background-color: var(--background);
+  color: var(--foreground);
+  border-radius: 8px;
+  /* ESTA LINHA CRIA O ESPAÇO DENTRO DO CARD BRANCO */
+  padding: 2rem;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.vaga-info h3 {
+  /* Título da vaga */
+  margin: 0 0 0.25rem 0;
+  font-size: 1.5rem;
+  color: var(--foreground);
+}
+
+.vaga-info p {
+  /* Textos de empresa, carga horária, etc. */
+  margin: 0.5rem 0 0 0;
+  font-size: 1rem;
+}
+
+.vaga-info .empresa {
+  /* Estilo específico para o nome da empresa */
+  font-weight: bold;
+  color: var(--foreground);
+}
+
+.vaga-info .detalhes {
+    /* Estilo para os detalhes em cinza */
+    color: var(--muted-foreground);
+    font-size: 0.9rem;
+}
+
+.btn-candidatar {
+  /* Botão para se candidatar */
+  background-color: var(--primary);
+  color: var(--primary-foreground);
+  padding: 0.7rem 1.5rem;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: bold;
+  white-space: nowrap; /* Impede que o texto quebre em duas linhas */
+  transition: background-color 0.2s ease;
+}
+
+.btn-candidatar:hover {
+  background-color: var(--primary-hover);
+}
+
+/* --- Responsividade para Telas Menores --- */
+@media (max-width: 768px) {
+  .vaga-card {
+    flex-direction: column; /* Empilha o conteúdo do card */
+    align-items: flex-start; /* Alinha tudo à esquerda */
+    gap: 1.5rem;
+  }
+
+  .btn-candidatar {
+      align-self: flex-start; /* Garante que o botão fique alinhado à esquerda também */
+  }
+
+  .vagas-header h2 {
+      font-size: 2.2rem;
+  }
+}
+/* ==========================================================================
+   1. RESET E VARIÁVEIS GLOBAIS
+   ========================================================================== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --primary: hsl(174, 36%, 45%);
+  --primary-hover: hsl(174, 36%, 40%);
+  --primary-foreground: hsl(0, 0%, 100%);
+  --background: hsl(0, 0%, 100%);
+  --foreground: hsl(218, 11%, 18%);
+  --muted-foreground: hsl(215, 16%, 47%);
+  --border: hsl(214.3, 31.8%, 91.4%);
+}
+
+/* ==========================================================================
+   2. ESTILOS GERAIS (BODY, APP, CONTAINER)
+   ========================================================================== */
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  line-height: 1.6;
+  color: var(--foreground);
+  background-color: var(--background);
+}
+
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+main {
+  flex-grow: 1; /* Garante que o conteúdo principal empurre o footer para baixo */
+}
+
+.container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+
+/* ==========================================================================
+   3. HEADER E NAVEGAÇÃO
+   ========================================================================== */
+.header {
+  background-color: var(--background);
+  border-bottom: 1px solid var(--border);
+  padding: 0.5rem 0;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.nav-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.logo img {
+  max-height: 70px; /* Altura ajustada */
+  width: auto;
+}
+
+.nav-desktop {
+  display: none; /* Escondido em mobile por padrão */
+  gap: 2.5rem;
+}
+
+.nav-link {
+  text-decoration: none;
+  color: var(--foreground);
+  font-weight: 500;
+  padding: 0.5rem 0;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.nav-link:hover {
+  color: var(--primary);
+  border-bottom-color: var(--primary);
+}
+
+.nav-actions {
+  display: none; /* Escondido em mobile por padrão */
+  align-items: center;
+  gap: 1rem;
+}
+
+/* Botões do Header */
+.login-btn,
+.logout-btn {
+  background-color: var(--primary);
+  color: var(--primary-foreground);
+  border: none;
+  padding: 0.6rem 1.5rem;
+  border-radius: 0.375rem;
+  font-weight: 500;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background-color 0.2s ease;
+  display: inline-block;
+}
+
+.login-btn:hover,
+.logout-btn:hover {
+  background-color: var(--primary-hover);
+}
+
+
+/* ==========================================================================
+   4. COMPONENTES GENÉRICOS (VAGAS E CANDIDATURAS)
+   ========================================================================== */
+
+/* Container colorido e centralizado */
+.content-container-colored {
+  background-color: var(--primary);
+  color: var(--primary-foreground);
+  max-width: 900px;
+  margin: 3rem auto;
+  padding: 3rem; /* <<< PADDING CORRIGIDO AQUI */
+  border-radius: 12px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+/* Cabeçalho para usar dentro do container colorido */
+.page-header-colored {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.page-header-colored h2 {
+  font-size: 2.8rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.page-header-colored p {
+  font-size: 1.2rem;
+  opacity: 0.9;
+  margin-top: 0.5rem;
+}
+
+/* Lista de cards (serve para vagas e candidaturas) */
+.vagas-list,
+.candidaturas-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Card individual (serve para vagas e candidaturas) */
+.vaga-card {
+  background-color: var(--background);
+  color: var(--foreground);
+  border-radius: 8px;
+  padding: 2rem; /* <<< PADDING INTERNO CORRIGIDO AQUI */
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.vaga-info h3 {
+  margin: 0 0 0.25rem 0;
+  font-size: 1.5rem;
+  color: var(--foreground);
+}
+
+.vaga-info p {
+  margin: 0.5rem 0 0 0;
+  font-size: 1rem;
+}
+
+.vaga-info .empresa {
+  font-weight: bold;
+}
+
+.vaga-info .detalhes {
+  color: var(--muted-foreground);
+  font-size: 0.9rem;
+}
+
+/* Botão de candidatar-se dentro do card */
+.btn-candidatar {
+  background-color: var(--primary);
+  color: var(--primary-foreground);
+  padding: 0.7rem 1.5rem;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: bold;
+  white-space: nowrap;
+  transition: background-color 0.2s ease;
+}
+
+.btn-candidatar:hover {
+  background-color: var(--primary-hover);
+}
+
+/* Display de status (para página de candidaturas) */
+.status-display {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  background-color: hsl(215, 16%, 95%);
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  min-width: 120px;
+}
+
+.status-display span {
+  font-size: 0.8rem;
+  color: var(--muted-foreground);
+  margin-bottom: 0.25rem;
+}
+
+.status-display strong {
+  font-size: 1.1rem;
+  color: var(--foreground);
+}
+
+
+/* ==========================================================================
+   5. FOOTER
+   ========================================================================== */
+.footer {
+  background-color: #2c6e7e;
+  color: #fff;
+  padding: 40px 0;
+  font-family: 'Arial', sans-serif;
+}
+
+.footer-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 30px;
+}
+
+.footer h4 {
+  font-size: 1.2rem;
+  margin-bottom: 15px;
+  border-bottom: 2px solid #5a9ca8;
+  padding-bottom: 5px;
+  display: inline-block;
+}
+
+.footer p, .footer a, .footer li {
+  font-size: 0.9rem;
+  margin-bottom: 10px;
+  color: #fff;
+  text-decoration: none;
+}
+
+.footer a:hover {
+  text-decoration: underline;
+}
+
+.footer ul {
+  list-style: none;
+}
+
+
+/* ==========================================================================
+   6. RESPONSIVIDADE (MEDIA QUERIES)
+   ========================================================================== */
+
+/* Telas de tablet e desktop */
+@media (min-width: 768px) {
+  .nav-desktop {
+    display: flex;
+    flex-grow: 1;
+    justify-content: center;
+  }
+  .nav-actions {
+    display: flex;
+  }
+}
+
+/* Telas pequenas (celular) */
+@media (max-width: 767px) {
+  .content-container-colored {
+    margin: 1.5rem;
+    padding: 2rem 1.5rem;
+  }
+
+  .page-header-colored h2 {
+    font-size: 2.2rem;
+  }
+
+  .vaga-card {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.5rem;
+  }
+  
+  .footer-grid {
+      grid-template-columns: 1fr;
+      text-align: center;
+  }
+
+  .footer h4 {
+      display: block;
+  }
+}
+/* =======================================================
+   ANIMAÇÃO DE ÍCONES (VERSÃO FINAL E CORRIGIDA)
+   ======================================================= */
+
+/* Prepara TODOS os ícones <svg> dentro dos itens para a transição */
+.stat-item .stat-icon svg {
+  transition: transform 0.3s ease-in-out;
+}
+
+/* Animação para o PRIMEIRO ícone (Monitor) */
+.stats-grid .stat-item:nth-child(1):hover .stat-icon svg {
+  transform: scale(1.1);
+}
+
+/* Animação para o SEGUNDO ícone (Chapéu de Formatura) */
+.stats-grid .stat-item:nth-child(2):hover .stat-icon svg {
+  transform: rotate(-15deg);
+}
+
+/* Animação para o TERCEIRO ícone (Engrenagem) */
+.stats-grid .stat-item:nth-child(3):hover .stat-icon svg {
+  transform: rotate(90deg);
+}
+/* =======================================================
+   ANIMAÇÃO: BOTÕES REATIVOS
+   ======================================================= */
+
+/* Alvo: Classes dos seus botões principais */
+.login-btn, .logout-btn, .cta-button, .btn-candidatar {
+  /* Adicionamos transform e box-shadow à transição */
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.login-btn:hover, 
+.logout-btn:hover, 
+.cta-button:hover, 
+.btn-candidatar:hover {
+  transform: translateY(-3px); /* Levanta o botão 3 pixels */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15); /* Aumenta a sombra para dar profundidade */
+}
+/* =======================================================
+   ANIMAÇÃO: SETAS DO CARROSSEL
+   ======================================================= */
+   
+.slider-arrow {
+  transition: transform 0.2s ease;
+}
+
+.slider-arrow.arrow-left:hover {
+  transform: scale(1.15) translateX(-4px); /* Aumenta e move para a esquerda */
+}
+
+.slider-arrow.arrow-right:hover {
+  transform: scale(1.15) translateX(4px); /* Aumenta e move para a direita */
+}
+/* =======================================================
+   ANIMAÇÃO: ENTRADA DA SEÇÃO HERO
+   ======================================================= */
+
+/* 1. Definimos as animações */
+@keyframes slideInFromLeft {
+  from {
+    transform: translateX(-50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideInFromRight {
+  from {
+    transform: translateX(50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* 2. Aplicamos as animações aos elementos */
+.hero-content {
+  animation: slideInFromLeft 0.8s ease-out;
+}
+
+.hero-image {
+  animation: slideInFromRight 0.8s ease-out;
+}
+/* =======================================================
+   NOVAS ANIMAÇÕES DO SITE
+   ======================================================= */
+
+/* --- Animação para Botões --- */
+.login-btn, .logout-btn, .cta-button, .btn-candidatar {
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.login-btn:hover, 
+.logout-btn:hover, 
+.cta-button:hover, 
+.btn-candidatar:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+/* --- Animação para Setas do Carrossel --- */
+.slider-arrow {
+  transition: transform 0.2s ease;
+}
+
+.slider-arrow.arrow-left:hover {
+  transform: scale(1.15) translateX(-4px);
+}
+
+.slider-arrow.arrow-right:hover {
+  transform: scale(1.15) translateX(4px);
+}
+
+/* --- Animação de Entrada da Seção Hero --- */
+@keyframes slideInFromLeft {
+  from { transform: translateX(-50px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes slideInFromRight {
+  from { transform: translateX(50px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+.hero-content {
+  animation: slideInFromLeft 0.8s ease-out;
+}
+
+.hero-image {
+  animation: slideInFromRight 0.8s ease-out;
 }
