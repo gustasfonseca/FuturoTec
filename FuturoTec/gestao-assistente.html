@@ -1,389 +1,351 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestão de Etecs - FuturoTEC</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gestão de Etecs - FuturoTEC</title>
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap"
+    rel="stylesheet"
+  />
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+  />
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    :root {
+      --primary-color: #008080;
+      --primary-hover-color: #006666;
+      --background-color: #f8f9fa;
+      --text-color: #343a40;
+      --light-gray-color: #ced4da;
+      --border-radius: 8px;
+      --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    }
 
-    <style>
-        /* --- Reset & General Styles --- */
-        :root {
-            --primary-color: #008080; /* Teal/Verde Azulado */
-            --primary-hover-color: #006666;
-            --secondary-color: #f0f4f8; /* Fundo do card/tabela */
-            --background-color: #f8f9fa; /* Fundo da página */
-            --text-color: #343a40; /* Cinza Escuro */
-            --light-gray-color: #ced4da;
-            --border-radius: 8px;
-            --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-        }
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: var(--background-color);
+      color: var(--text-color);
+      line-height: 1.6;
+      margin: 0;
+    }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
 
-        body {
-            font-family: 'Poppins', sans-serif;
-            background-color: var(--background-color);
-            color: var(--text-color);
-            line-height: 1.6;
-        }
+    .main-header {
+      background-color: #fff;
+      box-shadow: var(--box-shadow);
+      padding: 1rem 0;
+    }
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
+    .main-header .container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
 
-        /* --- Header --- */
-        .main-header {
-            background-color: #fff;
-            box-shadow: var(--box-shadow);
-            padding: 1rem 0;
-        }
+    .logo {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--primary-color);
+      text-decoration: none;
+    }
 
-        .main-header .container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+    .main-nav {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+    }
 
-        .logo {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--primary-color);
-            text-decoration: none;
-        }
+    .main-nav a {
+      text-decoration: none;
+      color: var(--text-color);
+      font-weight: 500;
+      transition: color 0.3s ease;
+    }
 
-        .main-nav {
-            display: flex;
-            align-items: center;
-            gap: 2rem;
-        }
+    .main-nav a:hover {
+      color: var(--primary-color);
+    }
 
-        .main-nav a {
-            text-decoration: none;
-            color: var(--text-color);
-            font-weight: 500;
-            transition: color 0.3s ease;
-        }
+    .profile-btn {
+      background-color: var(--primary-color);
+      color: #fff;
+      border: none;
+      padding: 0.6rem 1rem;
+      border-radius: var(--border-radius);
+      cursor: pointer;
+      font-weight: 500;
+      transition: background-color 0.3s ease;
+    }
 
-        .main-nav a:hover {
-            color: var(--primary-color);
-        }
+    .profile-btn:hover {
+      background-color: var(--primary-hover-color);
+    }
 
-        .profile-btn {
-            background-color: var(--primary-color);
-            color: #fff;
-            border: none;
-            padding: 0.6rem 1rem;
-            border-radius: var(--border-radius);
-            cursor: pointer;
-            font-weight: 500;
-            transition: background-color 0.3s ease;
-        }
+    main {
+      padding: 2.5rem 0;
+    }
 
-        .profile-btn:hover {
-            background-color: var(--primary-hover-color);
-        }
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+    }
 
-        /* --- Main Content --- */
-        main {
-            padding: 2.5rem 0;
-        }
+    .page-header h1 {
+      font-size: 2.2rem;
+      color: var(--text-color);
+    }
 
-        .page-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 2rem;
-        }
+    .page-header p {
+      color: #6c757d;
+      margin-top: 5px;
+    }
 
-        .page-header h1 {
-            font-size: 2.2rem;
-            color: var(--text-color);
-        }
-        
-        .page-header p {
-            color: #6c757d;
-            margin-top: 5px;
-        }
+    .btn-primary {
+      background-color: var(--primary-color);
+      color: #fff;
+      border: none;
+      padding: 0.8rem 1.5rem;
+      border-radius: var(--border-radius);
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 1rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: background-color 0.3s ease;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
 
-        .btn-primary {
-            background-color: var(--primary-color);
-            color: #fff;
-            border: none;
-            padding: 0.8rem 1.5rem;
-            border-radius: var(--border-radius);
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 1rem;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            transition: background-color 0.3s ease;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
+    .btn-primary:hover {
+      background-color: var(--primary-hover-color);
+    }
 
-        .btn-primary:hover {
-            background-color: var(--primary-hover-color);
-        }
-        
-        .content-card {
-            background-color: #fff;
-            padding: 2rem;
-            border-radius: var(--border-radius);
-            box-shadow: var(--box-shadow);
-        }
+    .content-card {
+      background-color: #fff;
+      padding: 2rem;
+      border-radius: var(--border-radius);
+      box-shadow: var(--box-shadow);
+    }
 
-        .table-controls {
-            margin-bottom: 1.5rem;
-        }
-        
-        .search-bar {
-            width: 100%;
-            max-width: 400px;
-            padding: 0.8rem;
-            border: 1px solid var(--light-gray-color);
-            border-radius: var(--border-radius);
-            font-size: 1rem;
-        }
+    .table-controls {
+      margin-bottom: 1.5rem;
+    }
 
-        /* --- Table Styles --- */
-        .table-responsive {
-            overflow-x: auto;
-        }
-        
-        .etec-table {
-            width: 100%;
-            border-collapse: collapse;
-            text-align: left;
-        }
+    .search-bar {
+      width: 100%;
+      max-width: 400px;
+      padding: 0.8rem;
+      border: 1px solid var(--light-gray-color);
+      border-radius: var(--border-radius);
+      font-size: 1rem;
+    }
 
-        .etec-table th, .etec-table td {
-            padding: 1rem;
-            border-bottom: 1px solid #e9ecef;
-        }
+    .table-responsive {
+      overflow-x: auto;
+    }
 
-        .etec-table thead th {
-            font-weight: 600;
-            font-size: 0.9rem;
-            text-transform: uppercase;
-            color: #6c757d;
-        }
-        
-        .etec-table tbody tr {
-            transition: background-color 0.2s ease;
-        }
+    .etec-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+    }
 
-        .etec-table tbody tr:hover {
-            background-color: #f1f3f5;
-        }
-        
-        .etec-table td {
-            vertical-align: middle;
-        }
+    .etec-table th,
+    .etec-table td {
+      padding: 1rem;
+      border-bottom: 1px solid #e9ecef;
+    }
 
-        .action-buttons button {
-            border: none;
-            background: none;
-            cursor: pointer;
-            font-size: 1.2rem;
-            margin-right: 0.8rem;
-            padding: 5px;
-            transition: transform 0.2s ease, color 0.2s ease;
-        }
-        
-        .action-buttons button:hover {
-            transform: scale(1.2);
-        }
-        
-        .btn-edit { color: #007bff; }
-        .btn-edit:hover { color: #0056b3; }
-        
-        .btn-delete { color: #dc3545; }
-        .btn-delete:hover { color: #a71d2a; }
+    .etec-table thead th {
+      font-weight: 600;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      color: #6c757d;
+    }
 
-        /* --- Footer --- */
-        .main-footer {
-            background-color: #2c3e50;
-            color: #ecf0f1;
-            padding: 3rem 0;
-            margin-top: 3rem;
-        }
+    .etec-table tbody tr:hover {
+      background-color: #f1f3f5;
+    }
 
-        .footer-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 2rem;
-        }
+    .action-buttons button {
+      border: none;
+      background: none;
+      cursor: pointer;
+      font-size: 1.2rem;
+      margin-right: 0.8rem;
+      padding: 5px;
+      transition: transform 0.2s ease, color 0.2s ease;
+    }
 
-        .footer-column h4 {
-            font-size: 1.2rem;
-            margin-bottom: 1rem;
-            color: #fff;
-        }
+    .action-buttons button:hover {
+      transform: scale(1.2);
+    }
 
-        .footer-column p, .footer-column ul, .footer-column li {
-            color: #bdc3c7;
-            list-style: none;
-        }
-        
-        .footer-column ul {
-            padding: 0;
-        }
-        
-        .footer-column ul li a {
-            color: #bdc3c7;
-            text-decoration: none;
-            transition: color 0.3s ease;
-        }
-        
-        .footer-column ul li a:hover {
-            color: var(--primary-color);
-        }
-        
-        .footer-column .social-icons a {
-            color: #ecf0f1;
-            font-size: 1.5rem;
-            margin-right: 1rem;
-            transition: color 0.3s ease;
-        }
-        
-        .footer-column .social-icons a:hover {
-            color: var(--primary-color);
-        }
-        
-        .footer-bottom {
-            text-align: center;
-            margin-top: 2rem;
-            padding-top: 2rem;
-            border-top: 1px solid #34495e;
-            font-size: 0.9rem;
-            color: #7f8c8d;
-        }
+    .btn-edit {
+      color: #007bff;
+    }
 
-    </style>
+    .btn-edit:hover {
+      color: #0056b3;
+    }
+
+    .btn-delete {
+      color: #dc3545;
+    }
+
+    .btn-delete:hover {
+      color: #a71d2a;
+    }
+  </style>
 </head>
+
 <body>
+  <header class="main-header">
+    <div class="container">
+      <a href="#" class="logo">Futuro<span style="color: var(--text-color)">TEC.</span></a>
+      <nav class="main-nav">
+        <a href="#">Início</a>
+        <button class="profile-btn"><i class="fa-solid fa-user"></i> Meu Perfil</button>
+      </nav>
+    </div>
+  </header>
 
-    <header class="main-header">
-        <div class="container">
-            <a href="#" class="logo">Futuro<span style="color: var(--text-color);">TEC.</span></a>
-            <nav class="main-nav">
-                <a href="#">Início</a>
-                <button class="profile-btn">
-                    <i class="fa-solid fa-user"></i> Meu Perfil
-                </button>
-            </nav>
+  <main>
+    <div class="container">
+      <div class="page-header">
+        <div>
+          <h1>Gestão de Etecs</h1>
+          <p>Adicione, edite ou remova unidades Etec da plataforma.</p>
         </div>
-    </header>
+        <button class="btn-primary" id="addEtecBtn">
+          <i class="fa-solid fa-plus"></i>
+          Adicionar Nova Etec
+        </button>
+      </div>
 
-    <main>
-        <div class="container">
-            <div class="page-header">
-                <div>
-                    <h1>Gestão de Etecs</h1>
-                    <p>Adicione, edite ou remova unidades Etec da plataforma.</p>
-                </div>
-                <button class="btn-primary">
-                    <i class="fa-solid fa-plus"></i>
-                    Adicionar Nova Etec
-                </button>
-            </div>
-            
-            <div class="content-card">
-                <div class="table-controls">
-                    <input type="search" class="search-bar" placeholder="Pesquisar por nome, localização ou contato...">
-                </div>
-                
-                <div class="table-responsive">
-                    <table class="etec-table">
-                        <thead>
-                            <tr>
-                                <th>Nome da Unidade</th>
-                                <th>Localização</th>
-                                <th>Contato</th>
-                                <th>Ações</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>Etec de Itaquera</td>
-                                <td>São Paulo - SP</td>
-                                <td>e211dir@cps.sp.gov.br</td>
-                                <td class="action-buttons">
-                                    <button class="btn-edit" title="Editar"><i class="fa-solid fa-pencil"></i></button>
-                                    <button class="btn-delete" title="Excluir"><i class="fa-solid fa-trash-can"></i></button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Etec de Guarulhos</td>
-                                <td>Guarulhos - SP</td>
-                                <td>e052dir@cps.sp.gov.br</td>
-                                <td class="action-buttons">
-                                    <button class="btn-edit" title="Editar"><i class="fa-solid fa-pencil"></i></button>
-                                    <button class="btn-delete" title="Excluir"><i class="fa-solid fa-trash-can"></i></button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Etec Martin Luther King</td>
-                                <td>São Paulo - SP</td>
-                                <td>e034dir@cps.sp.gov.br</td>
-                                <td class="action-buttons">
-                                    <button class="btn-edit" title="Editar"><i class="fa-solid fa-pencil"></i></button>
-                                    <button class="btn-delete" title="Excluir"><i class="fa-solid fa-trash-can"></i></button>
-                                </td>
-                            </tr>
-                            </tbody>
-                    </table>
-                </div>
-                </div>
+      <div class="content-card">
+        <div class="table-controls">
+          <input type="search" class="search-bar" id="searchInput" placeholder="Pesquisar por nome, localização ou contato...">
         </div>
-    </main>
 
-    <footer class="main-footer">
-        <div class="container">
-            <div class="footer-grid">
-                <div class="footer-column">
-                    <h4>Futuro<span style="color: #bdc3c7;">TEC.</span></h4>
-                    <p>Projeto de Conclusão de Curso (TCC) da ETEC Albert Einstein.</p>
-                </div>
-                <div class="footer-column">
-                    <h4>Links Úteis</h4>
-                    <ul>
-                        <li><a href="#">Termos de Uso</a></li>
-                        <li><a href="#">Política de Privacidade</a></li>
-                        <li><a href="#">Sobre Nós</a></li>
-                        <li><a href="#">Contato</a></li>
-                    </ul>
-                </div>
-                <div class="footer-column">
-                    <h4>Conecte-se</h4>
-                    <div class="social-icons">
-                        <a href="#" title="LinkedIn"><i class="fa-brands fa-linkedin"></i></a>
-                        <a href="#" title="Instagram"><i class="fa-brands fa-instagram"></i></a>
-                        <a href="#" title="Twitter"><i class="fa-brands fa-twitter"></i></a>
-                    </div>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <p>&copy; 2025 FuturoTEC. Todos os direitos reservados.</p>
-                <p style="font-size: 0.8rem; margin-top: 5px;">Desenvolvido por: Nátaly Lima, Gustavo Fonseca, Eduarda Marques e outros.</p>
-            </div>
+        <div class="table-responsive">
+          <table class="etec-table" id="etecTable">
+            <thead>
+              <tr>
+                <th>Nome da Unidade</th>
+                <th>Localização</th>
+                <th>Contato</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Etec de Itaquera</td>
+                <td>São Paulo - SP</td>
+                <td>e211dir@cps.sp.gov.br</td>
+                <td class="action-buttons">
+                  <button class="btn-edit" title="Editar"><i class="fa-solid fa-pencil"></i></button>
+                  <button class="btn-delete" title="Excluir"><i class="fa-solid fa-trash-can"></i></button>
+                </td>
+              </tr>
+              <tr>
+                <td>Etec de Guarulhos</td>
+                <td>Guarulhos - SP</td>
+                <td>e052dir@cps.sp.gov.br</td>
+                <td class="action-buttons">
+                  <button class="btn-edit" title="Editar"><i class="fa-solid fa-pencil"></i></button>
+                  <button class="btn-delete" title="Excluir"><i class="fa-solid fa-trash-can"></i></button>
+                </td>
+              </tr>
+              <tr>
+                <td>Etec Martin Luther King</td>
+                <td>São Paulo - SP</td>
+                <td>e034dir@cps.sp.gov.br</td>
+                <td class="action-buttons">
+                  <button class="btn-edit" title="Editar"><i class="fa-solid fa-pencil"></i></button>
+                  <button class="btn-delete" title="Excluir"><i class="fa-solid fa-trash-can"></i></button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
-    </footer>
+      </div>
+    </div>
+  </main>
 
-</body>
-</html>
+  <script>
+    const table = document.getElementById('etecTable').getElementsByTagName('tbody')[0];
+    const addBtn = document.getElementById('addEtecBtn');
+    const searchInput = document.getElementById('searchInput');
 
+    // Adicionar Etec
+    addBtn.addEventListener('click', () => {
+      const nome = prompt("Digite o nome da nova Etec:");
+      if (!nome) return;
+      const local = prompt("Digite a localização:");
+      if (!local) return;
+      const contato = prompt("Digite o e-mail de contato:");
+      if (!contato) return;
 
-</html>
+      const newRow = table.insertRow();
+      newRow.innerHTML = `
+        <td>${nome}</td>
+        <td>${local}</td>
+        <td>${contato}</td>
+        <td class="action-buttons">
+          <button class="btn-edit" title="Editar"><i class="fa-solid fa-pencil"></i></button>
+          <button class="btn-delete" title="Excluir"><i class="fa-solid fa-trash-can"></i></button>
+        </td>
+      `;
+    });
+
+    // Editar ou Excluir
+    table.addEventListener('click', (e) => {
+      const btn = e.target.closest('button');
+      if (!btn) return;
+
+      const row = btn.closest('tr');
+      const cells = row.querySelectorAll('td');
+
+      if (btn.classList.contains('btn-edit')) {
+        const nome = prompt("Editar nome da Etec:", cells[0].textContent);
+        if (nome !== null) cells[0].textContent = nome;
+
+        const local = prompt("Editar localização:", cells[1].textContent);
+        if (local !== null) cells[1].textContent = local;
+
+        const contato = prompt("Editar contato:", cells[2].textContent);
+        if (contato !== null) cells[2].textContent = contato;
+      }
+
+      if (btn.classList.contains('btn-delete')) {
+        if (confirm("Tem certeza que deseja excluir esta Etec?")) {
+          row.remove();
+        }
+      }
+    });
+
+    // Pesquisa
+    searchInput.addEventListener('input', () => {
+      const term = searchInput.value.toLowerCase();
+      const rows = table.querySelectorAll('tr');
+
+      rows.forEach(row => {
+        const text = row.textContent.toLowerCase();
+        row.style.display = text.includes(term) ? '' : 'none';
+      });
+    });
+  </script>
