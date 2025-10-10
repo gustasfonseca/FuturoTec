@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gestão de Vagas - Assistente Técnico</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    /* ===== Reset e fontes ===== */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    body {
+      background-color: #f8f9fa;
+      color: #343a40;
+      line-height: 1.6;
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    /* ===== Header ===== */
+    .header {
+      background-color: #fff;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      padding: 1rem 0;
+    }
+
+    .nav-wrapper {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo img {
+      height: 50px;
+    }
+
+    .nav-desktop {
+      display: flex;
+      gap: 1.5rem;
+    }
+
+    .nav-link {
+      font-weight: 500;
+      color: #343a40;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      transition: all 0.3s ease;
+    }
+
+    .nav-link:hover,
+    .nav-link.active {
+      background-color: #008080;
+      color: #fff;
+    }
+
+    .nav-actions .login-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background-color: #008080;
+      color: #fff;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: background-color 0.3s ease;
+    }
+
+    .nav-actions .login-btn:hover {
+      background-color: #006666;
+    }
+
+    /* ===== Main ===== */
+    .main-content {
+      max-width: 1200px;
+      margin: 2rem auto;
+      padding: 0 20px;
+    }
+
+    .page-header h1 {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .page-header p {
+      color: #6c757d;
+    }
+
+    /* ===== Tabela de vagas ===== */
+    .table-card {
+      background-color: #fff;
+      padding: 1.5rem;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+      margin-top: 2rem;
+    }
+
+    .table-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .btn-add {
+      background-color: #008080;
+      color: #fff;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: background-color 0.3s ease;
+    }
+
+    .btn-add:hover {
+      background-color: #006666;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th, td {
+      text-align: left;
+      padding: 0.8rem;
+      border-bottom: 1px solid #e9ecef;
+    }
+
+    th {
+      font-weight: 600;
+      color: #6c757d;
+      text-transform: uppercase;
+      font-size: 0.9rem;
+    }
+
+    tr:hover {
+      background-color: #f1f3f5;
+    }
+
+    .action-buttons button {
+      border: none;
+      background: none;
+      font-size: 1.2rem;
+      margin-right: 0.8rem;
+      color: #343a40;
+      transition: transform 0.2s ease;
+    }
+
+    .action-buttons button:hover {
+      transform: scale(1.2);
+      color: #008080;
+    }
+
+    /* ===== Footer ===== */
+    .footer {
+      text-align: center;
+      padding: 1.5rem 0;
+      background-color: #fff;
+      box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.05);
+      margin-top: 3rem;
+      color: #6c757d;
+      font-size: 0.9rem;
+    }
+
+    @media(max-width:768px){
+      .nav-desktop {
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header class="header">
+    <div class="container">
+      <div class="nav-wrapper">
+        <div class="logo">
+          <img src="img/FuturoTecInicial.jpeg" alt="FuturoTEC Logo">
+        </div>
+
+        <nav class="nav-desktop student-nav">
+          <a href="InicialAssistente.html" class="nav-link">Início</a>
+        </nav>
+
+        <div class="nav-actions">
+          <a href="PerfilAssistente.html" class="login-btn">
+            <i class="fa-solid fa-user"></i> Meu Perfil
+          </a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="main-content">
+    <div class="page-header">
+      <h1>Gestão de Vagas</h1>
+      <p>Veja, edite ou exclua as vagas publicadas.</p>
+    </div>
+
+    <div class="table-card">
+      <div class="table-header">
+        <h3>Vagas Publicadas</h3>
+        <button class="btn-add" id="addJobBtn"><i class="fa-solid fa-plus"></i> Adicionar Vaga</button>
+      </div>
+
+      <table id="jobsTable">
+        <thead>
+          <tr>
+            <th>Cargo</th>
+            <th>Empresa</th>
+            <th>Local</th>
+            <th>Contato</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Desenvolvedor Front-end</td>
+            <td>Empresa ABC</td>
+            <td>São Paulo - SP</td>
+            <td>contato@abc.com</td>
+            <td class="action-buttons">
+              <button class="edit-btn"><i class="fa-solid fa-pencil"></i></button>
+              <button class="delete-btn"><i class="fa-solid fa-trash-can"></i></button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <p>&copy; 2025 FuturoTec. Todos os direitos reservados.</p>
+  </footer>
+
+  <script>
+    const table = document.getElementById('jobsTable').getElementsByTagName('tbody')[0];
+    const addBtn = document.getElementById('addJobBtn');
+
+    // Adicionar nova vaga
+    addBtn.addEventListener('click', () => {
+      const cargo = prompt("Digite o cargo:");
+      if (!cargo) return;
+      const empresa = prompt("Digite o nome da empresa:");
+      if (!empresa) return;
+      const local = prompt("Digite a localização:");
+      if (!local) return;
+      const contato = prompt("Digite o e-mail de contato:");
+      if (!contato) return;
+
+      const newRow = table.insertRow();
+      newRow.innerHTML = `
+        <td>${cargo}</td>
+        <td>${empresa}</td>
+        <td>${local}</td>
+        <td>${contato}</td>
+        <td class="action-buttons">
+          <button class="edit-btn"><i class="fa-solid fa-pencil"></i></button>
+          <button class="delete-btn"><i class="fa-solid fa-trash-can"></i></button>
+        </td>
+      `;
+    });
+
+    // Editar ou excluir vagas
+    table.addEventListener('click', (e) => {
+      const btn = e.target.closest('button');
+      if (!btn) return;
+      const row = btn.closest('tr');
+      const cells = row.querySelectorAll('td');
+
+      if (btn.classList.contains('edit-btn')) {
+        const cargo = prompt("Editar cargo:", cells[0].textContent);
+        if (cargo !== null) cells[0].textContent = cargo;
+
+        const empresa = prompt("Editar empresa:", cells[1].textContent);
+        if (empresa !== null) cells[1].textContent = empresa;
+
+        const local = prompt("Editar localização:", cells[2].textContent);
+        if (local !== null) cells[2].textContent = local;
+
+        const contato = prompt("Editar contato:", cells[3].textContent);
+        if (contato !== null) cells[3].textContent = contato;
+      }
+
+      if (btn.classList.contains('delete-btn')) {
+        if (confirm("Tem certeza que deseja excluir esta vaga?")) {
+          row.remove();
+        }
+      }
+    });
+  </script>
+</body>
+
+</html>
