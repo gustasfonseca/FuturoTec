@@ -1,0 +1,39 @@
+/* Adicione no final de css/assistente.css */
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.btn-primary {
+    background-color: var(--primary);
+    color: white;
+    border: none;
+    padding: 0.6rem 1.2rem;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.2s ease;
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-hover);
+}
+
+.status {
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.8em;
+    font-weight: bold;
+    color: white;
+}
+
+.status-active {
+    background-color: #28a745; /* Verde */
+}
+
+.status-inactive {
+    background-color: #6c757d; /* Cinza */
+}
