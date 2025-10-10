@@ -1,95 +1,124 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Perfil do Assistente - FuturoTEC</title>
-    <link rel="stylesheet" href="css/perfil.css">
-    <link rel="stylesheet" href="css/styles.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Perfil do Assistente - FuturoTEC</title>
+  <link rel="stylesheet" href="css/perfil.css">
+  <link rel="stylesheet" href="css/styles.css">
 </head>
 
 <body>
-    <div class="app">
-        <header class="header">
-            <div class="container">
-                <div class="nav-wrapper">
-                    <div class="logo">
-                        <img src="img/FuturoTecInicial.jpeg" alt="FuturoTEC Logo">
-                    </div>
-                    <nav class="nav-desktop">
-                        <a href="InicialAssistente.html" class="nav-link">Início</a>
-                        <a href="gestao-assistente.html" class="nav-link">Gestão ETECs</a>
-                        <a href="página-de-criação-assistente.html" class="nav-link">Adicionar ETEC</a>
-                    </nav>
-                    <a href="PerfilAssistente.html" class="login-btn">Meu Perfil</a>
-                </div>
+  <div class="app">
+    <header class="header">
+      <div class="container">
+        <div class="nav-wrapper">
+          <div class="logo">
+            <img src="img/FuturoTecInicial.jpeg" alt="FuturoTEC Logo">
+          </div>
+          <nav class="nav-desktop">
+            <a href="InicialAssistente.html" class="nav-link">Início</a>
+            <a href="gestao-assistente.html" class="nav-link">Gestão ETECs</a>
+            <a href="página-de-criação-assistente.html" class="nav-link">Adicionar ETEC</a>
+          </nav>
+          <a href="PerfilAssistente.html" class="login-btn">Meu Perfil</a>
+        </div>
+      </div>
+    </header>
+
+    <main class="profile-page-container">
+      <div class="profile-header">
+        <h1>Perfil do Assistente Técnico</h1>
+        <p>Veja e edite seus dados de cadastro.</p>
+      </div>
+
+      <div class="profile-grid">
+        <aside class="profile-info">
+          <h3>Seus Dados</h3>
+          <p>Mantenha seus dados de contato e institucionais sempre atualizados.</p>
+        </aside>
+
+        <section class="profile-form-card">
+          <div class="user-summary">
+            <div class="profile-picture">
+              <img id="profile-img" src="https://i.imgur.com/m3d5v8B.png" alt="Foto de Perfil">
+              <button id="change-photo-btn" class="change-photo-btn">Trocar Foto</button>
+              <input type="file" id="file-input" accept="image/*" style="display:none;">
             </div>
-        </header>
+            <div class="user-details">
+              <h2 id="user-name">Carregando...</h2>
+              <p class="email" id="user-email">Carregando...</p>
+              <p class="job-title" id="user-etec-name">Carregando ETEC...</p>
+            </div>
+          </div>
+          <hr>
 
-        <main class="profile-page-container">
-            <div class="profile-header">
-                <h1>Perfil do Assistente Técnico</h1>
-                <p>Veja e edite seus dados de cadastro.</p>
+          <form id="profile-form-assistente">
+            <div class="form-group">
+              <label for="email">Email de Login</label>
+              <input type="email" id="email" disabled>
             </div>
 
-            <div class="profile-grid">
-                <aside class="profile-info">
-                    <h3>Seus Dados</h3>
-                    <p>Mantenha seus dados de contato e institucionais sempre atualizados.</p>
-                </aside>
-
-                <section class="profile-form-card">
-                    <div class="user-summary">
-                        <div class="profile-picture">
-                            <img src="https://i.imgur.com/m3d5v8B.png" alt="Foto de Perfil">
-                            <button class="change-photo-btn">trocar foto</button>
-                        </div>
-                        <div class="user-details">
-                            <h2 id="user-name">Carregando...</h2>
-                            <p class="email" id="user-email">Carregando...</p>
-                            <p class="job-title" id="user-etec-name">Carregando ETEC...</p>
-                        </div>
-                    </div>
-                    <hr>
-
-                    <form id="profile-form-assistente">
-                        <div class="form-group">
-                            <label for="email">Email de Login</label>
-                            <input type="email" id="email" disabled>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="nome-completo" class="required">Nome Completo</label>
-                            <input type="text" id="nome-completo" required>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="nome-etec">ETEC Associada</label>
-                            <input type="text" id="nome-etec" disabled>
-                        </div>
-
-                        <div class="form-actions">
-                            <button type="submit" class="save-button">Salvar Alterações</button>
-                        </div>
-                    </form>
-                    
-                    <div class="form-actions delete-section">
-                        <p>Se você deseja deletar sua conta permanentemente, clique no botão abaixo.</p>
-                        <button id="btn-excluir-conta-assistente" class="delete-button" type="button">Excluir Conta</button>
-                    </div>
-                    </section>
+            <div class="form-group">
+              <label for="nome-completo" class="required">Nome Completo</label>
+              <input type="text" id="nome-completo" required>
             </div>
-        </main>
-    </div>
 
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+            <div class="form-group">
+              <label for="nome-etec">ETEC Associada</label>
+              <input type="text" id="nome-etec" disabled>
+            </div>
 
-    <script src="https://unpkg.com/feather-icons"></script>
-    <script> feather.replace(); </script>
+            <div class="form-actions">
+              <button type="submit" class="save-button">Salvar Alterações</button>
+            </div>
+          </form>
 
-    <script src="js/auth-assistente.js"></script>
+          <div class="form-actions delete-section">
+            <p>Se você deseja deletar sua conta permanentemente, clique no botão abaixo.</p>
+            <button id="btn-excluir-conta-assistente" class="delete-button" type="button">Excluir Conta</button>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+  <script src="https://unpkg.com/feather-icons"></script>
+  <script>feather.replace();</script>
+
+  <script src="js/auth-assistente.js"></script>
+
+  <script>
+    // --- Trocar Foto ---
+    const fileInput = document.getElementById("file-input");
+    const changePhotoBtn = document.getElementById("change-photo-btn");
+    const profileImg = document.getElementById("profile-img");
+
+    changePhotoBtn.addEventListener("click", () => fileInput.click());
+    fileInput.addEventListener("change", (event) => {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = () => {
+          profileImg.src = reader.result;
+          alert("Foto de perfil atualizada com sucesso!");
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    // --- Excluir Conta ---
+    document.getElementById("btn-excluir-conta-assistente").addEventListener("click", () => {
+      if (confirm("Tem certeza que deseja excluir sua conta permanentemente?")) {
+        alert("Conta excluída com sucesso (simulação).");
+        // Aqui você pode adicionar o código real do Firebase Auth delete()
+      }
+    });
+  </script>
+  <link rel="stylesheet" href="css/perfilassistente.css">
+
 </body>
 </html>
