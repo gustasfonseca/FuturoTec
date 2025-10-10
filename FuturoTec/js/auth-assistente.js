@@ -431,4 +431,22 @@ document.addEventListener('DOMContentLoaded', async () => {
             recuperarSenhaAssistente(); 
         });
     }
+    
+});
+// --- LOGOUT ---
+document.addEventListener("DOMContentLoaded", function () {
+  const btnDeslogar = document.getElementById("btn-deslogar");
+
+  if (btnDeslogar) {
+    btnDeslogar.addEventListener("click", function () {
+      if (confirm("Tem certeza que deseja sair da sua conta?")) {
+        firebase.auth().signOut().then(() => {
+          window.location.href = "InicialAssistente.html"; // redireciona para o início
+        }).catch((error) => {
+          console.error("Erro ao deslogar:", error);
+          alert("Erro ao deslogar. Tente novamente.");
+        });
+      }
+    });
+  }
 });
