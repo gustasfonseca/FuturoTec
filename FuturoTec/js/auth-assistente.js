@@ -56,8 +56,6 @@ Para confirmar a exclusão, digite seu EMAIL (${userEmail}) no campo abaixo:`);
         console.log("[Exclusão Assistente] Reautenticação bem-sucedida.");
 
         // PASSO B: EXCLUIR DADOS DO PERFIL (Coleção 'usuarios')
-        // Se este perfil estiver associado a outros documentos, eles também devem ser excluídos
-        // mas aqui estamos deletando apenas o perfil principal.
         console.log("[Exclusão Assistente] Excluindo perfil do assistente...");
         await db.collection('usuarios').doc(userId).delete();
         console.log("[Exclusão Assistente] Perfil do assistente excluído.");
@@ -67,7 +65,7 @@ Para confirmar a exclusão, digite seu EMAIL (${userEmail}) no campo abaixo:`);
         console.log("[Exclusão Assistente] Usuário excluído do Firebase Auth. E-mail liberado.");
 
         alert("✅ Sua conta de assistente técnico foi excluída permanentemente. Você será redirecionado.");
-        window.location.href = 'login-assistente.html'; 
+        window.location.href = 'login-assistente.html';
 
     } catch (error) {
         console.error("Erro ao excluir a conta do assistente técnico:", error);
@@ -75,13 +73,13 @@ Para confirmar a exclusão, digite seu EMAIL (${userEmail}) no campo abaixo:`);
         let errorMessage = "Ocorreu um erro ao tentar excluir sua conta.";
         
         if (error.code === 'auth/wrong-password') {
-             errorMessage = "Senha incorreta. A exclusão da conta foi cancelada.";
+            errorMessage = "Senha incorreta. A exclusão da conta foi cancelada.";
         } else if (error.code === 'auth/requires-recent-login') {
             errorMessage = "Erro de Segurança: Você precisa ter feito login *recentemente* (saia e entre novamente) e tente excluir a conta em seguida.";
         } else if (error.code === 'auth/user-not-found') {
-             errorMessage = "Usuário não encontrado. Possível problema de autenticação.";
+            errorMessage = "Usuário não encontrado. Possível problema de autenticação.";
         } else if (error.code === 'permission-denied') {
-             errorMessage = "Erro de Permissão: Verifique as regras de segurança do Firestore (Coleção 'usuarios').";
+            errorMessage = "Erro de Permissão: Verifique as regras de segurança do Firestore (Coleção 'usuarios').";
         }
         
         alert(`❌ ${errorMessage} (Detalhes técnicos no console)`);
@@ -138,7 +136,6 @@ async function loginComGoogleAssistente() {
 // =======================================================
 
 async function recuperarSenhaAssistente() {
-    // 1. Pede o email do usuário
     const email = prompt("Por favor, digite seu e-mail de Assistente Técnico para redefinir a senha:");
 
     if (!email) {
@@ -147,9 +144,7 @@ async function recuperarSenhaAssistente() {
     }
 
     try {
-        // 2. Envia o e-mail de redefinição de senha usando o objeto 'auth'
         await auth.sendPasswordResetEmail(email);
-
         alert(`✅ E-mail de redefinição de senha enviado para ${email}. Verifique sua caixa de entrada e a pasta de Spam!`);
 
     } catch (error) {
@@ -160,7 +155,7 @@ async function recuperarSenhaAssistente() {
         if (error.code === 'auth/user-not-found') {
             errorMessage = "Não encontramos uma conta para este e-mail.";
         } else if (error.code === 'auth/invalid-email') {
-             errorMessage = "O formato do e-mail é inválido.";
+            errorMessage = "O formato do e-mail é inválido.";
         }
 
         alert(`❌ Erro: ${errorMessage}`);
@@ -182,7 +177,6 @@ async function fetchAllEtecs() {
 }
 
 async function preencherDadosDoPerfil() {
-    // Usa onAuthStateChanged para garantir que o usuário está carregado
     auth.onAuthStateChanged(async (user) => {
         if (user) {
             const uid = user.uid;
@@ -207,7 +201,6 @@ async function preencherDadosDoPerfil() {
                         document.getElementById('nome-etec').value = "Nenhuma ETEC associada";
                     }
                     
-                    // Conecta o botão de exclusão de conta
                     const btnExcluirConta = document.getElementById('btn-excluir-conta-assistente');
                     if (btnExcluirConta) {
                         btnExcluirConta.addEventListener('click', () => {
@@ -275,12 +268,17 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // Lógica da PÁGINA DE CADASTRO (MANTIDA)
+    // Lógica da PÁGINA DE CADASTRO (COM CORREÇÃO)
     if (document.getElementById('form-assistente')) {
         const formCadastro = document.getElementById('form-assistente');
         const inputEtec = document.getElementById('nome-etec');
         const etecResultsContainer = document.getElementById('etec-results');
         const inputEnderecoEtec = document.getElementById('endereco-etec');
+        
+        // === INÍCIO DA CORREÇÃO ===
+        // Seleciona o rótulo que queremos manipular
+        const labelEtec = document.querySelector('label[for="nome-etec"]');
+        // === FIM DA CORREÇÃO ===
 
         // LÓGICA DE AUTOCOMPLETE DA ETEC
         if (inputEtec) {
@@ -288,6 +286,12 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const query = e.target.value.trim().toLowerCase();
                 etecResultsContainer.innerHTML = '';
                 inputEnderecoEtec.value = ''; // Limpa o endereço ao digitar
+
+                // === CORREÇÃO ADICIONAL: Esconde o rótulo se o campo for esvaziado ===
+                if (labelEtec) {
+                    labelEtec.classList.remove('visible');
+                }
+                // === FIM DA CORREÇÃO ADICIONAL ===
 
                 if (query.length < 2) return;
 
@@ -300,29 +304,33 @@ document.addEventListener('DOMContentLoaded', async () => {
                     etecItem.classList.add('etec-result-item');
                     etecItem.innerHTML = `<h4>${etecData.cod} - ${etecData.nome}</h4><p>${etecData.endereco}</p>`;
                     etecItem.addEventListener('click', () => {
-                        inputEtec.value = `${etecData.cod} - ${etecData.nome}`; 
+                        inputEtec.value = `${etecData.cod} - ${etecData.nome}`;
                         inputEnderecoEtec.value = etecData.endereco;
-                        inputEtec.dataset.etecId = etecData.id; 
+                        inputEtec.dataset.etecId = etecData.id;
                         etecResultsContainer.innerHTML = ''; // Esconde os resultados
+
+                        // === CORREÇÃO PRINCIPAL: Adiciona a classe para mostrar a label ===
+                        if (labelEtec) {
+                            labelEtec.classList.add('visible');
+                        }
+                        // === FIM DA CORREÇÃO PRINCIPAL ===
                     });
                     etecResultsContainer.appendChild(etecItem);
                 });
             });
         }
 
-        // Esconde o autocomplete ao clicar fora (COM CORREÇÃO DE ERRO)
+        // Esconde o autocomplete ao clicar fora
         document.addEventListener('click', (e) => {
-            if (!e.target || !(e.target instanceof Element)) { 
+            if (!e.target || !(e.target instanceof Element)) {
                 return;
             }
-
             if (inputEtec && etecResultsContainer) {
                 if (!inputEtec.contains(e.target) && !etecResultsContainer.contains(e.target)) {
                     etecResultsContainer.innerHTML = '';
                 }
             }
         });
-
 
         // LÓGICA DE SUBMISSÃO DO CADASTRO
         formCadastro.addEventListener('submit', async (e) => {
@@ -332,29 +340,28 @@ document.addEventListener('DOMContentLoaded', async () => {
             const confirmarSenha = document.getElementById('confirmar-senha-assistente').value;
             const nome = document.getElementById('nome-assistente').value;
             const nomeEtec = document.getElementById('nome-etec').value;
-            const etecId = inputEtec.dataset.etecId; 
+            const etecId = inputEtec.dataset.etecId;
 
             if (senha !== confirmarSenha) return alert("As senhas não coincidem.");
             if (!etecId) return alert("Selecione a ETEC na lista de sugestões.");
 
             try {
                 const userCredential = await auth.createUserWithEmailAndPassword(email, senha);
-
                 const etecFound = allEtecs.find(etec => etec.id === etecId);
 
                 await db.collection('usuarios').doc(userCredential.user.uid).set({
                     role: 'assistente_tecnico',
                     nome: nome,
                     email: email,
-                    etec_id: etecId, 
-                    etec_nome: etecFound ? etecFound.nome : nomeEtec, 
+                    etec_id: etecId,
+                    etec_nome: etecFound ? etecFound.nome : nomeEtec,
                     dataCriacao: firebase.firestore.FieldValue.serverTimestamp()
                 });
 
                 await auth.signOut();
-
                 alert("Cadastro realizado com sucesso! Por favor, faça login.");
                 window.location.href = 'login-assistente.html';
+
             } catch (error) {
                 console.error("Erro no cadastro:", error);
                 alert(`Erro ao cadastrar: ${error.message}`);
@@ -362,7 +369,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // Lógica da PÁGINA DE LOGIN (MANTIDA)
+    // Lógica da PÁGINA DE LOGIN
     const formLoginAssistente = document.getElementById('form-login-assistente');
     if (formLoginAssistente) {
         formLoginAssistente.addEventListener('submit', async (e) => {
@@ -386,7 +393,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // MANIPULADOR DE EVENTOS PARA O BOTÃO DO GOOGLE (MANTIDO)
+    // MANIPULADOR DE EVENTOS PARA O BOTÃO DO GOOGLE
     const btnGoogleLogin = document.getElementById('btn-google-login-assistente');
     if (btnGoogleLogin) {
         btnGoogleLogin.addEventListener('click', async (e) => {
@@ -403,7 +410,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // Lógica genérica para todas as páginas (mostrar/esconder senha) (MANTIDA)
+    // Lógica genérica para todas as páginas (mostrar/esconder senha)
     document.querySelectorAll('.password-toggle').forEach(toggle => {
         toggle.addEventListener('click', () => {
             const targetId = toggle.getAttribute('data-target');
@@ -423,31 +430,31 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     });
 
-    // === CONEXÃO DO BOTÃO DE RECUPERAÇÃO DE SENHA (MANTIDA) ===
+    // CONEXÃO DO BOTÃO DE RECUPERAÇÃO DE SENHA
     const btnEsqueciSenha = document.getElementById('btn-esqueci-senha-assistente');
     if (btnEsqueciSenha) {
         btnEsqueciSenha.addEventListener('click', (e) => {
-            e.preventDefault(); 
-            recuperarSenhaAssistente(); 
+            e.preventDefault();
+            recuperarSenhaAssistente();
         });
     }
-    
 });
+
 // --- LOGOUT ---
 document.addEventListener("DOMContentLoaded", function () {
-  const btnDeslogar = document.getElementById("btn-deslogar");
+    const btnDeslogar = document.getElementById("btn-deslogar");
 
-  if (btnDeslogar) {
-    btnDeslogar.addEventListener("click", function () {
-      if (confirm("Tem certeza que deseja sair da sua conta?")) {
-        firebase.auth().signOut().then(() => {
-          window.location.href = "InicialAssistente.html"; // redireciona para o início
-        }).catch((error) => {
-          console.error("Erro ao deslogar:", error);
-          alert("Erro ao deslogar. Tente novamente.");
+    if (btnDeslogar) {
+        btnDeslogar.addEventListener("click", function () {
+            if (confirm("Tem certeza que deseja sair da sua conta?")) {
+                firebase.auth().signOut().then(() => {
+                    // CORREÇÃO: Redirecionar para uma página de login ou inicial, não para a mesma página.
+                    window.location.href = "login-assistente.html"; 
+                }).catch((error) => {
+                    console.error("Erro ao deslogar:", error);
+                    alert("Erro ao deslogar. Tente novamente.");
+                });
+            }
         });
-      }
-    });
-  }
+    }
 });
-
