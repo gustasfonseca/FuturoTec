@@ -54,6 +54,30 @@
                 </form>
             </div>
         </main>
+
+          <script src="https://unpkg.com/feather-icons"></script>
+        <script> feather.replace(); </script>
+
+        <script>
+            const passwordToggles = document.querySelectorAll('.password-toggle');
+
+            passwordToggles.forEach(toggle => {
+                toggle.addEventListener('click', function () {
+                    const targetId = this.getAttribute('data-target');
+                    const passwordInput = document.getElementById(targetId);
+                    const icon = this.querySelector('i');
+
+                    if (passwordInput.type === 'password') {
+                        passwordInput.type = 'text';
+                        icon.setAttribute('data-feather', 'eye-off');
+                    } else {
+                        passwordInput.type = 'password';
+                        icon.setAttribute('data-feather', 'eye');
+                    }
+                    feather.replace();
+                });
+            });
+        </script>
         <footer>...</footer>
     </div>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
