@@ -380,3 +380,37 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+// Adiciona um 'ouvinte' que espera o conteúdo da página carregar completamente
+document.addEventListener('DOMContentLoaded', function() {
+    
+    // Seleciona o ícone do olho pela sua classe (a classe é a mesma, então não muda)
+    const togglePassword = document.querySelector('.password-toggle');
+    
+    // Seleciona o campo (input) da senha pelo seu NOVO ID
+    // ÚNICA MUDANÇA É AQUI: trocamos o ID para 'senha-login-empresa'
+    const passwordInput = document.getElementById('senha-login-empresa');
+
+    // Seleciona o elemento <i> dentro do span para podermos trocar o ícone
+    const eyeIcon = togglePassword.querySelector('i');
+
+    // Verifica se os elementos foram encontrados antes de adicionar o evento
+    if (togglePassword && passwordInput) {
+        
+        // Adiciona um evento de 'click' no ícone do olho
+        togglePassword.addEventListener('click', function() {
+            // O resto do código é idêntico e funciona da mesma forma
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+            
+            // Troca o ícone do olho
+            if (type === 'password') {
+                eyeIcon.setAttribute('data-feather', 'eye');
+            } else {
+                eyeIcon.setAttribute('data-feather', 'eye-off');
+            }
+
+            // A biblioteca Feather Icons precisa ser chamada novamente para renderizar o novo ícone
+            feather.replace();
+        });
+    }
+});
