@@ -244,58 +244,101 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
 
-    // --- 2. LÓGICA DE CADASTRO DO CANDIDATO ---
-    const formCandidato = document.getElementById('form-candidato');
-    if (formCandidato) {
-        formCandidato.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const email = document.getElementById('email-candidato').value;
-            const senha = document.getElementById('senha-candidato').value;
-            const confirmarSenha = document.getElementById('confirmar-senha-candidato').value;
-            const nome = document.getElementById('nome-candidato').value;
-            const telefone = document.getElementById('telefone-candidato').value;
-            const dataNascimento = document.getElementById('data-nascimento-candidato').value;
+    // -// --- COLOQUE ESTA FUNÇÃO NO SEU ARQUIVO JS ---
+// Pode ser no topo do arquivo ou antes do addEventListener do formulário.
 
-            const cursoId = document.getElementById('curso-id-candidato').value;
-            const cursoNome = document.getElementById('curso-candidato').value;
+/**
+ * Função para verificar a força da senha.
+ * Retorna um objeto { valid: boolean, message: string }
+ */
+function isPasswordStrong(password) {
+    const minLength = 8;
+    const hasUpperCase = /[A-Z]/.test(password);
+    const hasLowerCase = /[a-z]/.test(password);
+    const hasNumbers = /\d/.test(password);
+    const hasSpecialChars = /[!@#$%^&*(),.?":{}|<>]/.test(password);
 
-            // VALIDAÇÕES
-            if (!cursoId) {
-                alert("Por favor, selecione um curso válido da lista de sugestões.");
-                return;
-            }
-            if (senha !== confirmarSenha) {
-                alert("As senhas não coincidem.");
-                return;
-            }
-
-            try {
-                const userCredential = await auth.createUserWithEmailAndPassword(email, senha);
-                const user = userCredential.user;
-
-                const perfilData = {
-                    role: 'aluno',
-                    nome: nome,
-                    telefone: telefone,
-                    dataNascimento: dataNascimento,
-                    email: email,
-                    cursoId: cursoId,
-                    cursoNome: cursoNome,
-                    dataCriacao: firebase.firestore.FieldValue.serverTimestamp()
-                };
-                await db.collection('usuarios').doc(user.uid).set(perfilData);
-
-                // Desloga após o cadastro para forçar o login
-                await auth.signOut();
-
-                alert("Cadastro de Candidato realizado com sucesso! Por favor, faça login.");
-                window.location.href = 'login-candidato.html';
-            } catch (error) {
-                console.error("Erro no cadastro:", error);
-                alert(`Erro ao cadastrar: ${error.message}`);
-            }
-        });
+    if (password.length < minLength) {
+        return { valid: false, message: 'A senha deve ter no mínimo 8 caracteres.' };
     }
+    if (!hasUpperCase) {
+        return { valid: false, message: 'A senha deve conter pelo menos uma letra maiúscula.' };
+    }
+    if (!hasLowerCase) {
+        return { valid: false, message: 'A senha deve conter pelo menos uma letra minúscula.' };
+    }
+    if (!hasNumbers) {
+        return { valid: false, message: 'A senha deve conter pelo menos um número.' };
+    }
+    if (!hasSpecialChars) {
+        return { valid: false, message: 'A senha deve conter pelo menos um caractere especial (ex: !@#$).' };
+    }
+
+    return { valid: true, message: '' };
+}
+
+
+// --- SEU CÓDIGO DE CADASTRO, AGORA COM A VALIDAÇÃO EXTRA ---
+const formCandidato = document.getElementById('form-candidato');
+if (formCandidato) {
+    formCandidato.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const email = document.getElementById('email-candidato').value;
+        const senha = document.getElementById('senha-candidato').value;
+        const confirmarSenha = document.getElementById('confirmar-senha-candidato').value;
+        const nome = document.getElementById('nome-candidato').value;
+        const telefone = document.getElementById('telefone-candidato').value;
+        const dataNascimento = document.getElementById('data-nascimento-candidato').value;
+        const cursoId = document.getElementById('curso-id-candidato').value;
+        const cursoNome = document.getElementById('curso-candidato').value;
+
+        // VALIDAÇÕES
+        if (!cursoId) {
+            alert("Por favor, selecione um curso válido da lista de sugestões.");
+            return;
+        }
+        if (senha !== confirmarSenha) {
+            alert("As senhas não coincidem.");
+            return;
+        }
+        
+        // ==========================================================
+        //         AQUI ESTÁ A NOVA VALIDAÇÃO ADICIONADA
+        // ==========================================================
+        const passwordCheck = isPasswordStrong(senha);
+        if (!passwordCheck.valid) {
+            // Se a senha não for forte, exibe a mensagem de erro e para a execução
+            alert(passwordCheck.message);
+            return; // O 'return' impede que o resto do código (try/catch) seja executado
+        }
+        // ==========================================================
+
+        try {
+            const userCredential = await auth.createUserWithEmailAndPassword(email, senha);
+            const user = userCredential.user;
+
+            const perfilData = {
+                role: 'aluno',
+                nome: nome,
+                telefone: telefone,
+                dataNascimento: dataNascimento,
+                email: email,
+                cursoId: cursoId,
+                cursoNome: cursoNome,
+                dataCriacao: firebase.firestore.FieldValue.serverTimestamp()
+            };
+            await db.collection('usuarios').doc(user.uid).set(perfilData);
+
+            await auth.signOut();
+
+            alert("Cadastro de Candidato realizado com sucesso! Por favor, faça login.");
+            window.location.href = 'login-candidato.html';
+        } catch (error) {
+            console.error("Erro no cadastro:", error);
+            alert(`Erro ao cadastrar: ${error.message}`);
+        }
+    });
+}
 
     // --- 3. LÓGICA DE LOGIN (EXISTENTE) ---
     const formLoginCandidato = document.getElementById('form-login-candidato');
@@ -464,4 +507,110 @@ document.addEventListener('DOMContentLoaded', function() {
             feather.replace();
         });
     }
+});
+// Este código deve estar no seu arquivo js/auth-candidato.js
+
+// Certifique-se de que sua configuração do Firebase já está aqui
+// const firebaseConfig = { ... };
+// firebase.initializeApp(firebaseConfig);
+
+const form = document.getElementById('form-candidato');
+const senhaInput = document.getElementById('senha-candidato');
+const confirmarSenhaInput = document.getElementById('confirmar-senha-candidato');
+const errorMessageDiv = document.getElementById('password-error-message');
+
+/**
+ * Função para verificar a força da senha.
+ * Critérios:
+ * - Pelo menos 8 caracteres
+ * - Pelo menos 1 letra maiúscula
+ * - Pelo menos 1 letra minúscula
+ * - Pelo menos 1 número
+ * - Pelo menos 1 caractere especial
+ */
+function isPasswordStrong(password) {
+    const minLength = 8;
+    const hasUpperCase = /[A-Z]/.test(password);
+    const hasLowerCase = /[a-z]/.test(password);
+    const hasNumbers = /\d/.test(password);
+    const hasSpecialChars = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+
+    if (password.length < minLength) {
+        return { valid: false, message: 'A senha deve ter no mínimo 8 caracteres.' };
+    }
+    if (!hasUpperCase) {
+        return { valid: false, message: 'A senha deve conter pelo menos uma letra maiúscula.' };
+    }
+    if (!hasLowerCase) {
+        return { valid: false, message: 'A senha deve conter pelo menos uma letra minúscula.' };
+    }
+    if (!hasNumbers) {
+        return { valid: false, message: 'A senha deve conter pelo menos um número.' };
+    }
+    if (!hasSpecialChars) {
+        return { valid: false, message: 'A senha deve conter pelo menos um caractere especial (ex: !@#$).' };
+    }
+
+    return { valid: true, message: '' };
+}
+
+form.addEventListener('submit', function(event) {
+    // 1. Previne o envio padrão do formulário
+    event.preventDefault(); 
+    
+    // Limpa mensagens de erro anteriores
+    errorMessageDiv.textContent = '';
+
+    // 2. Pega os valores dos campos
+    const email = document.getElementById('email-candidato').value;
+    const senha = senhaInput.value;
+    const confirmarSenha = confirmarSenhaInput.value;
+
+    // 3. Validação: As senhas são iguais?
+    if (senha !== confirmarSenha) {
+        errorMessageDiv.textContent = 'As senhas não coincidem. Por favor, tente novamente.';
+        return; // Para a execução
+    }
+
+    // 4. Validação: A senha é forte?
+    const passwordCheck = isPasswordStrong(senha);
+    if (!passwordCheck.valid) {
+        errorMessageDiv.textContent = passwordCheck.message;
+        return; // Para a execução
+    }
+
+    // 5. Se todas as validações passaram, prossiga com a criação do usuário
+    //    (Este é o lugar para o seu código do Firebase)
+    console.log('Validação bem-sucedida! Criando conta...');
+
+    // Exemplo de como você criaria o usuário com o Firebase Auth
+    /*
+    firebase.auth().createUserWithEmailAndPassword(email, senha)
+        .then((userCredential) => {
+            // Usuário criado com sucesso!
+            const user = userCredential.user;
+            console.log('Usuário criado:', user);
+            
+            // Aqui você pode salvar os outros dados do formulário no Firestore
+            // e redirecionar o usuário
+            // window.location.href = 'pagina-de-sucesso.html';
+
+        })
+        .catch((error) => {
+            // Lida com erros do Firebase (ex: email já em uso)
+            const errorCode = error.code;
+            const errorMessage = error.message;
+            console.error('Erro ao criar conta:', errorCode, errorMessage);
+            errorMessageDiv.textContent = 'Erro ao criar conta: ' + errorMessage;
+        });
+    */
+});
+
+// Opcional: Limpar a mensagem de erro quando o usuário começar a digitar novamente
+senhaInput.addEventListener('input', () => {
+    errorMessageDiv.textContent = '';
+});
+
+confirmarSenhaInput.addEventListener('input', () => {
+    errorMessageDiv.textContent = '';
 });
