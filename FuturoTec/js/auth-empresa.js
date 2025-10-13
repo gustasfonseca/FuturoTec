@@ -19,7 +19,7 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 
 // Define as variáveis globais essenciais
-const auth = firebase.auth(); 
+const auth = firebase.auth();
 const db = firebase.firestore();
 
 // Correção para o TypeError: `firebase.storage is not a function`
@@ -27,6 +27,35 @@ const db = firebase.firestore();
 let storage = null;
 if (typeof firebase.storage === 'function') {
     storage = firebase.storage();
+}
+
+// =======================================================
+// === FUNÇÃO DE VALIDAÇÃO DE SENHA FORTE (ADICIONADA) ===
+// =======================================================
+function isPasswordStrong(password) {
+    const minLength = 8;
+    const hasUpperCase = /[A-Z]/.test(password);
+    const hasLowerCase = /[a-z]/.test(password);
+    const hasNumbers = /\d/.test(password);
+    const hasSpecialChars = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+
+    if (password.length < minLength) {
+        return { valid: false, message: 'A senha deve ter no mínimo 8 caracteres.' };
+    }
+    if (!hasUpperCase) {
+        return { valid: false, message: 'A senha deve conter pelo menos uma letra maiúscula.' };
+    }
+    if (!hasLowerCase) {
+        return { valid: false, message: 'A senha deve conter pelo menos uma letra minúscula.' };
+    }
+    if (!hasNumbers) {
+        return { valid: false, message: 'A senha deve conter pelo menos um número.' };
+    }
+    if (!hasSpecialChars) {
+        return { valid: false, message: 'A senha deve conter pelo menos um caractere especial (ex: !@#$).' };
+    }
+
+    return { valid: true, message: '' };
 }
 
 
@@ -58,11 +87,11 @@ async function loginComGoogleEmpresa() {
     } catch (error) {
         console.error("Erro no login com o Google:", error);
 
-        const errorMessage = error.message.includes("Conta não encontrada")
-            ? error.message
-            : error.message.includes("Acesso negado")
-                ? error.message
-                : `Erro ao fazer login com o Google. Tente novamente. Detalhe: ${error.message}`;
+        const errorMessage = error.message.includes("Conta não encontrada") ?
+            error.message :
+            error.message.includes("Acesso negado") ?
+            error.message :
+            `Erro ao fazer login com o Google. Tente novamente. Detalhe: ${error.message}`;
 
         alert(errorMessage);
         throw error;
@@ -86,7 +115,7 @@ async function recuperarSenhaEmpresa() {
         console.error("Erro ao enviar e-mail de redefinição:", error);
 
         let errorMessage = "Erro ao solicitar a redefinição de senha. Verifique se o e-mail está correto e tente novamente.";
-        
+
         if (error.code === 'auth/user-not-found') {
             errorMessage = "Não encontramos uma conta para este e-mail.";
         } else if (error.code === 'auth/invalid-email') {
@@ -113,9 +142,7 @@ async function excluirContaEmpresa(user) {
     const userEmail = user.email;
 
     // 1. Confirmação de Segurança (Digitando o E-mail)
-    const confirmacaoEmail = prompt(`ATENÇÃO: A exclusão da conta da empresa é PERMANENTE. Você perderá todos os dados (perfil, vagas e candidaturas associadas).
-
-Para confirmar a exclusão, digite seu EMAIL (${userEmail}) no campo abaixo:`);
+    const confirmacaoEmail = prompt(`ATENÇÃO: A exclusão da conta da empresa é PERMANENTE. Você perderá todos os dados (perfil, vagas e candidaturas associadas).\n\nPara confirmar a exclusão, digite seu EMAIL (${userEmail}) no campo abaixo:`);
 
     if (confirmacaoEmail !== userEmail) {
         alert("E-mail digitado incorretamente ou operação cancelada.");
@@ -143,25 +170,25 @@ Para confirmar a exclusão, digite seu EMAIL (${userEmail}) no campo abaixo:`);
             .get();
 
         const batch = db.batch();
-        
+
         for (const doc of vagasSnapshot.docs) {
             const vagaId = doc.id;
-            
+
             // 1. Excluir candidaturas (registros na coleção 'candidaturas')
             const candidaturasSnapshot = await db.collection('candidaturas')
                 .where('vagaId', '==', vagaId)
                 .get();
-            
+
             candidaturasSnapshot.docs.forEach(candidaturaDoc => {
                 batch.delete(candidaturaDoc.ref);
             });
-            
+
             // 2. Excluir a própria vaga
             batch.delete(doc.ref);
         }
         await batch.commit();
         console.log(`[Exclusão Empresa] ${vagasSnapshot.size} vagas e suas candidaturas relacionadas excluídas.`);
-        
+
         // PASSO C: EXCLUIR DADOS DO PERFIL (Coleção 'usuarios')
         console.log("[Exclusão Empresa] Excluindo perfil da empresa...");
         await db.collection('usuarios').doc(userId).delete();
@@ -173,21 +200,21 @@ Para confirmar a exclusão, digite seu EMAIL (${userEmail}) no campo abaixo:`);
         console.log("[Exclusão Empresa] Usuário excluído do Firebase Auth. E-mail liberado.");
 
         alert("✅ Sua conta de empresa foi excluída permanentemente. Você será redirecionado.");
-        window.location.href = 'login-empresa.html'; 
+        window.location.href = 'login-empresa.html';
 
     } catch (error) {
         console.error("Erro ao excluir a conta da empresa:", error);
-        
+
         let errorMessage = "Ocorreu um erro ao tentar excluir sua conta.";
-        
+
         if (error.code === 'auth/wrong-password') {
-             errorMessage = "Senha incorreta. A exclusão da conta foi cancelada.";
+            errorMessage = "Senha incorreta. A exclusão da conta foi cancelada.";
         } else if (error.code === 'auth/requires-recent-login') {
             errorMessage = "Erro de Segurança: Você precisa ter feito login *recentemente* (saia e entre novamente) e tente excluir a conta em seguida.";
         } else if (error.code === 'auth/user-not-found') {
-             errorMessage = "Usuário não encontrado. Possível problema de autenticação.";
+            errorMessage = "Usuário não encontrado. Possível problema de autenticação.";
         }
-        
+
         alert(`❌ ${errorMessage} (Detalhes técnicos no console)`);
     }
 }
@@ -203,7 +230,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const targetId = toggle.getAttribute('data-target');
         const passwordInput = document.getElementById(targetId);
         const icon = toggle.querySelector('i');
-        if (passwordInput && icon) { 
+        if (passwordInput && icon) {
             toggle.addEventListener('click', () => {
                 if (passwordInput.type === 'password') {
                     passwordInput.type = 'text';
@@ -217,7 +244,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Lógica de Cadastro (mantida)
+    // Lógica de Cadastro
     const formEmpresa = document.getElementById('form-empresa');
     if (formEmpresa) {
         formEmpresa.addEventListener('submit', async (e) => {
@@ -232,6 +259,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 alert("As senhas não coincidem.");
                 return;
             }
+
+            // === ADIÇÃO DA VALIDAÇÃO DE SENHA FORTE ===
+            const passwordCheck = isPasswordStrong(senha);
+            if (!passwordCheck.valid) {
+                alert(passwordCheck.message); // Usa alert() como o resto do seu código
+                return; // Para a execução se a senha for fraca
+            }
+            // === FIM DA ADIÇÃO ===
 
             try {
                 const userCredential = await auth.createUserWithEmailAndPassword(email, senha);
@@ -301,7 +336,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
-    
+
     // CONEXÃO DO BOTÃO DE RECUPERAÇÃO DE SENHA (mantido)
     const btnEsqueciSenha = document.getElementById('btn-esqueci-senha-empresa');
     if (btnEsqueciSenha) {
@@ -310,19 +345,21 @@ document.addEventListener('DOMContentLoaded', () => {
             recuperarSenhaEmpresa();
         });
     }
-    
+
     // =======================================================
     // === LÓGICA DA PÁGINA DE PERFIL DA EMPRESA (CARREGAR/SALVAR/EXCLUIR) ===
     // =======================================================
     const formPerfilEmpresa = document.getElementById('profile-form-empresa');
-    
+
     if (formPerfilEmpresa) {
         const btnExcluirConta = document.getElementById('btn-excluir-conta-empresa');
 
         const carregarDadosDaEmpresa = async (userId) => {
             try {
                 const doc = await db.collection('usuarios').doc(userId).get();
-                if (!doc.exists) { return; }
+                if (!doc.exists) {
+                    return;
+                }
 
                 const data = doc.data();
 
@@ -349,7 +386,9 @@ document.addEventListener('DOMContentLoaded', () => {
             };
 
             try {
-                await db.collection('usuarios').doc(userId).set(dadosParaSalvar, { merge: true });
+                await db.collection('usuarios').doc(userId).set(dadosParaSalvar, {
+                    merge: true
+                });
                 alert("Alterações salvas com sucesso!");
                 document.getElementById('user-name').textContent = dadosParaSalvar.nome;
             } catch (error) {
@@ -361,15 +400,15 @@ document.addEventListener('DOMContentLoaded', () => {
         auth.onAuthStateChanged(user => {
             if (user) {
                 carregarDadosDaEmpresa(user.uid);
-                
+
                 formPerfilEmpresa.addEventListener('submit', (e) => {
                     e.preventDefault();
                     salvarDadosDoPerfil(user.uid);
                 });
-                
+
                 if (btnExcluirConta) {
                     btnExcluirConta.addEventListener('click', () => {
-                        excluirContaEmpresa(user); 
+                        excluirContaEmpresa(user);
                     });
                 }
 
@@ -381,11 +420,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 // Adiciona um 'ouvinte' que espera o conteúdo da página carregar completamente
-document.addEventListener('DOMContentLoaded', function() {
-    
+document.addEventListener('DOMContentLoaded', function () {
+
     // Seleciona o ícone do olho pela sua classe (a classe é a mesma, então não muda)
     const togglePassword = document.querySelector('.password-toggle');
-    
+
     // Seleciona o campo (input) da senha pelo seu NOVO ID
     // ÚNICA MUDANÇA É AQUI: trocamos o ID para 'senha-login-empresa'
     const passwordInput = document.getElementById('senha-login-empresa');
@@ -395,13 +434,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Verifica se os elementos foram encontrados antes de adicionar o evento
     if (togglePassword && passwordInput) {
-        
+
         // Adiciona um evento de 'click' no ícone do olho
-        togglePassword.addEventListener('click', function() {
+        togglePassword.addEventListener('click', function () {
             // O resto do código é idêntico e funciona da mesma forma
             const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
             passwordInput.setAttribute('type', type);
-            
+
             // Troca o ícone do olho
             if (type === 'password') {
                 eyeIcon.setAttribute('data-feather', 'eye');
