@@ -5,7 +5,27 @@ const db = firebase.firestore();
 let currentCandidate = null;
 
 // =================================================================
-// FUNÇÃO PRINCIPAL: CARREGAR VAGAS (ATUALIZADA)
+// FUNÇÃO AUXILIAR PARA BUSCAR O NOME DA EMPRESA
+// =================================================================
+const getCompanyName = async (empresaId) => {
+    if (!empresaId) return 'Empresa não informada';
+    try {
+        // Busca o documento da empresa na coleção 'usuarios' usando o ID
+        const empresaDoc = await db.collection('usuarios').doc(empresaId).get();
+        if (empresaDoc.exists) {
+            // Retorna o nome da empresa, assumindo que o campo é 'nome'
+            return empresaDoc.data().nome || 'Empresa Desconhecida (Nome Ausente)';
+        }
+        return 'Empresa Não Encontrada (ID: ' + empresaId + ')';
+    } catch (error) {
+        console.error("Erro ao buscar nome da empresa:", empresaId, error);
+        return 'Erro ao Carregar Nome da Empresa';
+    }
+};
+
+
+// =================================================================
+// FUNÇÃO PRINCIPAL: CARREGAR VAGAS (CORRIGIDA)
 // =================================================================
 
 const loadAvailableJobs = () => {
@@ -15,48 +35,55 @@ const loadAvailableJobs = () => {
     vagasContainer.innerHTML = '<p style="color: white; text-align: center;">Buscando vagas...</p>';
 
     db.collection('vagas')
-      .orderBy('criadaEm', 'desc')
-      .get()
-      .then(snapshot => {
-          vagasContainer.innerHTML = '';
-          if (snapshot.empty) {
-              vagasContainer.innerHTML = '<p class="info-message" style="color: white;">Nenhuma vaga disponível no momento.</p>';
-              return;
-          }
+        .orderBy('criadaEm', 'desc')
+        .get()
+        .then(async snapshot => { // <--- Adicionado 'async' aqui para usar 'await' dentro
+            vagasContainer.innerHTML = '';
+            if (snapshot.empty) {
+                vagasContainer.innerHTML = '<p class="info-message" style="color: white;">Nenhuma vaga disponível no momento.</p>';
+                return;
+            }
 
-          snapshot.forEach(doc => {
-              const vaga = doc.data();
-              const vagaId = doc.id;
-              
-              // ALTERAÇÃO AQUI: Mudamos de 'div' para 'article' e a classe para 'vaga-card'
-              const vagaCard = document.createElement('article');
-              vagaCard.className = 'vaga-card'; 
-              
-              // ALTERAÇÃO AQUI: A estrutura HTML interna agora corresponde ao nosso CSS
-              vagaCard.innerHTML = `
-                <div class="vaga-info">
-                    <h3>${vaga.titulo || 'Título não informado'}</h3>
-                    <p class="empresa">${vaga.empresaNome || 'Empresa não informada'}</p>
-                    <p class="detalhes">Carga Horária: ${vaga.cargaHoraria || 'Não informada'}</p>
-                    <p class="detalhes">Requisitos: ${(vaga.requisitos || '').substring(0, 80)}...</p>
-                </div>
-                <div class="vaga-action">
-                    <a href="#" class="btn-candidatar" data-vaga-id="${vagaId}">Candidatar-se</a>
-                </div>
-              `;
-              vagasContainer.appendChild(vagaCard);
-          });
-          
-          setupCandidacyListeners();
-      })
-      .catch(error => {
-          console.error("Erro ao buscar vagas: ", error);
-          vagasContainer.innerHTML = '<p class="error-message" style="color: white;">Erro ao carregar as vagas.</p>';
-      });
+            // 1. Cria um array de Promises para buscar o nome da empresa para cada vaga
+            const jobsWithCompanyNamesPromises = snapshot.docs.map(async doc => {
+                const vaga = doc.data();
+                const vagaId = doc.id;
+
+                // 2. Chama a função auxiliar e AGUARDA o resultado
+                const nomeEmpresa = await getCompanyName(vaga.empresaId);
+
+                // 3. Monta o HTML do cartão de vaga
+                return `
+                    <article class="vaga-card">
+                        <div class="vaga-info">
+                            <h3>${vaga.titulo || 'Título não informado'}</h3>
+                            <p class="empresa">Empresa: ${nomeEmpresa}</p>
+                            <p class="detalhes">Carga Horária: ${vaga.cargaHoraria || 'Não informada'}</p>
+                            <p class="detalhes">Requisitos: ${vaga.requisitos || 'Não informado'}</p>
+                        </div>
+                        <div class="vaga-action">
+                            <a href="#" class="btn-candidatar" data-vaga-id="${vagaId}">Candidatar-se</a>
+                        </div>
+                    </article>
+                `;
+            });
+
+            // 4. AGUARDA que todas as promises sejam resolvidas (todos os nomes de empresa sejam buscados)
+            const allJobCardsHtml = await Promise.all(jobsWithCompanyNamesPromises);
+
+            // 5. Adiciona todo o HTML de uma vez ao container
+            vagasContainer.innerHTML = allJobCardsHtml.join('');
+
+            setupCandidacyListeners();
+        })
+        .catch(error => {
+            console.error("Erro ao buscar vagas: ", error);
+            vagasContainer.innerHTML = '<p class="error-message" style="color: white;">Erro ao carregar as vagas.</p>';
+        });
 };
 
 // =================================================================
-// FUNÇÃO: CARREGAR MINHAS CANDIDATURAS (ATUALIZADA)
+// FUNÇÃO: CARREGAR MINHAS CANDIDATURAS (Ajustada para usar getCompanyName)
 // =================================================================
 
 const loadMyCandidacies = async () => {
@@ -80,33 +107,38 @@ const loadMyCandidacies = async () => {
             candidaturasContainer.innerHTML = '<p class="info-message">Você ainda não se candidatou a nenhuma vaga.</p>';
             return;
         }
-        
+
         // Usamos Promise.all para carregar todas as vagas em paralelo (mais rápido)
         const promises = candidaciesSnapshot.docs.map(async (doc) => {
             const candidatura = doc.data();
             const vagaDoc = await db.collection('vagas').doc(candidatura.vagaId).get();
+
+            let vagaData = { titulo: 'Vaga Excluída ou Expirada', empresaId: null };
+
             if (vagaDoc.exists) {
-                return { ...candidatura, vaga: vagaDoc.data() };
+                vagaData = vagaDoc.data();
             }
-            return { ...candidatura, vaga: { titulo: 'Vaga Excluída ou Expirada', empresaNome: 'N/A' } };
+
+            // BUSCA O NOME DA EMPRESA AQUI TAMBÉM
+            const nomeEmpresa = await getCompanyName(vagaData.empresaId);
+
+            return { ...candidatura, vaga: { ...vagaData, empresaNome: nomeEmpresa } };
         });
-        
+
         const candidaciesDetails = await Promise.all(promises);
 
         candidaturasContainer.innerHTML = '';
 
         candidaciesDetails.forEach(item => {
             const vaga = item.vaga;
-            
-            // ALTERAÇÃO AQUI: Usando 'article' e a classe 'vaga-card'
+
             const card = document.createElement('article');
             card.className = 'vaga-card';
-            
-            // ALTERAÇÃO AQUI: Estrutura HTML interna refeita para corresponder ao CSS
+
             card.innerHTML = `
                 <div class="vaga-info">
                     <h3>${vaga.titulo}</h3>
-                    <p class="empresa">${vaga.empresaNome}</p>
+                    <p class="empresa">Empresa: ${vaga.empresaNome}</p>
                     <p class="detalhes">Candidatado em: ${item.dataCandidatura ? new Date(item.dataCandidatura.toDate()).toLocaleDateString() : 'N/A'}</p>
                 </div>
                 <div class="vaga-action status-display">
@@ -124,9 +156,7 @@ const loadMyCandidacies = async () => {
 };
 
 
-// =================================================================
-// FUNÇÃO: PROCESSAR CANDIDATURA (AJUSTADA)
-// =================================================================
+// ... (o restante do seu aluno.js: setupCandidacyListeners, handleCandidacy e auth.onAuthStateChanged)
 
 const setupCandidacyListeners = () => {
     // ALTERAÇÃO AQUI: O seletor agora busca pela classe .btn-candidatar
@@ -160,7 +190,7 @@ const handleCandidacy = async (vagaId, button) => {
             .where('alunoId', '==', currentCandidate.uid)
             .where('vagaId', '==', vagaId)
             .get();
-            
+
         if (!existingCandidacy.empty) {
             alert('Você já se candidatou para esta vaga.');
             button.textContent = 'Já Candidatado';
@@ -176,7 +206,7 @@ const handleCandidacy = async (vagaId, button) => {
         };
 
         await db.collection('candidaturas').add(candidacyData);
-        
+
         alert('Candidatura enviada com sucesso! 🎉');
         button.textContent = 'Candidatura Enviada';
 
@@ -195,7 +225,7 @@ const handleCandidacy = async (vagaId, button) => {
 auth.onAuthStateChanged((user) => {
     if (user) {
         currentCandidate = user;
-        
+
         const logoutButton = document.querySelector('.logout-btn');
         if (logoutButton) {
             // Previne adicionar múltiplos listeners se o script rodar mais de uma vez
@@ -211,11 +241,11 @@ auth.onAuthStateChanged((user) => {
         }
 
         const currentPath = window.location.pathname;
-        
+
         if (currentPath.includes('VagasAluno.html')) {
             loadAvailableJobs();
         }
-        
+
         if (currentPath.includes('minhasCandidaturas.html')) {
             loadMyCandidacies();
         }
