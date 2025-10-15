@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gestão de Alunos - FuturoTEC</title>
+  <link rel="stylesheet" href="css/gestao-aluno.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+
+<body>
+  <header class="header">
+    <div class="container">
+      <div class="nav-wrapper">
+        <div class="logo">
+          <img src="img/FuturoTecInicial.jpeg" alt="FuturoTEC Logo">
+        </div>
+
+        <nav class="nav-desktop student-nav">
+          <a href="InicialAssistente.html" class="nav-link active">Voltar</a>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <main class="main-content">
+    <header class="page-header">
+      <div class="header-text">
+        <h1>Gestão de Alunos</h1>
+        <p>Visualize, edite ou exclua perfis de alunos cadastrados na plataforma.</p>
+      </div>
+    </header>
+
+    <section class="stats-section">
+      <div class="stats-grid">
+        <div class="content-card">
+          <div class="table-controls">
+            <input type="search" class="search-bar" id="searchInput" placeholder="Pesquisar alunos...">
+            <button class="btn-primary" id="addStudentBtn">
+              <i class="fa-solid fa-plus"></i> Adicionar Aluno
+            </button>
+          </div>
+
+          <div class="table-responsive">
+            <table class="etec-table" id="studentsTable">
+              <thead>
+                <tr>
+                  <th>Nome</th>
+                  <th>Email</th>
+                  <th>Curso</th>
+                  <th>Telefone</th>
+                  <th>Ações</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>João Silva</td>
+                  <td>joao@email.com</td>
+                  <td>Informática</td>
+                  <td>(11) 90000-0000</td>
+                  <td class="action-buttons">
+                    <button class="btn-edit" title="Editar"><i class="fa-solid fa-pencil"></i></button>
+                    <button class="btn-delete" title="Excluir"><i class="fa-solid fa-trash-can"></i></button>
+                  </td>
+                </tr>
+                <tr>
+                  <td>Maria Souza</td>
+                  <td>maria@email.com</td>
+                  <td>Administração</td>
+                  <td>(11) 98888-0000</td>
+                  <td class="action-buttons">
+                    <button class="btn-edit" title="Editar"><i class="fa-solid fa-pencil"></i></button>
+                    <button class="btn-delete" title="Excluir"><i class="fa-solid fa-trash-can"></i></button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>&copy; 2025 FuturoTec. Todos os direitos reservados.</p>
+  </footer>
+
+  <script>
+    const table = document.getElementById('studentsTable').getElementsByTagName('tbody')[0];
+    const addBtn = document.getElementById('addStudentBtn');
+    const searchInput = document.getElementById('searchInput');
+
+    // Adicionar aluno
+    addBtn.addEventListener('click', () => {
+      const nome = prompt("Digite o nome do aluno:");
+      if (!nome) return;
+      const email = prompt("Digite o email do aluno:");
+      if (!email) return;
+      const curso = prompt("Digite o curso do aluno:");
+      if (!curso) return;
+      const telefone = prompt("Digite o telefone do aluno:");
+      if (!telefone) return;
+
+      const newRow = table.insertRow();
+      newRow.innerHTML = `
+        <td>${nome}</td>
+        <td>${email}</td>
+        <td>${curso}</td>
+        <td>${telefone}</td>
+        <td class="action-buttons">
+          <button class="btn-edit" title="Editar"><i class="fa-solid fa-pencil"></i></button>
+          <button class="btn-delete" title="Excluir"><i class="fa-solid fa-trash-can"></i></button>
+        </td>
+      `;
+    });
+
+    // Editar ou Excluir aluno
+    table.addEventListener('click', (e) => {
+      const btn = e.target.closest('button');
+      if (!btn) return;
+
+      const row = btn.closest('tr');
+      const cells = row.querySelectorAll('td');
+
+      if (btn.classList.contains('btn-edit')) {
+        const nome = prompt("Editar nome:", cells[0].textContent);
+        if (nome !== null) cells[0].textContent = nome;
+
+        const email = prompt("Editar email:", cells[1].textContent);
+        if (email !== null) cells[1].textContent = email;
+
+        const curso = prompt("Editar curso:", cells[2].textContent);
+        if (curso !== null) cells[2].textContent = curso;
+
+        const telefone = prompt("Editar telefone:", cells[3].textContent);
+        if (telefone !== null) cells[3].textContent = telefone;
+      }
+
+      if (btn.classList.contains('btn-delete')) {
+        if (confirm("Tem certeza que deseja excluir este aluno?")) {
+          row.remove();
+        }
+      }
+    });
+
+    // Filtrar alunos
+    searchInput.addEventListener('input', () => {
+      const term = searchInput.value.toLowerCase();
+      const rows = table.querySelectorAll('tr');
+      rows.forEach(row => {
+        const text = row.textContent.toLowerCase();
+        row.style.display = text.includes(term) ? '' : 'none';
+      });
+    });
+  </script>
+</body>
+
+</html>
