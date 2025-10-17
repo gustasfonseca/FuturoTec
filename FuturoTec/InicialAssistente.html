@@ -1,248 +1,218 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Início - Assistente Técnico</title>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>FuturoTEC - Assistente Técnico</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
   <style>
-    /* ===== Reset e fontes ===== */
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: 'Poppins', sans-serif;
-    }
+    /* ===== RESET ===== */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Roboto', sans-serif; background-color: #f4f4f4; }
 
-    body {
-      background-color: #f8f9fa;
-      color: #343a40;
-      line-height: 1.6;
-    }
-
-    a {
-      text-decoration: none;
-      color: inherit;
-    }
-
-    /* ===== Header ===== */
-    .header {
-      background-color: #fff;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-      padding: 1rem 0;
-    }
-
-    .nav-wrapper {
-      max-width: 1200px;
-      margin: 0 auto;
+    /* ===== HEADER ===== */
+    header.header {
+      background-color: #ffffff;
+      padding: 15px 60px;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
 
-    .logo img {
+    header .logo img {
       height: 50px;
     }
 
-    .nav-desktop {
+    nav.nav-desktop {
       display: flex;
-      gap: 1.5rem;
+      gap: 25px;
     }
 
-    .nav-link {
+    nav.nav-desktop a {
+      color: #000000;
+      text-decoration: none;
+      font-weight: 400;
+      letter-spacing: 0.5px;
+      transition: color 0.3s ease, text-decoration 0.3s ease;
+    }
+
+    nav.nav-desktop a:hover {
+      color: #36666f;
+      text-decoration: underline;
+    }
+
+    .login-btn {
+      background-color: #36666f;
+      padding: 8px 15px;
+      border-radius: 5px;
+      color: white;
       font-weight: 500;
-      color: #343a40;
-      padding: 0.5rem 1rem;
-      border-radius: 6px;
-      transition: all 0.3s ease;
+      text-decoration: none;
+      transition: background-color 0.3s ease, transform 0.2s ease;
     }
 
-    .nav-link:hover,
-    .nav-link.active {
-      background-color: #008080;
-      color: #fff;
+    .login-btn:hover { 
+      background-color: #2d555d; 
+      transform: scale(1.05);
     }
 
-    .nav-actions .login-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      background-color: #008080;
-      color: #fff;
+    /* ===== MAIN ===== */
+    main {
+      padding: 60px 80px;
+      text-align: center;
+    }
+
+    .container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 30px;
+    }
+
+    .card {
+      background-color: white;
+      width: 260px;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+      text-align: center;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 6px 16px rgba(0,0,0,0.25);
+    }
+
+    .card i { font-size: 40px; color: #36666f; margin-bottom: 15px; }
+    .card h3 { margin-bottom: 10px; color: #333; }
+    .card p { color: #555; font-size: 0.9rem; margin-bottom: 15px; }
+
+    .card a {
+      display: inline-block;
+      background-color: #36666f;
+      color: white;
       border: none;
-      padding: 0.5rem 1rem;
-      border-radius: 6px;
-      cursor: pointer;
+      padding: 10px 20px;
+      border-radius: 8px;
+      text-decoration: none;
       font-weight: 500;
       transition: background-color 0.3s ease;
     }
 
-    .nav-actions .login-btn:hover {
-      background-color: #006666;
+    .card a:hover { background-color: #2d555d; }
+
+    /* ===== FOOTER ===== */
+    footer.footer {
+      background-color: #36666f;
+      color: white;
+      padding: 40px 0;
+      font-family: 'Roboto', sans-serif;
     }
 
-    /* ===== Main ===== */
-    .main-content {
-      max-width: 1200px;
-      margin: 2rem auto;
-      padding: 0 20px;
-    }
-
-    .page-header h1 {
-      font-size: 2rem;
-      margin-bottom: 0.5rem;
-    }
-
-    .page-header p {
-      color: #6c757d;
-    }
-
-    /* ===== Stats Section ===== */
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 1.5rem;
-      margin-top: 2rem;
-    }
-
-    .stat-box-link {
-      text-decoration: none;
-    }
-
-    .stat-box {
-      background-color: #fff;
-      padding: 1.5rem;
-      border-radius: 8px;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    .footer-grid {
       display: flex;
-      gap: 1rem;
-      align-items: center;
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      max-width: 1200px;
+      margin: 0 auto;
     }
 
-    .stat-box:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+    .footer-info, .footer-links, .footer-social {
+      flex: 1;
+      min-width: 250px;
+      margin-bottom: 20px;
     }
 
-    .stat-icon i {
-      font-size: 2rem;
-      color: #008080;
-    }
+    .footer-info h4, .footer-links h4, .footer-social h4 { margin-bottom: 10px; }
 
-    .stat-info h3 {
-      font-size: 1.2rem;
-      margin-bottom: 0.3rem;
-    }
+    .footer-links ul { list-style: none; padding: 0; }
+    .footer-links ul li { margin-bottom: 8px; }
+    .footer-links ul li a { color: white; text-decoration: none; }
+    .footer-links ul li a:hover { text-decoration: underline; }
 
-    .stat-info p {
-      font-size: 0.9rem;
-      color: #6c757d;
-    }
+    .footer-social .social-icons { display: flex; gap: 15px; margin-top: 10px; }
+    .footer-social .social-icons a { color: white; font-size: 22px; }
+    .footer-social .social-icons a:hover { opacity: 0.8; }
 
-    /* ===== Footer ===== */
-    .footer {
-      text-align: center;
-      padding: 1.5rem 0;
-      background-color: #fff;
-      box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.05);
-      margin-top: 3rem;
-      color: #6c757d;
-      font-size: 0.9rem;
-    }
-
-    /* ===== Responsividade ===== */
-    @media(max-width:768px){
-      .nav-desktop {
-        flex-direction: column;
-        gap: 0.5rem;
-      }
-      .stats-grid {
-        grid-template-columns: 1fr;
-      }
-    }
+    .footer-logo img { width: 100px; margin-bottom: 10px; }
   </style>
 </head>
-
 <body>
 
+  <!-- Header -->
   <header class="header">
+    <div class="logo">
+      <img src="img/FuturoTecInicial.jpeg" alt="FuturoTEC Logo">
+    </div>
+    <nav class="nav-desktop">
+      <a href="InicialAssistente.html">Início</a>
+    </nav>
+    <a href="PerfilAssistente.html" class="login-btn">Meu Perfil</a>
+  </header>
+
+  <!-- Main -->
+  <main>
+    <h2>Bem-vindo ao Painel do Assistente Técnico</h2>
+    <p>Selecione uma das opções abaixo para gerenciar o sistema.</p>
+
     <div class="container">
-      <div class="nav-wrapper">
-        <div class="logo">
+      <div class="card">
+        <i class="fa-solid fa-user-graduate"></i>
+        <h3>Gestão de Alunos</h3>
+        <p>Gerencie os alunos cadastrados, cursos e desempenho.</p>
+        <a href="gestao-alunos.html">Acessar</a>
+      </div>
+
+      <div class="card">
+        <i class="fa-solid fa-briefcase"></i>
+        <h3>Gestão de Vagas</h3>
+        <p>Gerencie as oportunidades de estágio disponíveis para os alunos.</p>
+        <a href="editar-vagas-excluir.html">Acessar</a>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container footer-grid">
+      <div class="footer-info">
+        <h4>FuturoTEC</h4>
+        <p>Projeto de Conclusão de Curso (TCC)</p>
+        <p class="school">ETEC Albert Einstein</p>
+        <p class="copyright">© 2025 FuturoTEC. Todos os direitos reservados.</p>
+        <p class="authors">Desenvolvido por: Nátaly Lima, Gustavo Fonseca, Eduarda Marques, Amanda Silva, Gabrielly Mendes, Uillian Oliveira e Felipe Cardoso.</p>
+      </div>
+
+      <div class="footer-links">
+        <h4>Links Úteis</h4>
+        <ul>
+          <li><a href="#">Termos de Uso</a></li>
+          <li><a href="#">Política de Privacidade</a></li>
+          <li><a href="#">Sobre nós</a></li>
+          <li><a href="#">Contato</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-social">
+        <div class="footer-logo">
           <img src="img/FuturoTecInicial.jpeg" alt="FuturoTEC Logo">
         </div>
-
-        <nav class="nav-desktop student-nav">
-          <!-- Você pode adicionar links de navegação aqui, se quiser -->
-        </nav>
-
-        <div class="nav-actions">
-          <a href="PerfilAssistente.html" class="login-btn">
-            <i class="fa-solid fa-user"></i> Meu Perfil
-          </a>
+        <h4>Conecte-se</h4>
+        <div class="social-icons">
+          <a href="#"><i class="fa-brands fa-linkedin"></i></a>
+          <a href="#"><i class="fa-brands fa-twitter"></i></a>
+          <a href="#"><i class="fa-solid fa-file-lines"></i></a>
         </div>
       </div>
     </div>
-  </header>
-
-  <main class="main-content">
-    <header class="page-header">
-      <h1>Bem-vindo, Assistente!</h1>
-      <p>Aqui você tem acesso às ferramentas para gerenciar a plataforma FuturoTec.</p>
-    </header>
-
-    <section class="stats-section">
-      <div class="stats-grid">
-        <!-- Gestão de ETECs -->
-        <a href="gestao-assistente.html" class="stat-box-link">
-          <div class="stat-box">
-            <div class="stat-icon">
-              <i class="fas fa-school"></i>
-            </div>
-            <div class="stat-info">
-              <h3>Gestão de ETECs</h3>
-              <p>Adicione, edite ou remova ETECs e seus cursos na plataforma.</p>
-            </div>
-          </div>
-        </a>
-
-        <!-- Gestão de Vagas -->
-        <a href="editar-vagas-excluir.html" class="stat-box-link">
-          <div class="stat-box">
-            <div class="stat-icon">
-              <i class="fas fa-briefcase"></i>
-            </div>
-            <div class="stat-info">
-              <h3>Gestão de Vagas</h3>
-              <p>Edite ou remova as vagas de emprego publicadas pelas empresas.</p>
-            </div>
-          </div>
-        </a>
-
-        <!-- Gestão de Alunos -->
-        <a href="gestao-alunos.html" class="stat-box-link">
-          <div class="stat-box">
-            <div class="stat-icon">
-              <i class="fas fa-user-graduate"></i>
-            </div>
-            <div class="stat-info">
-              <h3>Gestão de Alunos</h3>
-              <p>Edite, visualize ou exclua perfis de alunos cadastrados na plataforma.</p>
-            </div>
-          </div>
-        </a>
-      </div>
-    </section>
-  </main>
-
-  <footer class="footer">
-    <p>&copy; 2025 FuturoTec. Todos os direitos reservados.</p>
   </footer>
 
 </body>
-
 </html>
 
 
