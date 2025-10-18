@@ -1,159 +1,293 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Gestão de Alunos - FuturoTEC</title>
-  <link rel="stylesheet" href="css/gestao-aluno.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gestão de Alunos - Assistente Técnico</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+/* ===== Estilos ===== */
+* { margin:0; padding:0; box-sizing:border-box; font-family:'Poppins', sans-serif; }
+body { background-color:#f8f9fa; color:#343a40; line-height:1.6; }
+a { text-decoration:none; color:inherit; }
+button { cursor:pointer; }
+
+/* Header */
+.header { background-color:#fff; box-shadow:0 2px 5px rgba(0,0,0,0.1); padding:1rem 0; }
+.nav-wrapper { max-width:1200px; margin:0 auto; display:flex; justify-content:space-between; align-items:center; }
+.logo img { height:50px; }
+.nav-desktop { display:flex; gap:1.5rem; }
+.nav-link { font-weight:500; color:#343a40; padding:0.5rem 1rem; border-radius:6px; transition:all 0.3s ease; }
+.nav-link:hover, .nav-link.active { background-color:#008080; color:#fff; }
+.nav-actions .login-btn { display:inline-flex; align-items:center; gap:0.5rem; background-color:#008080; color:#fff; border:none; padding:0.5rem 1rem; border-radius:6px; cursor:pointer; font-weight:500; transition:background-color 0.3s ease; }
+.nav-actions .login-btn:hover { background-color:#006666; }
+
+/* Main */
+.main-content { max-width:1200px; margin:2rem auto; padding:0 20px; }
+.page-header h1 { font-size:2rem; margin-bottom:0.5rem; }
+.page-header p { color:#6c757d; }
+.table-card { background-color:#fff; padding:1.5rem; border-radius:8px; box-shadow:0 4px 6px rgba(0,0,0,0.05); margin-top:2rem; }
+.table-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; }
+.btn-add { background-color:#008080; color:#fff; border:none; padding:0.5rem 1rem; border-radius:6px; font-weight:500; display:flex; align-items:center; gap:0.5rem; transition:background-color 0.3s ease; }
+.btn-add:hover { background-color:#006666; }
+table { width:100%; border-collapse:collapse; }
+th, td { text-align:left; padding:0.8rem; border-bottom:1px solid #e9ecef; }
+th { font-weight:600; color:#6c757d; text-transform:uppercase; font-size:0.9rem; }
+tr:hover { background-color:#f1f3f5; }
+.action-buttons button { border:none; background:none; font-size:1.2rem; margin-right:0.8rem; color:#343a40; transition:transform 0.2s ease; }
+.action-buttons button:hover { transform:scale(1.2); color:#008080; }
+
+/* Footer */
+.footer { text-align:center; padding:1.5rem 0; background-color:#008080; color:#fff; font-size:0.9rem; margin-top:3rem; }
+
+/* Modal */
+.modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); justify-content:center; align-items:center; z-index:1000; }
+.modal-content { background:#fff; padding:20px; border-radius:8px; width:90%; max-width:400px; display:flex; flex-direction:column; gap:10px; }
+.modal-content input { padding:8px; border-radius:6px; border:1px solid #ccc; }
+.modal-content button { padding:10px; border:none; border-radius:6px; background:#008080; color:#fff; font-weight:500; cursor:pointer; }
+.modal-content button:hover { background:#006666; }
+.modal-content .cancel-btn { background:#ccc; color:#000; }
+
+@media(max-width:768px){ .nav-desktop { flex-direction:column; gap:0.5rem; } }
+</style>
 </head>
-
 <body>
-  <header class="header">
-    <div class="container">
-      <div class="nav-wrapper">
-        <div class="logo">
-          <img src="img/FuturoTecInicial.jpeg" alt="FuturoTEC Logo">
-        </div>
 
-        <nav class="nav-desktop student-nav">
-          <a href="InicialAssistente.html" class="nav-link active">Voltar</a>
-        </nav>
-      </div>
+<header class="header">
+<div class="container">
+  <div class="nav-wrapper">
+    <div class="logo">
+      <img src="img/FuturoTecInicial.jpeg" alt="FuturoTEC Logo">
     </div>
-  </header>
+    <nav class="nav-desktop student-nav">
+      <a href="InicialAssistente.html" class="nav-link">Início</a>
+    </nav>
+    <div class="nav-actions">
+      <a href="PerfilAssistente.html" class="login-btn"><i class="fa-solid fa-user"></i> Meu Perfil</a>
+    </div>
+  </div>
+</div>
+</header>
 
-  <main class="main-content">
-    <header class="page-header">
-      <div class="header-text">
-        <h1>Gestão de Alunos</h1>
-        <p>Visualize, edite ou exclua perfis de alunos cadastrados na plataforma.</p>
-      </div>
-    </header>
+<main class="main-content">
+<div class="page-header">
+  <h1>Gestão de Alunos</h1>
+  <p>Veja, edite ou exclua os alunos cadastrados.</p>
+</div>
 
-    <section class="stats-section">
-      <div class="stats-grid">
-        <div class="content-card">
-          <div class="table-controls">
-            <input type="search" class="search-bar" id="searchInput" placeholder="Pesquisar alunos...">
-            <button class="btn-primary" id="addStudentBtn">
-              <i class="fa-solid fa-plus"></i> Adicionar Aluno
-            </button>
-          </div>
+<div class="table-card">
+  <div class="table-header">
+    <h3>Alunos Cadastrados</h3>
+    <button class="btn-add" id="addStudentBtn"><i class="fa-solid fa-plus"></i> Adicionar Aluno</button>
+  </div>
+  <table id="studentsTable">
+    <thead>
+      <tr>
+        <th>Nome</th>
+        <th>Email</th>
+        <th>Telefone</th>
+        <th>Endereço</th>
+        <th>Idade</th>
+        <th>Curso</th>
+        <th>Ações</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</div>
+</main>
 
-          <div class="table-responsive">
-            <table class="etec-table" id="studentsTable">
-              <thead>
-                <tr>
-                  <th>Nome</th>
-                  <th>Email</th>
-                  <th>Curso</th>
-                  <th>Telefone</th>
-                  <th>Ações</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>João Silva</td>
-                  <td>joao@email.com</td>
-                  <td>Informática</td>
-                  <td>(11) 90000-0000</td>
-                  <td class="action-buttons">
-                    <button class="btn-edit" title="Editar"><i class="fa-solid fa-pencil"></i></button>
-                    <button class="btn-delete" title="Excluir"><i class="fa-solid fa-trash-can"></i></button>
-                  </td>
-                </tr>
-                <tr>
-                  <td>Maria Souza</td>
-                  <td>maria@email.com</td>
-                  <td>Administração</td>
-                  <td>(11) 98888-0000</td>
-                  <td class="action-buttons">
-                    <button class="btn-edit" title="Editar"><i class="fa-solid fa-pencil"></i></button>
-                    <button class="btn-delete" title="Excluir"><i class="fa-solid fa-trash-can"></i></button>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+<footer class="footer">
+    <div class="container footer-grid">
+        <div class="footer-info">
+            <h4>FuturoTEC</h4>
+            <p>Projeto de Conclusão de Curso (TCC)</p>
+            <p class="school">ETEC Albert Einstein</p>
+            <p class="copyright">© 2025 FuturoTEC. Todos os direitos reservados.</p>
+            <p class="authors">Desenvolvido por: Nátaly Lima, Gustavo Fonseca, Eduarda Marques, Amanda Silva, Gabrielly Mendes, Uillian Oliveira e Felipe Cardoso.</p>
         </div>
-      </div>
-    </section>
-  </main>
 
-  <footer class="footer">
-    <p>&copy; 2025 FuturoTec. Todos os direitos reservados.</p>
-  </footer>
+        <div class="footer-links">
+            <h4>Links Úteis</h4>
+            <ul>
+                <li><a href="#">Termos de Uso</a></li>
+                <li><a href="#">Política de Privacidade</a></li>
+                <li><a href="#">Sobre nós</a></li>
+                <li><a href="#">Contato</a></li>
+            </ul>
+        </div>
 
-  <script>
-    const table = document.getElementById('studentsTable').getElementsByTagName('tbody')[0];
-    const addBtn = document.getElementById('addStudentBtn');
-    const searchInput = document.getElementById('searchInput');
+        <div class="footer-social">
+            <div class="footer-logo">
+            </div>
+            <h4>Conecte-se</h4>
+            <div class="social-icons">
+                <a href="#"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6H6a2 2 0 0 0-2 2z"></path><path d="M14 2v6h6"></path><path d="M8 12h8"></path><path d="M8 16h8"></path></svg></a>
+                <a href="#"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg></a>
+                <a href="#"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"></path></svg></a>
+            </div>
+        </div>
+    </div>
+    </footer>
 
-    // Adicionar aluno
-    addBtn.addEventListener('click', () => {
-      const nome = prompt("Digite o nome do aluno:");
-      if (!nome) return;
-      const email = prompt("Digite o email do aluno:");
-      if (!email) return;
-      const curso = prompt("Digite o curso do aluno:");
-      if (!curso) return;
-      const telefone = prompt("Digite o telefone do aluno:");
-      if (!telefone) return;
+<!-- Modal -->
+<div class="modal" id="modal">
+  <div class="modal-content">
+    <input type="text" id="nomeInput" placeholder="Nome">
+    <input type="email" id="emailInput" placeholder="Email">
+    <input type="text" id="telefoneInput" placeholder="Telefone">
+    <input type="text" id="enderecoInput" placeholder="Endereço">
+    <input type="number" id="idadeInput" placeholder="Idade">
+    <input type="text" id="cursoInput" placeholder="Curso">
+    <button type="button" id="saveBtn">Salvar</button>
+    <button type="button" id="cancelBtn" class="cancel-btn">Cancelar</button>
+  </div>
+</div>
 
-      const newRow = table.insertRow();
-      newRow.innerHTML = `
-        <td>${nome}</td>
-        <td>${email}</td>
-        <td>${curso}</td>
-        <td>${telefone}</td>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
+import { getFirestore, collection, getDocs, addDoc, updateDoc, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
+
+// Config Firebase
+const firebaseConfig = {
+  apiKey: "AIzaSyA8Q9cKB4oVmFM6ilHK_70h8JDvgsOQhLY",
+  authDomain: "futurotec-e3a69.firebaseapp.com",
+  projectId: "futurotec-e3a69",
+  storageBucket: "futurotec-e3a69.appspot.com",
+  messagingSenderId: "234233783827",
+  appId: "1:234233783827:web:bf9376dee78d8924ef01e6",
+  measurementId: "G-C7EEMP1146"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const alunosRef = collection(db, "alunos");
+
+// Elementos DOM
+const table = document.getElementById('studentsTable').getElementsByTagName('tbody')[0];
+const addBtn = document.getElementById('addStudentBtn');
+const modal = document.getElementById('modal');
+const nomeInput = document.getElementById('nomeInput');
+const emailInput = document.getElementById('emailInput');
+const telefoneInput = document.getElementById('telefoneInput');
+const enderecoInput = document.getElementById('enderecoInput');
+const idadeInput = document.getElementById('idadeInput');
+const cursoInput = document.getElementById('cursoInput');
+const saveBtn = document.getElementById('saveBtn');
+const cancelBtn = document.getElementById('cancelBtn');
+
+let editId = null;
+
+// Carregar alunos
+async function carregarAlunos() {
+  try {
+    table.innerHTML = "";
+    const snapshot = await getDocs(alunosRef);
+    snapshot.forEach(docSnap => {
+      const aluno = docSnap.data();
+      const row = table.insertRow();
+      row.dataset.id = docSnap.id;
+      row.innerHTML = `
+        <td>${aluno.nome || 'N/A'}</td>
+        <td>${aluno.email || 'N/A'}</td>
+        <td>${aluno.telefone || 'N/A'}</td>
+        <td>${aluno.endereco || 'N/A'}</td>
+        <td>${aluno.idade || 'N/A'}</td>
+        <td>${aluno.curso || 'N/A'}</td>
         <td class="action-buttons">
-          <button class="btn-edit" title="Editar"><i class="fa-solid fa-pencil"></i></button>
-          <button class="btn-delete" title="Excluir"><i class="fa-solid fa-trash-can"></i></button>
+          <button class="edit-btn" title="Editar"><i class="fa-solid fa-pencil"></i></button>
+          <button class="delete-btn" title="Excluir"><i class="fa-solid fa-trash-can"></i></button>
         </td>
       `;
     });
+  } catch (error) {
+    console.error("Erro ao carregar alunos:", error);
+    alert("Erro ao carregar alunos. Verifique a conexão com o Firebase.");
+  }
+}
 
-    // Editar ou Excluir aluno
-    table.addEventListener('click', (e) => {
-      const btn = e.target.closest('button');
-      if (!btn) return;
+// Abrir modal
+addBtn.addEventListener('click', () => {
+  modal.style.display = "flex";
+  nomeInput.value = "";
+  emailInput.value = "";
+  telefoneInput.value = "";
+  enderecoInput.value = "";
+  idadeInput.value = "";
+  cursoInput.value = "";
+  editId = null;
+  saveBtn.textContent = "Salvar";
+});
 
-      const row = btn.closest('tr');
-      const cells = row.querySelectorAll('td');
+// Cancelar
+cancelBtn.addEventListener('click', () => { modal.style.display = "none"; });
+modal.addEventListener('click', e => { if(e.target===modal) modal.style.display="none"; });
 
-      if (btn.classList.contains('btn-edit')) {
-        const nome = prompt("Editar nome:", cells[0].textContent);
-        if (nome !== null) cells[0].textContent = nome;
+// Salvar aluno
+saveBtn.addEventListener('click', async () => {
+  const nome = nomeInput.value.trim();
+  const email = emailInput.value.trim();
+  const telefone = telefoneInput.value.trim();
+  const endereco = enderecoInput.value.trim();
+  const idade = idadeInput.value.trim();
+  const curso = cursoInput.value.trim();
 
-        const email = prompt("Editar email:", cells[1].textContent);
-        if (email !== null) cells[1].textContent = email;
+  if(!nome||!email||!telefone||!endereco||!idade||!curso){ alert("Preencha todos os campos."); return; }
 
-        const curso = prompt("Editar curso:", cells[2].textContent);
-        if (curso !== null) cells[2].textContent = curso;
+  try{
+    if(editId){
+      await updateDoc(doc(db,"alunos",editId), { nome,email,telefone,endereco,idade,curso });
+      alert("Aluno atualizado!");
+    } else {
+      await addDoc(alunosRef, { nome,email,telefone,endereco,idade,curso });
+      alert("Aluno adicionado!");
+    }
+  }catch(error){
+    console.error("Erro ao salvar aluno:",error);
+    alert("Falha ao salvar o aluno.");
+  }
+  modal.style.display="none";
+  carregarAlunos();
+});
 
-        const telefone = prompt("Editar telefone:", cells[3].textContent);
-        if (telefone !== null) cells[3].textContent = telefone;
+// Editar e excluir
+table.addEventListener('click', async e => {
+  const btn = e.target.closest('.edit-btn, .delete-btn');
+  if(!btn) return;
+
+  const row = btn.closest('tr');
+  const id = row.dataset.id;
+  const cells = row.querySelectorAll('td');
+
+  if(btn.classList.contains('edit-btn')){
+    nomeInput.value = cells[0].textContent;
+    emailInput.value = cells[1].textContent;
+    telefoneInput.value = cells[2].textContent;
+    enderecoInput.value = cells[3].textContent;
+    idadeInput.value = cells[4].textContent;
+    cursoInput.value = cells[5].textContent;
+    modal.style.display="flex";
+    editId = id;
+    saveBtn.textContent="Atualizar";
+  }
+
+  if(btn.classList.contains('delete-btn')){
+    if(confirm("Deseja realmente excluir este aluno?")){
+      try{
+        await deleteDoc(doc(db,"alunos",id));
+        carregarAlunos();
+      }catch(error){
+        console.error("Erro ao excluir aluno:",error);
+        alert("Falha ao excluir aluno.");
       }
+    }
+  }
+});
 
-      if (btn.classList.contains('btn-delete')) {
-        if (confirm("Tem certeza que deseja excluir este aluno?")) {
-          row.remove();
-        }
-      }
-    });
+// Inicializa
+carregarAlunos();
+</script>
 
-    // Filtrar alunos
-    searchInput.addEventListener('input', () => {
-      const term = searchInput.value.toLowerCase();
-      const rows = table.querySelectorAll('tr');
-      rows.forEach(row => {
-        const text = row.textContent.toLowerCase();
-        row.style.display = text.includes(term) ? '' : 'none';
-      });
-    });
-  </script>
 </body>
-
 </html>
+
