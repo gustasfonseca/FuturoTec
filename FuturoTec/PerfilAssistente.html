@@ -20,8 +20,11 @@
           <!-- Navegação do Assistente -->
           <nav class="nav-desktop student-nav">
             <a href="InicialAssistente.html" class="nav-link">Início</a>
+      
+          
           </nav>
           <div class="nav-actions">
+      
           </div>
         </div>
       </div>
@@ -61,6 +64,16 @@
             </div>
 
             <div class="form-group">
+              <label for="telefone" class="required">Número de telefone</label>
+              <input type="tel" id="telefone" placeholder="(11) 90000-0000" required>
+            </div>
+
+            <div class="form-group">
+              <label for="nascimento" class="required">Data de nascimento</label>
+              <input type="date" id="nascimento" required>
+            </div>
+
+            <div class="form-group">
               <label for="nome-etec" class="required">ETEC Associada</label>
               <input type="text" id="nome-etec" disabled>
             </div>
@@ -84,6 +97,37 @@
     </main>
   </div>
 
+  <footer class="footer">
+    <div class="container footer-grid">
+      <div class="footer-info">
+        <h4>FuturoTEC</h4>
+        <p>Projeto de Conclusão de Curso (TCC)</p>
+        <p class="school">ETEC Albert Einstein</p>
+        <p class="copyright">© 2025 FuturoTEC. Todos os direitos reservados.</p>
+        <p class="authors">Desenvolvido por: Nátaly Lima, Gustavo Fonseca, Eduarda Marques, Amanda Silva, Gabrielly Mendes, Uillian Oliveira e Felipe Cardoso.</p>
+      </div>
+
+      <div class="footer-links">
+        <h4>Links Úteis</h4>
+        <ul>
+          <li><a href="#">Termos de Uso</a></li>
+          <li><a href="#">Política de Privacidade</a></li>
+          <li><a href="#">Sobre nós</a></li>
+          <li><a href="#">Contato</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-social">
+        <h4>Conecte-se</h4>
+        <div class="social-icons">
+          <a href="#">[Facebook]</a>
+          <a href="#">[LinkedIn]</a>
+          <a href="#">[Twitter]</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
   <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
@@ -94,4 +138,5 @@
 
 </body>
 </html>
+
 
