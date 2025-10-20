@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Vagas Disponíveis | FuturoTEC</title>
-    <link rel="stylesheet" href="css/styles.css" />
+    <link rel="stylesheet" href="css/styles.css" /> 
     
     <script src="https://unpkg.com/feather-icons"></script>
 </head>
@@ -28,26 +28,43 @@
     </script>
     
     <div class="app">
+        
         <header class="header">
             <div class="container">
                 <div class="nav-wrapper">
-                    <div class="logo">
+                    
+                    <a href="InicialAluno.html" class="logo">
                         <img src="img/FuturoTecInicial.jpeg" alt="FuturoTEC Logo" />
-                    </div>
+                    </a>
+
                     <nav class="nav-desktop student-nav">
                         <a href="InicialAluno.html" class="nav-link">Início</a>
                         <a href="InicialAluno.html#cursos" class="nav-link">Cursos</a>
                         <a href="VagasAluno.html" class="nav-link">Vagas</a>
                         <a href="minhasCandidaturas.html" class="nav-link">Candidaturas</a>
                     </nav>
+
                     <div class="nav-actions">
-                        
-                        <a href="PerfilAluno.html" class="login-btn">Meu Perfil</a>
+                        <a href="PerfilAluno.html" class="login-btn logout-btn">Meu Perfil</a>
                     </div>
+                    
+                    <button class="mobile-menu-btn" id="mobile-menu-btn" aria-label="Abrir menu">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </button>
                 </div>
+
+                <nav class="nav-mobile" id="nav-mobile">
+                    <a href="InicialAluno.html" class="nav-link-mobile">Início</a>
+                    <a href="InicialAluno.html#cursos" class="nav-link-mobile">Cursos</a>
+                    <a href="VagasAluno.html" class="nav-link-mobile">Vagas</a>
+                    <a href="minhasCandidaturas.html" class="nav-link-mobile">Candidaturas</a>
+                    <a href="PerfilAluno.html" class="login-btn logout-btn" style="margin-top: 1rem;">Meu Perfil</a> 
+                </nav>
+
             </div>
         </header>
-
         <main>
             <div class="content-container-colored">
 
@@ -55,51 +72,120 @@
                     <h2>Vagas de Estágio e Emprego</h2>
                     <p>Confira as oportunidades disponíveis e candidate-se!</p>
                 </header>
-            
-                <div id="vagas-container" class="vagas-list">
+
+                <div class="filters-and-search">
+                    <div>
+                        
+                        <div style="flex-grow: 1; min-width: 200px;">
+                            <label for="filtroCurso">Filtrar por Curso:</label>
+                            <select id="filtroCurso">
+                                <option value="">Todos os Cursos</option>
+                                <option value="Administração">Administração</option>
+                                <option value="Comércio exterior">Comércio exterior</option>
+                                <option value="Ciências da natureza">Ciências da natureza</option>
+                                <option value="Design gráfico">Design gráfico</option>
+                                <option value="Desenvolvimento de sistemas">Desenvolvimento de sistemas</option>
+                                <option value="Eletrônica">Eletrônica</option>
+                                <option value="Informática para internet">Informática para internet</option>
+                                <option value="Serviços jurídicos">Serviços jurídicos</option>
+                            </select>
+                        </div>
+
+                        <div style="flex-grow: 2; min-width: 300px;">
+                            <label for="pesquisaVaga">Pesquisar (Vaga/Empresa):</label>
+                            <input type="text" id="pesquisaVaga" placeholder="Digite o nome da vaga ou da empresa">
+                        </div>
+
                     </div>
+                    <button id="aplicarFiltros">Aplicar Filtros e Pesquisar</button>
+                </div>
+                <div id="vagas-container" class="vagas-list">
+                    <p style="text-align: center; color: var(--muted-foreground);">Carregando vagas...</p>
+                </div>
 
             </div>
         </main>
 
-       <footer class="footer">
-    <div class="container footer-grid">
-        <div class="footer-info">
-            <h4>FuturoTEC</h4>
-            <p>Projeto de Conclusão de Curso (TCC)</p>
-            <p class="school">ETEC Albert Einstein</p>
-            <p class="copyright">© 2025 FuturoTEC. Todos os direitos reservados.</p>
-            <p class="authors">Desenvolvido por: Nátaly Lima, Gustavo Fonseca, Eduarda Marques, Amanda Silva, Gabrielly Mendes, Uillian Oliveira e Felipe Cardoso.</p>
-        </div>
-
-        <div class="footer-links">
-            <h4>Links Úteis</h4>
-            <ul>
-                <li><a href="#">Termos de Uso</a></li>
-                <li><a href="#">Política de Privacidade</a></li>
-                <li><a href="#">Sobre nós</a></li>
-                <li><a href="#">Contato</a></li>
-            </ul>
-        </div>
-
-      <div class="container">
-                <div class="nav-wrapper">
-                    <div class="logo">
-                        <img src="img/FuturoTecInicial.jpeg" alt="FuturoTEC Logo" />
+        <footer class="footer">
+            <div class="container">
+                <div class="footer-grid">
+                    
+                    <div class="footer-info">
+                        <h4>FuturoTEC</h4>
+                        <p>Projeto de Conclusão de Curso (TCC)</p>
+                        <p class="school">ETEC Albert Einstein</p>
+                        <p class="copyright">© 2025 FuturoTEC. Todos os direitos reservados.</p>
+                        <p class="authors">Desenvolvido por: Nátaly Lima, Gustavo Fonseca, Eduarda Marques, Amanda Silva, Gabrielly Mendes, Uillian Oliveira e Felipe Cardoso.</p>
                     </div>
-                    <br></div>
-            <h4>Conecte-se</h4>
-            <div class="social-icons">
-                <a href="#"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6H6a2 2 0 0 0-2 2z"></path><path d="M14 2v6h6"></path><path d="M8 12h8"></path><path d="M8 16h8"></path></svg></a>
-                <a href="#"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg></a>
-                <a href="#"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"></path></svg></a>
+
+                    <div class="footer-links">
+                        <h4>Links Úteis</h4>
+                        <ul>
+                            <li><a href="#">Termos de Uso</a></li>
+                            <li><a href="#">Política de Privacidade</a></li>
+                            <li><a href="#">Sobre nós</a></li>
+                            <li><a href="#">Contato</a></li>
+                        </ul>
+                    </div>
+                    
+                    <div>
+                        <div class="logo" style="margin-bottom: 20px;">
+                            <img src="img/FuturoTecInicial.jpeg" alt="FuturoTEC Logo" />
+                        </div>
+                        
+                        <h4>Conecte-se</h4>
+                        <div class="social-icons">
+                            <a href="#" aria-label="Documentos"><i data-feather="file"></i></a>
+                            <a href="#" aria-label="LinkedIn"><i data-feather="linkedin"></i></a>
+                            <a href="#" aria-label="Twitter"><i data-feather="twitter"></i></a>
+                        </div>
+                    </div>
+                </div>
             </div>
+        </footer>
         </div>
-    </div>
-    </footer>
     
     <script>
+        // Inicializa o Feather Icons (se estiver usando)
         feather.replace();
+
+        // Lógica do Menu Mobile (Importante para o Header)
+        document.addEventListener('DOMContentLoaded', function() {
+            const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+            const navMobile = document.getElementById('nav-mobile');
+            const logoutButtons = document.querySelectorAll('.logout-btn');
+
+            if (mobileMenuBtn && navMobile) {
+                mobileMenuBtn.addEventListener('click', function() {
+                    mobileMenuBtn.classList.toggle('active');
+                    navMobile.classList.toggle('open');
+                });
+
+                // Fechar o menu ao clicar em um link
+                const mobileLinks = navMobile.querySelectorAll('a');
+                mobileLinks.forEach(link => {
+                    link.addEventListener('click', () => {
+                        mobileMenuBtn.classList.remove('active');
+                        navMobile.classList.remove('open');
+                    });
+                });
+            }
+
+            // Adiciona o listener de logout (necessário para o aluno.js)
+            logoutButtons.forEach(button => {
+                // A lógica real de logout será gerenciada pelo aluno.js no onAuthStateChanged
+                // Mas garantimos que o botão esteja lá.
+                button.addEventListener('click', (e) => {
+                    // Previne a navegação padrão, o JS do aluno fará o signOut
+                    if (button.classList.contains('logout-btn') && button.href.includes('PerfilAluno.html')) {
+                         // Permite a navegação para PerfilAluno.html, o logout é disparado apenas quando logado
+                    } else if (button.classList.contains('logout-btn')) {
+                         e.preventDefault(); 
+                    }
+                });
+            });
+
+        });
     </script>
     <script src="js/aluno.js"></script>
 </body>
