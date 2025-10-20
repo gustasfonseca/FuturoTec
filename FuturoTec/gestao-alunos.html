@@ -21,7 +21,27 @@ button { cursor:pointer; }
 .main-content { max-width:1200px; margin:2rem auto; padding:0 20px; }
 .page-header h1 { font-size:2rem; margin-bottom:0.5rem; }
 .page-header p { color:#6c757d; }
-.table-card { background-color:#fff; padding:1.5rem; border-radius:8px; box-shadow:0 4px 6px rgba(0,0,0,0.05); margin-top:2rem; }
+.table-card { background-color:#fff; padding:1.5rem; border-radius:8px; box-shadow:0 4px 6px rgba(0,0,0,0.05); margin-top:1rem; }
+/* Estilos para a Barra de Pesquisa */
+.search-container {
+    margin-bottom: 2rem;
+    position: relative;
+    max-width: 400px; /* Limita a largura para melhor visualização */
+}
+.search-container input[type="text"] {
+    width: 100%;
+    padding: 10px 15px;
+    border: 1px solid #ced4da;
+    border-radius: 6px;
+    font-size: 1rem;
+    transition: border-color 0.3s;
+}
+.search-container input[type="text"]:focus {
+    border-color: #008080;
+    outline: none;
+    box-shadow: 0 0 0 0.2rem rgba(0, 128, 128, 0.25);
+}
+/* Estilos para a Tabela */
 table { width:100%; border-collapse:collapse; }
 th, td { text-align:left; padding:0.8rem; border-bottom:1px solid #e9ecef; }
 th { font-weight:600; color:#6c757d; text-transform:uppercase; font-size:0.9rem; }
@@ -42,41 +62,45 @@ tr:hover { background-color:#f1f3f5; }
 
 <header class="header">
 <div class="container">
-  <div class="nav-wrapper">
-    <div class="logo">
-      <img src="img/FuturoTecInicial.jpeg" alt="FuturoTEC Logo">
-    </div>
-    <nav class="nav-desktop student-nav">
-      <a href="InicialAssistente.html" class="nav-link">Início</a>
-    </nav>
-    <div class="nav-actions">
-      <a href="PerfilAssistente.html" class="login-btn"><i class="fa-solid fa-user"></i> Meu Perfil</a>
-    </div>
-  </div>
+  <div class="nav-wrapper">
+    <div class="logo">
+      <img src="img/FuturoTecInicial.jpeg" alt="FuturoTEC Logo">
+    </div>
+    <nav class="nav-desktop student-nav">
+      <a href="InicialAssistente.html" class="nav-link">Início</a>
+    </nav>
+    <div class="nav-actions">
+      <a href="PerfilAssistente.html" class="login-btn"><i class="fa-solid fa-user"></i> Meu Perfil</a>
+    </div>
+  </div>
 </div>
 </header>
 
 <main class="main-content">
 <div class="page-header">
-  <h1>Alunos que Criaram Conta</h1>
-  <p>Veja os alunos cadastrados na plataforma.</p>
+  <h1>Alunos que Criaram Conta</h1>
+  <p>Veja os alunos cadastrados na plataforma. Digite no campo abaixo para filtrar.</p>
 </div>
 
+<div class="search-container">
+    <input type="text" id="searchBar" placeholder="Pesquisar aluno por nome ou email..." list="studentSuggestions">
+    <datalist id="studentSuggestions"></datalist>
+</div>
 <div class="table-card">
-  <table id="studentsTable">
-    <thead>
-      <tr>
-        <th>Nome</th>
-        <th>Email</th>
-        <th>Telefone</th>
-        <th>Endereço</th>
-        <th>Idade</th>
-        <th>Curso</th>
-        <th>Ações</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
+  <table id="studentsTable">
+    <thead>
+      <tr>
+        <th>Nome</th>
+        <th>Email</th>
+        <th>Telefone</th>
+        <th>Endereço</th>
+        <th>Idade</th>
+        <th>Curso</th>
+        <th>Ações</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
 </div>
 </main>
 
@@ -112,16 +136,16 @@ tr:hover { background-color:#f1f3f5; }
 </footer>
 
 <div class="modal" id="modal">
-  <div class="modal-content">
-    <input type="text" id="nomeInput" placeholder="Nome">
-    <input type="email" id="emailInput" placeholder="Email">
-    <input type="text" id="telefoneInput" placeholder="Telefone">
-    <input type="text" id="enderecoInput" placeholder="Endereço">
-    <input type="number" id="idadeInput" placeholder="Idade">
-    <input type="text" id="cursoInput" placeholder="Curso">
-    <button type="button" id="saveBtn">Atualizar</button>
-    <button type="button" id="cancelBtn" class="cancel-btn">Cancelar</button>
-  </div>
+  <div class="modal-content">
+    <input type="text" id="nomeInput" placeholder="Nome">
+    <input type="email" id="emailInput" placeholder="Email">
+    <input type="text" id="telefoneInput" placeholder="Telefone">
+    <input type="text" id="enderecoInput" placeholder="Endereço">
+    <input type="number" id="idadeInput" placeholder="Idade">
+    <input type="text" id="cursoInput" placeholder="Curso">
+    <button type="button" id="saveBtn">Atualizar</button>
+    <button type="button" id="cancelBtn" class="cancel-btn">Cancelar</button>
+  </div>
 </div>
 
 <script type="module">
@@ -130,12 +154,12 @@ import { getFirestore, collection, getDocs, updateDoc, deleteDoc, doc } from "ht
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyA8Q9cKB4oVmFM6ilHK_70h8JDvgsOQhLY",
-  authDomain: "futurotec-e3a69.firebaseapp.com",
-  projectId: "futurotec-e3a69",
-  storageBucket: "futurotec-e3a69.appspot.com",
-  messagingSenderId: "234233783827",
-  appId: "1:234233783827:web:bf9376dee78d8924ef01e6"
+  apiKey: "AIzaSyA8Q9cKB4oVmFM6ilHK_70h8JDvgsOQhLY",
+  authDomain: "futurotec-e3a69.firebaseapp.com",
+  projectId: "futurotec-e3a69",
+  storageBucket: "futurotec-e3a69.appspot.com",
+  messagingSenderId: "234233783827",
+  appId: "1:234233783827:web:bf9376dee78d8924ef01e6"
 };
 
 const app = initializeApp(firebaseConfig);
@@ -154,93 +178,165 @@ const cursoInput = document.getElementById("cursoInput");
 const saveBtn = document.getElementById("saveBtn");
 const cancelBtn = document.getElementById("cancelBtn");
 
+// NOVOS ELEMENTOS
+const searchBar = document.getElementById("searchBar");
+const studentSuggestions = document.getElementById("studentSuggestions");
+let allStudents = []; // Array para armazenar todos os alunos carregados
 let editId = null;
 let currentUser = null;
 let isAssistente = true; // para teste, considera assistente
 
-// Carrega alunos
-async function carregarAlunos() {
-  tableBody.innerHTML = "";
-  try {
-    const snapshot = await getDocs(alunosRef);
-    if(snapshot.empty){
-      const row = tableBody.insertRow();
-      const cell = row.insertCell();
-      cell.colSpan = 7;
-      cell.style.textAlign = "center";
-      cell.textContent = "Nenhum aluno cadastrado ainda.";
-      return;
+// Função para preencher a tabela com uma lista específica de alunos
+function renderizarAlunos(alunos) {
+    tableBody.innerHTML = "";
+    if (alunos.length === 0) {
+        const row = tableBody.insertRow();
+        const cell = row.insertCell();
+        cell.colSpan = 7;
+        cell.style.textAlign = "center";
+        cell.textContent = "Nenhum aluno encontrado.";
+        return;
     }
-    snapshot.forEach(docSnap => {
-      const aluno = docSnap.data();
-      const row = tableBody.insertRow();
-      row.dataset.id = docSnap.id;
-      row.innerHTML = `
-        <td>${aluno.nome || ''}</td>
-        <td>${aluno.email || ''}</td>
-        <td>${aluno.telefone || ''}</td>
-        <td>${aluno.endereco || ''}</td>
-        <td>${aluno.idade || ''}</td>
-        <td>${aluno.curso || ''}</td>
-        <td class="action-buttons">
-          <button class="edit-btn" title="Editar"><i class="fa-solid fa-pencil"></i></button>
-          <button class="delete-btn" title="Excluir"><i class="fa-solid fa-trash-can"></i></button>
-        </td>
-      `;
+
+    alunos.forEach(alunoData => {
+        const row = tableBody.insertRow();
+        row.dataset.id = alunoData.id; // Adiciona o ID do documento ao elemento da linha
+        row.innerHTML = `
+            <td>${alunoData.nome || ''}</td>
+            <td>${alunoData.email || ''}</td>
+            <td>${alunoData.telefone || ''}</td>
+            <td>${alunoData.endereco || ''}</td>
+            <td>${alunoData.idade || ''}</td>
+            <td>${alunoData.curso || ''}</td>
+            <td class="action-buttons">
+                <button class="edit-btn" title="Editar"><i class="fa-solid fa-pencil"></i></button>
+                <button class="delete-btn" title="Excluir"><i class="fa-solid fa-trash-can"></i></button>
+            </td>
+        `;
     });
-  } catch(error){
-    console.error("Erro ao carregar alunos:", error);
-  }
 }
+
+// Carrega alunos do Firebase e armazena
+async function carregarAlunos() {
+    tableBody.innerHTML = '<tr><td colspan="7" style="text-align:center;">Carregando alunos...</td></tr>';
+    try {
+        const snapshot = await getDocs(alunosRef);
+        allStudents = snapshot.docs.map(docSnap => ({
+            id: docSnap.id,
+            ...docSnap.data()
+        }));
+
+        if (allStudents.length === 0) {
+            tableBody.innerHTML = '<tr><td colspan="7" style="text-align:center;">Nenhum aluno cadastrado ainda.</td></tr>';
+            return;
+        }
+
+        renderizarAlunos(allStudents); // Renderiza a lista completa
+        atualizarSugestoes(allStudents); // Atualiza as sugestões de pesquisa
+    } catch (error) {
+        console.error("Erro ao carregar alunos:", error);
+        tableBody.innerHTML = '<tr><td colspan="7" style="text-align:center; color:red;">Erro ao carregar alunos.</td></tr>';
+    }
+}
+
+// Filtra a lista de alunos com base no termo de pesquisa
+function filtrarAlunos() {
+    const termo = searchBar.value.toLowerCase().trim();
+
+    if (termo === "") {
+        renderizarAlunos(allStudents); // Mostra todos se o campo estiver vazio
+        return;
+    }
+
+    const filteredStudents = allStudents.filter(aluno =>
+        (aluno.nome && aluno.nome.toLowerCase().includes(termo)) ||
+        (aluno.email && aluno.email.toLowerCase().includes(termo))
+    );
+
+    renderizarAlunos(filteredStudents); // Renderiza a lista filtrada
+}
+
+// Adiciona opções de sugestão (datalist)
+function atualizarSugestoes(alunos) {
+    studentSuggestions.innerHTML = '';
+    const nomes = new Set(); // Usa Set para garantir nomes únicos
+
+    alunos.forEach(aluno => {
+        if (aluno.nome) {
+            nomes.add(aluno.nome);
+        }
+    });
+
+    nomes.forEach(nome => {
+        const option = document.createElement('option');
+        option.value = nome;
+        studentSuggestions.appendChild(option);
+    });
+}
+
+// Evento de digitação na barra de pesquisa
+searchBar.addEventListener("input", filtrarAlunos);
+
 
 // Editar / Excluir
 tableBody.addEventListener("click", e => {
-  const btn = e.target.closest(".edit-btn, .delete-btn");
-  if(!btn) return;
+  const btn = e.target.closest(".edit-btn, .delete-btn");
+  if(!btn) return;
 
-  const row = btn.closest("tr");
-  const id = row.dataset.id;
+  const row = btn.closest("tr");
+  const id = row.dataset.id;
+  // Encontra os dados do aluno no array allStudents
+  const alunoData = allStudents.find(a => a.id === id);
 
-  if(btn.classList.contains("edit-btn")){
-    const cells = row.querySelectorAll("td");
-    nomeInput.value = cells[0].textContent;
-    emailInput.value = cells[1].textContent;
-    telefoneInput.value = cells[2].textContent;
-    enderecoInput.value = cells[3].textContent;
-    idadeInput.value = cells[4].textContent;
-    cursoInput.value = cells[5].textContent;
-    editId = id;
-    modal.style.display = "flex";
-  }
+  if(btn.classList.contains("edit-btn")){
+    if(!alunoData) return; // Segurança caso não encontre
+    
+    // Preenche o modal com os dados do aluno
+    nomeInput.value = alunoData.nome || '';
+    emailInput.value = alunoData.email || '';
+    telefoneInput.value = alunoData.telefone || '';
+    enderecoInput.value = alunoData.endereco || '';
+    idadeInput.value = alunoData.idade || '';
+    cursoInput.value = alunoData.curso || '';
+    editId = id;
+    modal.style.display = "flex";
+  }
 
-  if(btn.classList.contains("delete-btn")){
-    if(confirm("Deseja excluir este aluno?")){
-      deleteDoc(doc(db,"usuarios",id))
-        .then(()=> carregarAlunos())
-        .catch(e=>{ console.error(e); alert("Erro ao excluir aluno"); });
-    }
-  }
+  if(btn.classList.contains("delete-btn")){
+    if(confirm("Deseja excluir este aluno?")){
+      deleteDoc(doc(db,"usuarios",id))
+        .then(()=> {
+            // Recarrega os alunos após a exclusão
+            carregarAlunos(); 
+            // Limpa o campo de pesquisa para garantir a visualização da lista atualizada
+            searchBar.value = ''; 
+        })
+        .catch(e=>{ console.error(e); alert("Erro ao excluir aluno"); });
+    }
+  }
 });
 
 // Atualizar aluno
 saveBtn.addEventListener("click", async () => {
-  if(!editId) return;
-  try {
-    await updateDoc(doc(db,"usuarios",editId),{
-      nome: nomeInput.value.trim(),
-      email: emailInput.value.trim(),
-      telefone: telefoneInput.value.trim(),
-      endereco: enderecoInput.value.trim(),
-      idade: Number(idadeInput.value) || 0,
-      curso: cursoInput.value.trim()
-    });
-    modal.style.display = "none";
-    editId = null;
-    carregarAlunos();
-  } catch(error){
-    console.error("Erro ao atualizar aluno:", error);
-    alert("Falha ao atualizar aluno. Veja o console.");
-  }
+  if(!editId) return;
+  try {
+    await updateDoc(doc(db,"usuarios",editId),{
+      nome: nomeInput.value.trim(),
+      email: emailInput.value.trim(),
+      telefone: telefoneInput.value.trim(),
+      endereco: enderecoInput.value.trim(),
+      idade: Number(idadeInput.value) || 0,
+      curso: cursoInput.value.trim()
+    });
+    modal.style.display = "none";
+    editId = null;
+    // Recarrega os alunos após a atualização
+    carregarAlunos(); 
+    searchBar.value = '';
+  } catch(error){
+    console.error("Erro ao atualizar aluno:", error);
+    alert("Falha ao atualizar aluno. Veja o console.");
+  }
 });
 
 // Fechar modal
@@ -253,5 +349,3 @@ carregarAlunos();
 
 </body>
 </html>
-
-
