@@ -4,86 +4,211 @@ const auth = firebase.auth();
 const db = firebase.firestore();
 let currentCandidate = null;
 
+// Armazenar todas as vagas com nomes de empresa para filtrar localmente
+let allVagasData = []; 
+
 // =================================================================
 // FUNÇÃO AUXILIAR PARA BUSCAR O NOME DA EMPRESA
 // =================================================================
 const getCompanyName = async (empresaId) => {
     if (!empresaId) return 'Empresa não informada';
     try {
-        // Busca o documento da empresa na coleção 'usuarios' usando o ID
         const empresaDoc = await db.collection('usuarios').doc(empresaId).get();
         if (empresaDoc.exists) {
-            // Retorna o nome da empresa, assumindo que o campo é 'nome'
-            return empresaDoc.data().nome || 'Empresa Desconhecida (Nome Ausente)';
+            // Incluímos o nome em minúsculas para facilitar a pesquisa local
+            const nome = empresaDoc.data().nome || 'Empresa Desconhecida (Nome Ausente)';
+            return {
+                nomeCompleto: nome, 
+                nomeLowerCase: nome.toLowerCase()
+            };
         }
-        return 'Empresa Não Encontrada (ID: ' + empresaId + ')';
+        return {
+            nomeCompleto: 'Empresa Não Encontrada', 
+            nomeLowerCase: 'empresa não encontrada'
+        };
     } catch (error) {
         console.error("Erro ao buscar nome da empresa:", empresaId, error);
-        return 'Erro ao Carregar Nome da Empresa';
+        return {
+            nomeCompleto: 'Erro ao Carregar Nome da Empresa', 
+            nomeLowerCase: 'erro ao carregar nome da empresa'
+        };
     }
+};
+
+// =================================================================
+// FUNÇÃO PARA RENDERIZAR VAGAS (COM DESCRIÇÃO DA VAGA)
+// =================================================================
+const renderJobs = (vagasToRender) => {
+    const vagasContainer = document.getElementById('vagas-container');
+    if (!vagasContainer) return;
+
+    if (vagasToRender.length === 0) {
+        vagasContainer.innerHTML = '<p class="info-message" style="color: white;">Nenhuma vaga encontrada com os filtros/pesquisa atuais.</p>';
+        return;
+    }
+
+    const allJobCardsHtml = vagasToRender.map(item => {
+        const vaga = item.vaga;
+        const vagaId = item.vagaId;
+        const nomeEmpresa = item.nomeEmpresaCompleto;
+        
+        // Tratamento do campo 'cursosRequeridos' (mantido)
+        let cursosData = vaga.cursosRequeridos; 
+        let cursosDisplay = 'Não informado'; 
+
+        if (cursosData) {
+            let tempDisplay;
+            
+            if (Array.isArray(cursosData)) {
+                tempDisplay = cursosData.join(', ').trim(); 
+            } else if (typeof cursosData === 'string') {
+                tempDisplay = cursosData.trim();
+            }
+
+            if (tempDisplay && tempDisplay !== '') {
+                cursosDisplay = tempDisplay;
+            }
+        }
+        
+        // Monta o HTML do cartão de vaga
+        return `
+            <article class="vaga-card">
+                <div class="vaga-info">
+                    <h3>${vaga.titulo || 'Título não informado'}</h3>
+                    <p class="empresa">Empresa: ${nomeEmpresa}</p>
+                    
+                    <p class="detalhes">Descrição: ${vaga.descricao || 'Descrição não informada'}</p>
+                    
+                    <p class="detalhes">Curso: ${cursosDisplay}</p>
+                    <p class="detalhes">Carga Horária: ${vaga.cargaHoraria || 'Não informada'}</p>
+                    <p class="detalhes">Requisitos: ${vaga.requisitos || 'Não informado'}</p>
+                </div>
+                <div class="vaga-action">
+                    <a href="#" class="btn-candidatar" data-vaga-id="${vagaId}">Candidatar-se</a>
+                </div>
+            </article>
+        `;
+    });
+
+    vagasContainer.innerHTML = allJobCardsHtml.join('');
+    setupCandidacyListeners();
+}
+
+// =================================================================
+// FUNÇÃO: REALIZAR FILTRO E PESQUISA LOCAL (CORRIGIDA E ROBUSTA)
+// =================================================================
+const filterAndSearchJobs = () => {
+    // Normaliza o filtro do curso (para minúsculo e sem espaços)
+    const filtroCurso = document.getElementById('filtroCurso').value.toLowerCase().trim();
+    // Normaliza a pesquisa de texto
+    const pesquisaVaga = document.getElementById('pesquisaVaga').value.toLowerCase().trim();
+
+    let filteredJobs = allVagasData;
+
+    // 1. FILTRO POR CURSO
+    if (filtroCurso) {
+        filteredJobs = filteredJobs.filter(item => {
+            const cursos = item.vaga.cursosRequeridos; 
+            if (!cursos) {
+                return false; 
+            }
+            
+            if (Array.isArray(cursos)) {
+                // Usa .some() para verificar se PELO MENOS UM curso no array
+                // (após normalização) inclui o texto do filtro.
+                return cursos.some(dbCourse => 
+                    dbCourse.toLowerCase().trim().includes(filtroCurso)
+                );
+            } else if (typeof cursos === 'string') {
+                // Se for string, verifica se a string normalizada inclui o filtro.
+                return cursos.toLowerCase().trim().includes(filtroCurso);
+            }
+            return false;
+        });
+    }
+
+    // 2. PESQUISA POR NOME DA VAGA OU EMPRESA (Local)
+    if (pesquisaVaga) {
+        filteredJobs = filteredJobs.filter(item => {
+            const tituloVaga = item.vaga.titulo ? item.vaga.titulo.toLowerCase() : '';
+            const nomeEmpresa = item.nomeEmpresaLowerCase;
+
+            // Mantém a lógica de pesquisa de texto
+            return tituloVaga.includes(pesquisaVaga) || nomeEmpresa.includes(pesquisaVaga);
+        });
+    }
+
+    // 3. RENDERIZA OS RESULTADOS FILTRADOS
+    renderJobs(filteredJobs);
 };
 
 
 // =================================================================
-// FUNÇÃO PRINCIPAL: CARREGAR VAGAS (CORRIGIDA)
+// FUNÇÃO PRINCIPAL: CARREGAR TODAS AS VAGAS (Para cache local)
 // =================================================================
 
-const loadAvailableJobs = () => {
+const loadAvailableJobs = async () => {
     const vagasContainer = document.getElementById('vagas-container');
     if (!vagasContainer) return;
 
     vagasContainer.innerHTML = '<p style="color: white; text-align: center;">Buscando vagas...</p>';
+    allVagasData = []; // Limpa o cache anterior
 
-    db.collection('vagas')
-        .orderBy('criadaEm', 'desc')
-        .get()
-        .then(async snapshot => { // <--- Adicionado 'async' aqui para usar 'await' dentro
-            vagasContainer.innerHTML = '';
-            if (snapshot.empty) {
-                vagasContainer.innerHTML = '<p class="info-message" style="color: white;">Nenhuma vaga disponível no momento.</p>';
-                return;
-            }
+    try {
+        // Busca todas as vagas do Firestore
+        const snapshot = await db.collection('vagas')
+            .orderBy('criadaEm', 'desc')
+            .get(); 
 
-            // 1. Cria um array de Promises para buscar o nome da empresa para cada vaga
-            const jobsWithCompanyNamesPromises = snapshot.docs.map(async doc => {
-                const vaga = doc.data();
-                const vagaId = doc.id;
+        if (snapshot.empty) {
+            vagasContainer.innerHTML = '<p class="info-message" style="color: white;">Nenhuma vaga disponível no momento.</p>';
+            return;
+        }
 
-                // 2. Chama a função auxiliar e AGUARDA o resultado
-                const nomeEmpresa = await getCompanyName(vaga.empresaId);
+        // 1. Cria um array de Promises para buscar o nome da empresa para cada vaga
+        const jobsWithCompanyNamesPromises = snapshot.docs.map(async doc => {
+            const vaga = doc.data();
+            const vagaId = doc.id;
 
-                // 3. Monta o HTML do cartão de vaga
-                return `
-                    <article class="vaga-card">
-                        <div class="vaga-info">
-                            <h3>${vaga.titulo || 'Título não informado'}</h3>
-                            <p class="empresa">Empresa: ${nomeEmpresa}</p>
-                            <p class="detalhes">Carga Horária: ${vaga.cargaHoraria || 'Não informada'}</p>
-                            <p class="detalhes">Requisitos: ${vaga.requisitos || 'Não informado'}</p>
-                        </div>
-                        <div class="vaga-action">
-                            <a href="#" class="btn-candidatar" data-vaga-id="${vagaId}">Candidatar-se</a>
-                        </div>
-                    </article>
-                `;
-            });
+            // 2. Chama a função auxiliar e AGUARDA o resultado do nome da empresa
+            const nomeEmpresaInfo = await getCompanyName(vaga.empresaId);
 
-            // 4. AGUARDA que todas as promises sejam resolvidas (todos os nomes de empresa sejam buscados)
-            const allJobCardsHtml = await Promise.all(jobsWithCompanyNamesPromises);
-
-            // 5. Adiciona todo o HTML de uma vez ao container
-            vagasContainer.innerHTML = allJobCardsHtml.join('');
-
-            setupCandidacyListeners();
-        })
-        .catch(error => {
-            console.error("Erro ao buscar vagas: ", error);
-            vagasContainer.innerHTML = '<p class="error-message" style="color: white;">Erro ao carregar as vagas.</p>';
+            // 3. Retorna o objeto completo da vaga para o cache local
+            return {
+                vagaId,
+                vaga,
+                nomeEmpresaCompleto: nomeEmpresaInfo.nomeCompleto,
+                nomeEmpresaLowerCase: nomeEmpresaInfo.nomeLowerCase,
+            };
         });
+
+        // 4. AGUARDA que todas as promises sejam resolvidas 
+        allVagasData = await Promise.all(jobsWithCompanyNamesPromises);
+
+        // 5. RENDERIZA TODAS AS VAGAS NA CARGA INICIAL (sem filtros)
+        renderJobs(allVagasData);
+
+    } catch(error) {
+        console.error("Erro ao buscar vagas: ", error);
+        vagasContainer.innerHTML = '<p class="error-message" style="color: white;">Erro ao carregar as vagas.</p>';
+    };
 };
 
+
 // =================================================================
-// FUNÇÃO: CARREGAR MINHAS CANDIDATURAS (Ajustada para usar getCompanyName)
+// NOVO: Adiciona o Event Listener para os Filtros
+// =================================================================
+
+const setupFilterListeners = () => {
+    const aplicarFiltrosButton = document.getElementById('aplicarFiltros');
+    if (aplicarFiltrosButton) {
+        // Usamos 'click' no botão para disparar a função
+        aplicarFiltrosButton.addEventListener('click', filterAndSearchJobs);
+    }
+}
+
+// =================================================================
+// FUNÇÃO: CARREGAR MINHAS CANDIDATURAS
 // =================================================================
 
 const loadMyCandidacies = async () => {
@@ -120,9 +245,9 @@ const loadMyCandidacies = async () => {
             }
 
             // BUSCA O NOME DA EMPRESA AQUI TAMBÉM
-            const nomeEmpresa = await getCompanyName(vagaData.empresaId);
+            const nomeEmpresaInfo = await getCompanyName(vagaData.empresaId);
 
-            return { ...candidatura, vaga: { ...vagaData, empresaNome: nomeEmpresa } };
+            return { ...candidatura, vaga: { ...vagaData, empresaNome: nomeEmpresaInfo.nomeCompleto } };
         });
 
         const candidaciesDetails = await Promise.all(promises);
@@ -131,6 +256,10 @@ const loadMyCandidacies = async () => {
 
         candidaciesDetails.forEach(item => {
             const vaga = item.vaga;
+            // FIX ADICIONAL: Tratamento do status para estilização futura (opcional, mas recomendado)
+            const statusClass = item.status === 'Pendente' ? 'status-pending' 
+                              : item.status === 'Entrevista' ? 'status-interview' 
+                              : item.status === 'Contratado' ? 'status-hired' : 'status-default';
 
             const card = document.createElement('article');
             card.className = 'vaga-card';
@@ -141,7 +270,7 @@ const loadMyCandidacies = async () => {
                     <p class="empresa">Empresa: ${vaga.empresaNome}</p>
                     <p class="detalhes">Candidatado em: ${item.dataCandidatura ? new Date(item.dataCandidatura.toDate()).toLocaleDateString() : 'N/A'}</p>
                 </div>
-                <div class="vaga-action status-display">
+                <div class="vaga-action status-display ${statusClass}">
                     <span>Status</span>
                     <strong>${item.status || 'Pendente'}</strong>
                 </div>
@@ -156,8 +285,7 @@ const loadMyCandidacies = async () => {
 };
 
 
-// ... (o restante do seu aluno.js: setupCandidacyListeners, handleCandidacy e auth.onAuthStateChanged)
-
+// ... (o restante do seu aluno.js: setupCandidacyListeners, handleCandidacy) ...
 const setupCandidacyListeners = () => {
     // ALTERAÇÃO AQUI: O seletor agora busca pela classe .btn-candidatar
     document.querySelectorAll('.btn-candidatar').forEach(button => {
@@ -219,7 +347,7 @@ const handleCandidacy = async (vagaId, button) => {
 };
 
 // =================================================================
-// PONTO PRINCIPAL: AUTENTICAÇÃO E ROTEAMENTO (SEM ALTERAÇÕES SIGNIFICATIVAS)
+// PONTO PRINCIPAL: AUTENTICAÇÃO E ROTEAMENTO (ADICIONANDO setupFilterListeners)
 // =================================================================
 
 auth.onAuthStateChanged((user) => {
@@ -243,7 +371,8 @@ auth.onAuthStateChanged((user) => {
         const currentPath = window.location.pathname;
 
         if (currentPath.includes('VagasAluno.html')) {
-            loadAvailableJobs();
+            // Inicializa a função de carregamento e, se bem-sucedida, o listener de filtros
+            loadAvailableJobs().then(setupFilterListeners); 
         }
 
         if (currentPath.includes('minhasCandidaturas.html')) {
