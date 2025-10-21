@@ -20,7 +20,7 @@ const db = firebase.firestore();
 let allEtecs = [];
 
 // =======================================================
-// === FUNÇÃO DE VALIDAÇÃO DE SENHA FORTE              ===
+// === FUNÇÃO DE VALIDAÇÃO DE SENHA FORTE              ===
 // =======================================================
 /**
  * Função para verificar a força da senha.
@@ -51,6 +51,39 @@ function isPasswordStrong(password) {
 
     return { valid: true, message: '' };
 }
+
+// =======================================================
+// === FUNÇÃO DE ATUALIZAÇÃO DA INTERFACE DE VALIDAÇÃO ===
+// =======================================================
+function updatePasswordValidationUI(password) {
+    const list = document.getElementById('password-validation-list');
+    if (!list) return;
+
+    const checks = {
+        'val-length': password.length >= 8,
+        'val-uppercase': /[A-Z]/.test(password),
+        'val-lowercase': /[a-z]/.test(password),
+        'val-number': /\d/.test(password),
+        'val-special': /[!@#$%^&*(),.?":{}|<>]/.test(password)
+    };
+
+    for (const [id, isValid] of Object.entries(checks)) {
+        const item = document.getElementById(id);
+        if (item) {
+            item.classList.toggle('valid', isValid);
+            item.classList.toggle('invalid', !isValid);
+            const icon = item.querySelector('.icon-status');
+            if (icon) {
+                icon.setAttribute('data-feather', isValid ? 'check-circle' : 'x-circle');
+            }
+        }
+    }
+    // Reaplicar os ícones do Feather
+    if (typeof feather !== 'undefined' && feather.replace) {
+        feather.replace();
+    }
+}
+
 
 // =======================================================
 // === FUNÇÃO DE EXCLUSÃO DE CONTA (Assistente Técnico) ===
@@ -259,6 +292,15 @@ document.addEventListener('DOMContentLoaded', async () => {
         const etecResultsContainer = document.getElementById('etec-results');
         const inputEnderecoEtec = document.getElementById('endereco-etec');
         const labelEtec = document.querySelector('label[for="nome-etec"]');
+        const inputSenhaAssistente = document.getElementById('senha-assistente');
+
+
+        // NOVO: LISTENER PARA ATUALIZAÇÃO DA VALIDAÇÃO EM TEMPO REAL
+        if (inputSenhaAssistente) {
+            inputSenhaAssistente.addEventListener('keyup', (e) => {
+                updatePasswordValidationUI(e.target.value);
+            });
+        }
 
         if (inputEtec) {
             inputEtec.addEventListener('input', (e) => {
@@ -313,7 +355,10 @@ document.addEventListener('DOMContentLoaded', async () => {
             const confirmarSenha = document.getElementById('confirmar-senha-assistente').value;
             const nome = document.getElementById('nome-assistente').value;
             const nomeEtec = document.getElementById('nome-etec').value;
-            const etecId = inputEtec.dataset.etecId;
+            // Acessa dataset do elemento input, pois é onde o ID da Etec é armazenado após a seleção
+            const inputEtecDataset = document.getElementById('nome-etec').dataset;
+            const etecId = inputEtecDataset.etecId;
+
 
             // VALIDAÇÕES
             if (senha !== confirmarSenha) {
