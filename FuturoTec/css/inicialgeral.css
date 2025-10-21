@@ -1,162 +1,221 @@
-/* --- Variáveis de cores --- */
+/* --- Variáveis de cores (MANTIDAS) --- */
 :root {
     --primary: #4F9B94; /* Cor principal (verde água) */
     --primary-hover: #458a83; /* Verde mais escuro para hover */
-    --background: #f0f4f8; /* Fundo cinza muito claro */
+    --background: #f0f4f8; /* Fundo cinza muito claro (usado nos botões) */
     --foreground: #334e68; /* Azul escuro (texto principal) */
     --muted-foreground: #6b84a0; /* Azul acinzentado (subtítulos) */
-    --card-background: #E0F7FA; /* Fundo do container (azul claro) */
-    --shadow-color: rgba(46, 139, 87, 0.15); /* Sombra mais sutil */
+    --card-background: #E0F7FA; 
+    --shadow-color: rgba(46, 139, 87, 0.15); 
+    --shadow-hover: rgba(46, 139, 87, 0.3); 
 }
 
-/* --- Estilos Gerais --- */
+/* 1. CORREÇÃO ESSENCIAL PARA EVITAR O SCROLL HORIZONTAL */
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+/* --- Estilos Gerais: CENTRALIZAÇÃO E FUNDO PROFISSIONAL --- */
 body {
     font-family: 'Poppins', sans-serif;
-    background-color: #ffffff; /* Fundo da página totalmente branco */
+    background-color: var(--background); 
     color: var(--foreground);
     margin: 0;
     padding: 0;
+    overflow-x: hidden; 
 }
 
-/* --- Layout da Página Inicial --- */
+.app {
+    display: flex;
+    justify-content: center; 
+    align-items: flex-start;
+    min-height: 100vh;
+}
 
-/* Logo no topo */
-.logo-topo {
+main {
+    width: 100%;
+    /* Reduzido de 1300px para centralizar melhor em telas mais comuns */
+    max-width: 1200px; 
     padding: 20px;
+    margin: 20px auto; 
+}
+
+/* --- Logo Proeminente (MAIOR ÊNFASE) --- */
+.logo-topo {
+    padding-top: 30px;
     text-align: center;
-    margin-bottom: 20px;
+    margin-bottom: 30px; /* Reduzido o espaço para aproximar do título */
 }
 
 .logo-topo img {
-    max-height: 200px; /* Aumentei a altura máxima da logo para 120px */
+    /* Aumenta a logo para a máxima ênfase (ponto focal) */
+    max-height: 160px; 
     width: auto;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    border-radius: 8px; 
 }
 
-/* Título principal da página */
+/* --- Título Principal (REDUZIDO) --- */
 .top-title {
     text-align: center;
-    font-size: 2.8em;
+    /* Reduzido o tamanho da fonte */
+    font-size: clamp(2em, 4vw, 3em); 
     font-weight: 700;
     color: var(--foreground);
-    margin-bottom: 40px;
+    margin-bottom: 40px; /* Reduzido o espaço para aproximar o card */
 }
 
-/* Container principal que agrupa os botões e a imagem */
+.top-title .highlight {
+    color: var(--primary); 
+}
+
+
+/* --- Card de Opções (REDUZIDO E CENTRALIZADO) --- */
 .cadastro-container {
     display: flex;
     align-items: center;
-    justify-content: center;
-    padding: 40px;
-    flex-wrap: wrap;
+    justify-content: space-between;
+    
+    /* Reduzido o padding interno */
+    padding: clamp(30px, 5vw, 50px); 
+    
     background-color: var(--primary);
-    border-radius: 16px;
-    box-shadow: 0 8px 24px var(--shadow-color);
-    max-width: 1100px;
-    margin: 20px auto;
-    gap: 50px;
+    border-radius: 20px; /* Ligeiramente mais sutil */
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2); 
+    
+    /* Reduz a largura máxima do card */
+    max-width: 1050px; 
+    margin: 40px auto; /* Garante a centralização */
+    
+    gap: 30px; /* Reduzido o gap entre os elementos */
 }
 
-@media (max-width: 768px) {
+/* --- Responsividade --- */
+@media (max-width: 992px) {
     .cadastro-container {
         flex-direction: column;
-        padding: 30px;
-        gap: 30px;
+        text-align: center;
+        gap: 40px;
     }
+    /* ... (restante das regras de responsividade) ... */
 }
 
 /* Conteúdo de texto e botões */
 .cadastro-content {
-    flex: 1;
-    max-width: 450px;
+    /* Ajusta para 50% de largura para dar espaço igual à imagem */
+    flex: 0 0 50%; 
+    max-width: 450px; /* Limita a largura do bloco de texto/botões */
+    min-width: 300px;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
 }
 
-/* Título secundário dentro do container */
+/* Títulos dentro do Card */
 .cadastro-title {
-    font-size: 2.5em;
+    font-size: clamp(2em, 3.5vw, 2.6em); /* Título ligeiramente menor */
     font-weight: 700;
     color: #ffffff;
-    margin-bottom: 10px;
-    text-align: left;
+    margin-bottom: 15px;
 }
 
 .cadastro-subtitle {
-    font-size: 1.1em;
+    font-size: 1.1em; /* Subtítulo ligeiramente menor */
     font-weight: 400;
     color: var(--background);
-    margin-bottom: 30px;
+    margin-bottom: 30px; /* Mais perto dos botões */
+    opacity: 1; 
 }
 
-/* Imagem ao lado dos botões */
+/* --- Imagem (REDUZIDA E CENTRALIZADA) --- */
 .cadastro-image {
-    flex: 1;
-    max-width: 550px;
+    /* Ajusta para 45% da largura para equilibrar com o bloco de 50% */
+    flex: 0 0 45%; 
+    max-width: 45%; 
+    min-width: 250px; 
     display: flex;
-    justify-content: center;
-    align-items: center;
+    justify-content: center; /* Centraliza a imagem no próprio bloco */
+    
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), filter 0.4s ease-out; 
+    cursor: pointer;
+}
+
+@media (max-width: 992px) {
+    .cadastro-image {
+        max-width: 80%; 
+    }
 }
 
 .cadastro-image img {
     width: 100%;
     height: auto;
-    border-radius: 12px;
-    box-shadow: 0 6px 18px var(--shadow-color);
+    border-radius: 18px; 
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25); 
+    object-fit: cover; 
+    transition: filter 0.4s ease-out; 
 }
 
-/* Estilos dos botões */
+/* Efeito interativo na imagem */
+.cadastro-image:hover {
+    transform: translateY(-5px); 
+}
+.cadastro-image:hover img {
+    filter: brightness(1.05); /* Brilho mais sutil */
+}
+
+
+/* --- Estilos dos Botões (MANTIDOS E POLIDOS) --- */
 .botoes-container {
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    gap: 15px; /* Reduzido o espaço entre os botões */
     width: 100%;
-    max-width: 400px;
 }
 
 .botao-link {
-    background-color: var(--background);
+    background-color: #ffffff; 
     color: var(--primary);
-    padding: 20px;
-    border-radius: 12px;
+    padding: 20px; /* Reduzido o padding dos botões */
+    border-radius: 14px; 
     display: flex;
     align-items: center;
     text-decoration: none;
-    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); 
 }
 
 .botao-link:hover {
-    background-color: var(--primary-hover);
-    color: var(--background);
-    transform: translateY(-4px);
-    box-shadow: 0 8px 16px var(--shadow-color);
+    background-color: var(--primary); 
+    color: #ffffff; 
+    transform: translateY(-6px); /* Elevação sutil */
+    box-shadow: 0 15px 30px var(--shadow-hover); 
 }
 
 .botao-icone {
-    margin-right: 20px;
+    margin-right: 20px; /* Reduzido o espaço */
+    transition: transform 0.3s ease-in-out; 
+}
+
+.botao-link:hover .botao-icone {
+    transform: scale(1.1); 
 }
 
 .botao-icone svg {
-    width: 2.2em;
+    width: 2.2em; /* Ícones ligeiramente menores */
     height: 2.2em;
     fill: currentColor;
     display: block;
 }
 
-.botao-texto {
-    display: flex;
-    flex-direction: column;
-}
-
 .botao-titulo {
-    font-size: 1.25em;
-    font-weight: 600;
+    font-size: 1.3em; 
+    font-weight: 700; 
     margin: 0;
 }
 
 .botao-subtitulo {
-    font-size: 0.9em;
+    font-size: 0.9em; /* Subtítulo menor */
     font-weight: 400;
     margin: 0;
-    opacity: 0.8;
+    opacity: 0.9; 
 }
