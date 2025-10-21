@@ -1,3 +1,5 @@
+// auth-empresa.js
+
 // =======================================================
 // === CONFIGURAÇÃO INICIAL DO FIREBASE ===
 // =======================================================
@@ -53,11 +55,45 @@ function isPasswordStrong(password) {
 
 
 // =======================================================
+// === FUNÇÃO DE ATUALIZAÇÃO DA INTERFACE DE VALIDAÇÃO (NOVA) ===
+// =======================================================
+function updatePasswordValidationUI(password) {
+    // Usamos o ID específico para a lista de validação da empresa
+    const list = document.getElementById('password-validation-list-empresa');
+    if (!list) return;
+
+    const checks = {
+        'val-length-empresa': password.length >= 8,
+        'val-uppercase-empresa': /[A-Z]/.test(password),
+        'val-lowercase-empresa': /[a-z]/.test(password),
+        'val-number-empresa': /\d/.test(password),
+        'val-special-empresa': /[!@#$%^&*(),.?":{}|<>]/.test(password)
+    };
+
+    for (const [id, isValid] of Object.entries(checks)) {
+        const item = document.getElementById(id);
+        if (item) {
+            item.classList.toggle('valid', isValid);
+            item.classList.toggle('invalid', !isValid);
+            const icon = item.querySelector('.icon-status');
+            if (icon) {
+                // Atualiza o atributo do ícone
+                icon.setAttribute('data-feather', isValid ? 'check-circle' : 'x-circle');
+            }
+        }
+    }
+    // Reaplicar os ícones do Feather para que as mudanças sejam visíveis
+    if (typeof feather !== 'undefined' && feather.replace) {
+        feather.replace();
+    }
+}
+
+
+// =======================================================
 // === FUNÇÕES DE AUTENTICAÇÃO (MANTIDAS) ===
 // =======================================================
 
 async function loginComGoogleEmpresa() {
-    // ... (Sua função loginComGoogleEmpresa permanece inalterada) ...
     const provider = new firebase.auth.GoogleAuthProvider();
 
     try {
@@ -93,7 +129,6 @@ async function loginComGoogleEmpresa() {
 }
 
 async function recuperarSenhaEmpresa() {
-    // ... (Sua função recuperarSenhaEmpresa permanece inalterada) ...
     const email = prompt("Por favor, digite seu e-mail de Empresa para redefinir a senha:");
 
     if (!email) {
@@ -122,7 +157,6 @@ async function recuperarSenhaEmpresa() {
 }
 
 async function excluirContaEmpresa(user) {
-    // ... (Sua função excluirContaEmpresa permanece inalterada) ...
     if (!user) {
         alert("Erro: Nenhuma empresa logada.");
         return;
@@ -199,81 +233,152 @@ async function excluirContaEmpresa(user) {
 
 
 // =======================================================
-// === LÓGICA DE DOM PRINCIPAL (UNIFICADA) ===
+// === LÓGICA DE DOM PRINCIPAL (AJUSTADA) ===
 // =======================================================
 document.addEventListener('DOMContentLoaded', () => {
 
-    // 1. FUNCIONALIDADE MOSTRAR/ESCONDER SENHA (CORRIGIDA)
-    // Busca o ícone da senha
-    const passwordToggle = document.querySelector('.password-toggle');
-    // Busca o input que o ícone controla (pelo data-target)
-    const passwordInput = document.getElementById(passwordToggle ? passwordToggle.dataset.target : null);
-
-    if (passwordToggle && passwordInput) {
-        passwordToggle.addEventListener('click', () => {
-            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-            passwordInput.setAttribute('type', type);
-
-            // Troca o ícone (eye/eye-off)
-            if (type === 'password') {
-                passwordToggle.innerHTML = '<i data-feather="eye"></i>';
-            } else {
-                passwordToggle.innerHTML = '<i data-feather="eye-off"></i>';
-            }
+    // 1. FUNCIONALIDADE MOSTRAR/ESCONDER SENHA (Unificada para todos os .password-toggle)
+    document.querySelectorAll('.password-toggle').forEach(toggle => {
+        toggle.addEventListener('click', () => {
+            const targetId = toggle.getAttribute('data-target');
+            const passwordInput = document.getElementById(targetId);
+            if (!passwordInput) return;
             
-            // Re-renderiza o ícone
-            if (typeof feather !== 'undefined') feather.replace(); 
+            const icon = toggle.querySelector('i');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                icon.setAttribute('data-feather', 'eye-off');
+            } else {
+                passwordInput.type = 'password';
+                icon.setAttribute('data-feather', 'eye');
+            }
+            if (typeof feather !== 'undefined' && feather.replace) {
+                feather.replace();
+            }
         });
-    }
+    });
 
     // Garante que os ícones iniciais estejam renderizados
     if (typeof feather !== 'undefined') feather.replace();
 
-    // 2. LÓGICA DE LOGIN (CORRIGIDA COM EFEITO DE CARREGAMENTO)
+    // 2. LÓGICA DE CADASTRO (Implementação Completa)
+    const formEmpresa = document.getElementById('form-empresa');
+    if (formEmpresa) {
+        const inputSenhaEmpresa = document.getElementById('senha-empresa');
+        const errorMessageDiv = document.getElementById('form-error-message-empresa');
+        
+        // Listener para ATUALIZAÇÃO DA VALIDAÇÃO EM TEMPO REAL
+        if (inputSenhaEmpresa) {
+            inputSenhaEmpresa.addEventListener('keyup', (e) => {
+                updatePasswordValidationUI(e.target.value);
+            });
+        }
+
+        // LÓGICA DE SUBMISSÃO DO CADASTRO
+        formEmpresa.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            errorMessageDiv.textContent = ''; // Limpa erros anteriores
+
+            const email = document.getElementById('email-empresa').value;
+            const senha = document.getElementById('senha-empresa').value;
+            const confirmarSenha = document.getElementById('confirmar-senha-empresa').value;
+            const nomeEmpresa = document.getElementById('nome-empresa').value;
+            const cnpj = document.getElementById('cnpj-empresa').value;
+
+            // VALIDAÇÕES
+            if (senha !== confirmarSenha) {
+                errorMessageDiv.textContent = "As senhas não coincidem.";
+                return;
+            }
+            if (cnpj.length !== 14 || isNaN(cnpj)) {
+                 errorMessageDiv.textContent = "O CNPJ deve ter 14 dígitos e conter somente números.";
+                 return;
+            }
+            
+            // VALIDAÇÃO DE SENHA FORTE
+            const passwordCheck = isPasswordStrong(senha);
+            if (!passwordCheck.valid) {
+                errorMessageDiv.textContent = passwordCheck.message;
+                return; 
+            }
+
+            // Efeito visual no botão
+            const btn = document.querySelector('.submit-btn');
+            const originalText = btn.textContent;
+            btn.textContent = 'Criando Conta...';
+            btn.disabled = true;
+
+            try {
+                // 1. Cria o usuário no Firebase Auth
+                const userCredential = await auth.createUserWithEmailAndPassword(email, senha);
+
+                // 2. Cria o documento no Firestore com a role 'empresa'
+                await db.collection('usuarios').doc(userCredential.user.uid).set({
+                    role: 'empresa',
+                    nome: nomeEmpresa,
+                    email: email,
+                    cnpj: cnpj,
+                    dataCriacao: firebase.firestore.FieldValue.serverTimestamp()
+                });
+
+                // 3. Desloga o usuário e redireciona
+                await auth.signOut();
+                alert("✅ Cadastro de Empresa realizado com sucesso! Por favor, faça login.");
+                window.location.href = 'login-empresa.html';
+
+            } catch (error) {
+                console.error("Erro no cadastro da Empresa:", error);
+                let msg = error.message;
+                if (error.code === 'auth/email-already-in-use') {
+                    msg = "Este e-mail já está em uso por outra conta.";
+                }
+                errorMessageDiv.textContent = `❌ Erro ao cadastrar: ${msg}`;
+            } finally {
+                btn.textContent = originalText;
+                btn.disabled = false;
+            }
+        });
+    }
+
+
+    // 3. LÓGICA DE LOGIN (Mantida)
     const formLoginEmpresa = document.getElementById('form-login-empresa');
     if (formLoginEmpresa) {
         formLoginEmpresa.addEventListener('submit', async (e) => {
             e.preventDefault();
-            
             const email = document.getElementById('email-login-empresa').value;
             const senha = document.getElementById('senha-login-empresa').value;
             const btn = document.querySelector('.submit-btn');
             const originalText = btn.textContent;
             
-            // Efeito de Carregamento
             btn.textContent = 'Aguarde...';
             btn.disabled = true;
 
             try {
                 const userCredential = await auth.signInWithEmailAndPassword(email, senha);
-                const user = userCredential.user;
-
-                const userDoc = await db.collection('usuarios').doc(user.uid).get();
-                const userData = userDoc.data();
+                const userDoc = await db.collection('usuarios').doc(userCredential.user.uid).get();
                 
-                // Finaliza o carregamento em caso de sucesso
                 btn.textContent = originalText;
                 btn.disabled = false;
 
-                if (userData && userData.role === 'empresa') {
+                if (userDoc.exists && userDoc.data().role === 'empresa') {
                     window.location.href = 'InicialEmpresa.html';
                 } else {
                     alert("Acesso negado. Este login é apenas para empresas.");
                     auth.signOut();
                 }
             } catch (error) {
-                console.error("Erro no login:", error);
+                console.error("Erro no login da Empresa:", error);
                 alert(`Erro ao fazer login: ${error.message}`);
                 
-                // Finaliza o carregamento em caso de falha
                 btn.textContent = originalText;
                 btn.disabled = false;
             }
         });
     }
 
-
-    // 3. MANIPULADOR DE EVENTOS PARA O BOTÃO DO GOOGLE
+    // 4. MANIPULADOR DE EVENTOS PARA O BOTÃO DO GOOGLE (Mantido)
     const btnGoogleLogin = document.getElementById('btn-google-login-empresa');
     if (btnGoogleLogin) {
         btnGoogleLogin.addEventListener('click', async (e) => {
@@ -289,7 +394,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // 4. CONEXÃO DO BOTÃO DE RECUPERAÇÃO DE SENHA
+    // 5. CONEXÃO DO BOTÃO DE RECUPERAÇÃO DE SENHA (Mantido)
     const btnEsqueciSenha = document.getElementById('btn-esqueci-senha-empresa');
     if (btnEsqueciSenha) {
         btnEsqueciSenha.addEventListener('click', (e) => {
@@ -298,14 +403,18 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
     
-    // 5. LÓGICA DE CADASTRO (Se você usar esse arquivo para cadastro também)
-    const formEmpresa = document.getElementById('form-empresa');
-    // ... (Sua lógica de cadastro se houver, permanece inalterada aqui) ...
-    // ...
-    // ...
-    
-    // 6. LÓGICA DA PÁGINA DE PERFIL (Se você usar esse arquivo para perfil)
-    const formPerfilEmpresa = document.getElementById('profile-form-empresa');
-    // ... (Sua lógica de perfil se houver, permanece inalterada aqui) ...
-    // ...
+    // 6. LÓGICA DE DESLOGAR (Se existir um botão com este ID)
+    const btnDeslogar = document.getElementById("btn-deslogar");
+    if (btnDeslogar) {
+        btnDeslogar.addEventListener("click", function () {
+            if (confirm("Tem certeza que deseja sair da sua conta de Empresa?")) {
+                firebase.auth().signOut().then(() => {
+                    window.location.href = "login-empresa.html";
+                }).catch((error) => {
+                    console.error("Erro ao deslogar:", error);
+                    alert("Erro ao deslogar. Tente novamente.");
+                });
+            }
+        });
+    }
 });
