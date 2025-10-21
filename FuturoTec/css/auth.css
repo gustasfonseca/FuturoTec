@@ -1,37 +1,49 @@
-/* auth.css - REVISADO E MELHORADO PARA O ÍCONE DA SENHA */
+/* auth.css - AJUSTE FINAL: LARGURA 750px e ALTURA REDUZIDA */
 
 /* --------------------
-   1. Estilo da Seção e Fundo (Minimalista)
-   -------------------- */
+    1. Estilo da Seção e Fundo (Minimalista)
+    -------------------- */
 body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    font-family: 'Poppins', sans-serif;
     background: #f0f4f8; /* Fundo suave, quase branco */
+}
+
+.app {
+    /* Garante que o app ocupe toda a tela para centralizar o auth-section */
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%; /* Garante que ele use a largura total */
 }
 
 .auth-section {
     padding: 60px 20px;
     background-color: transparent; 
-    min-height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
+    width: 100%; /* Garante que ele possa expandir */
 }
 
 /* --------------------
-   2. Cartão de Login (Card)
-   -------------------- */
+    2. Cartão de Login (Card) - LARGURA E ALTURA AJUSTADAS AQUI
+    -------------------- */
 .auth-card {
-    --main-color: hsl(174, 36%, 45%); 
+    --main-color: #4F9B94; /* Cor principal (verde água) */
     --light-color: #fff; 
     
     background-color: var(--main-color);
-    padding: 40px;
+    /* REDUÇÃO DE ALTURA: De 40px para 30px no topo e base (30px 40px) */
+    padding: 30px 40px; 
     border-radius: 16px;
     box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15), 0 5px 15px rgba(0, 0, 0, 0.08); 
-    max-width: 420px;
+    max-width: 750px; /* LARGURA MÁXIMA MANTIDA */
+    min-width: 350px; 
     width: 100%;
     text-align: center;
     color: var(--light-color);
+    position: relative; 
     transition: transform 0.4s ease-out, box-shadow 0.4s ease;
 }
 
@@ -39,6 +51,7 @@ body {
     font-size: 2.2em;
     font-weight: 700;
     margin-bottom: 5px;
+    margin-top: 20px; 
 }
 
 .auth-subtitle {
@@ -49,8 +62,8 @@ body {
 }
 
 /* --------------------
-   3. Botão do Google
-   -------------------- */
+    3. Botão do Google (Mantido)
+    -------------------- */
 .google-login-button {
     background-color: var(--light-color);
     color: #333;
@@ -80,8 +93,8 @@ body {
 }
 
 /* --------------------
-   4. Divisor 'ou'
-   -------------------- */
+    4. Divisor 'ou' (Mantido)
+    -------------------- */
 .divider {
     display: flex;
     align-items: center;
@@ -107,8 +120,8 @@ body {
 }
 
 /* --------------------
-   5. Inputs e Foco (Minimalista com Animação)
-   -------------------- */
+    5. Inputs, Foco e CORREÇÃO ROBUSTA do ALINHAMENTO dos Ícones
+    -------------------- */
 .form-group {
     text-align: left;
     margin-bottom: 20px;
@@ -116,14 +129,17 @@ body {
 }
 
 .form-group label {
-    display: none;
+    display: block; 
+    margin-bottom: 5px;
+    font-size: 0.9em;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.9);
 }
 
 .form-group input {
     width: 100%;
     padding: 14px;
-    /* Adiciona padding à direita para o ícone */
-    padding-right: 45px; /* Espaço para o ícone */
+    padding-right: 45px; /* Deixa espaço para o ícone */
     border: 1px solid transparent;
     border-radius: 8px;
     font-size: 1em;
@@ -145,16 +161,26 @@ body {
     background-color: #fff;
 }
 
-/* Ícone de mostrar/esconder senha - POSIÇÃO REAJUSTADA */
+/* ESTILOS DE CORREÇÃO UNIVERSAL PARA O ÍCONE DA SENHA (OLHO) */
+
 .password-group .password-toggle {
     position: absolute;
-    right: 15px; /* Posição à direita */
-    top: 50%; /* Centraliza verticalmente */
-    transform: translateY(-50%); /* Ajuste fino */
+    right: 15px; 
     cursor: pointer;
     color: #666; 
     transition: color 0.2s ease;
-    z-index: 2; /* Garante que o ícone fique acima do input */
+    z-index: 2; 
+}
+
+/* SOLUÇÃO ROBUSTA: Centralizar o ícone em relação ao INPUT */
+/* Usa o seletor de IRMÃO SUBSEQUENTE (+) para posicionar o toggle 
+   exatamente 37px abaixo do topo do form-group, centralizando-o no INPUT. */
+.password-group input[type="password"] + .password-toggle,
+.password-group input[type="text"] + .password-toggle {
+    /* Este valor é a chave. Ele centraliza o ícone verticalmente no input 
+       independentemente do que vier DEPOIS (como a validation-list) */
+    top: 37px; 
+    transform: none; 
 }
 
 .password-toggle:hover {
@@ -162,9 +188,15 @@ body {
 }
 
 
+/* Estilização e correção do input de data (Calendário) */
+.form-group input[type="date"] {
+    /* Remove o padding direito extra, confiando no ícone nativo */
+    padding-right: 14px; 
+}
+
 /* --------------------
-   6. Botão de Envio (Animação de Clique)
-   -------------------- */
+    6. Botão de Envio (Mantido)
+    -------------------- */
 .submit-btn {
     background-color: var(--light-color);
     color: var(--main-color);
@@ -193,26 +225,47 @@ body {
 }
 
 /* --------------------
-   7. Links e Rodapé
-   -------------------- */
-.forgot-password,
-.login-link a {
+    7. Links e Voltar (Mantido)
+    -------------------- */
+.login-link a,
+.forgot-password a {
     color: var(--light-color);
     font-size: 0.95em;
     opacity: 0.8;
     transition: opacity 0.2s ease;
-}
-
-.forgot-password a:hover,
-.login-link a:hover {
-    opacity: 1;
     text-decoration: underline;
 }
 
-/* --- ESTILOS UNIFICADOS PARA AUTOCOMPLETE (CURSOS e ETECs) ---
-   Mantenha os estilos que você já tinha aqui, eles não foram alterados
-*/
-.search-results,
+.login-link a:hover,
+.forgot-password a:hover {
+    opacity: 1;
+}
+
+.back-link {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    color: var(--light-color); 
+    text-decoration: none;
+    font-size: 0.9em;
+    font-weight: 500;
+    opacity: 0.8;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.back-link .back-icon {
+    width: 16px; 
+}
+
+.back-link:hover {
+    opacity: 1;
+    transform: translateX(-2px); 
+}
+
+/* --- ESTILOS UNIFICADOS PARA AUTOCOMPLETE (Mantido) --- */
 .autocomplete-list {
     position: absolute;
     top: 100%;
@@ -228,7 +281,6 @@ body {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-.etec-result-item,
 .autocomplete-item {
     padding: 12px 15px;
     cursor: pointer;
@@ -238,67 +290,58 @@ body {
     font-weight: 500;
 }
 
-.etec-result-item:hover,
 .autocomplete-item:hover {
     background-color: #f0f0f0;
 }
 
-.etec-result-item:last-child,
-.autocomplete-item:last-child {
-    border-bottom: none;
+
+/* --------------------
+    8. Estilos de Validação da Senha em Tempo Real
+    -------------------- */
+
+.validation-list {
+    margin-top: 10px;
+    padding: 15px;
+    list-style: none;
+    text-align: left;
+    background-color: rgba(255, 255, 255, 0.1); 
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-.etec-result-item h4 {
-    margin: 0 0 4px 0;
-    font-size: 1em;
-    color: #333;
-    font-weight: 600;
-}
-
-.etec-result-item p {
-    margin: 0;
-    font-size: 0.85em;
-    color: #666;
-}
-/* --- Novo Estilo: Link de Voltar Elegante --- */
-
-.auth-card {
-    /* É importante que o auth-card tenha position: relative; se não tiver, adicione. */
-    position: relative; 
-    /* ... o resto dos estilos do auth-card ... */
-}
-
-.back-link {
-    /* Posição no topo esquerdo do cartão */
-    position: absolute;
-    top: 20px;
-    left: 20px;
-    
-    color: var(--light-color); /* Cor branca/clara */
-    text-decoration: none;
-    font-size: 0.9em;
-    font-weight: 500;
-    opacity: 0.8;
-    
-    /* Para alinhar o ícone e o texto */
+.validation-item {
     display: flex;
     align-items: center;
-    gap: 5px;
-    
-    transition: opacity 0.3s ease, transform 0.3s ease;
+    font-size: 0.9em;
+    margin: 5px 0;
+    transition: color 0.3s ease;
+    color: rgba(255, 255, 255, 0.7); 
 }
 
-.back-link .back-icon {
-    width: 16px; /* Tamanho do ícone */
+/* Estado de Sucesso (VERDE) */
+.validation-item.valid {
+    color: #92e6a1; 
+    font-weight: 500;
 }
 
-.back-link:hover {
-    opacity: 1;
-    transform: translateX(-2px); /* Efeito sutil de movimento */
+.validation-item.valid .icon-status {
+    color: #5cb85c; 
 }
 
-/* Compensar o espaço extra no topo, se necessário */
-.auth-title {
-    /* Aumenta a margem do topo para não colidir com o link de voltar */
-    margin-top: 20px; 
+/* Estado de Falha (VERMELHO) */
+.validation-item.invalid {
+    color: #ff9999; 
+}
+
+.validation-item.invalid .icon-status {
+    color: #d9534f; 
+}
+
+/* Estilo do Ícone (Feather Icons) */
+.icon-status {
+    margin-right: 8px;
+    width: 16px;
+    height: 16px;
+    display: block; 
+    transition: transform 0.3s ease;
 }
