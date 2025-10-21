@@ -3,7 +3,7 @@
     <head>
         <meta charset="UTF-8"/>
         <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-        <title>Cadastro - FuturoTEC</title>
+        <title>Cadastro Candidato - FuturoTEC</title>
         <meta name="description" content="Plataforma que conecta estudantes da ETEC com empresas parceiras." />
         <meta name="author" content="FuturoTEC"/>
 
@@ -13,6 +13,7 @@
         <meta property="og:image" content="https://placehold.co/1200x630/1A2B3C/FFFFFF?text=FuturoTEC"/>
         <meta name="twitter:card" content="summary_large_image"/>
         <meta name="twitter:image" content="https://placehold.co/1200x630/1A2B3C/FFFFFF?text=FuturoTEC"/>
+        
         <link rel="stylesheet" href="css/styles.css">
         <link rel="stylesheet" href="css/auth.css">
     
@@ -20,22 +21,25 @@
     <body>
 
         <div class="app">
-            <header class="header">
-                </header>
-
             <main class="auth-section">
                 <div class="auth-card">
-                    <h2 class="auth-title">Cadastro</h2>
-                    <h3>Cadastro do Candidato</h3>
+                    
+                    <a href="login-candidato.html" class="back-link">
+                        <i data-feather="arrow-left" class="back-icon"></i>
+                        Voltar para Login
+                    </a>
+
+                    <h1 class="auth-title">Cadastro</h1>
+                    <h2 class="auth-subtitle">Candidato</h2>
                     
                     <form id="form-candidato" class="auth-form">
                         <div class="form-group">
                             <label for="nome-candidato">Nome:</label>
-                            <input type="text" id="nome-candidato" name="nome" placeholder="Nome:" required>
+                            <input type="text" id="nome-candidato" name="nome" placeholder="Nome completo:" required>
                         </div>
                         <div class="form-group">
                             <label for="telefone-candidato">Número de telefone:</label>
-                            <input type="tel" id="telefone-candidato" name="telefone" placeholder="Número de telefone:" required>
+                            <input type="tel" id="telefone-candidato" name="telefone" placeholder="Telefone (DDD + Número):" required>
                         </div>
                         <div class="form-group">
                             <label for="email-candidato">Email:</label>
@@ -43,7 +47,7 @@
                         </div>
                         <div class="form-group">
                             <label for="data-nascimento-candidato">Data de nascimento:</label>
-                            <input type="date" id="data-nascimento-candidato" name="dataNascimento" placeholder="Data de nascimento:" required>
+                            <input type="date" id="data-nascimento-candidato" name="dataNascimento" required>
                         </div>
                         
                         <div class="form-group">
@@ -54,12 +58,21 @@
 
                             <div id="sugestoes-curso" class="autocomplete-list"></div>
                         </div>
+                        
                         <div class="form-group password-group">
                             <label for="senha-candidato">Senha:</label>
                             <input type="password" id="senha-candidato" name="senha" placeholder="Senha:" required>
                             <span class="password-toggle" data-target="senha-candidato"><i data-feather="eye"></i></span>
+                            
+                            <div id="password-validation-list" class="validation-list">
+                                <p id="min-length" class="validation-item invalid"><i data-feather="x" class="icon-status"></i> Mínimo 8 caracteres</p>
+                                <p id="has-upper" class="validation-item invalid"><i data-feather="x" class="icon-status"></i> Pelo menos 1 maiúscula (A-Z)</p>
+                                <p id="has-lower" class="validation-item invalid"><i data-feather="x" class="icon-status"></i> Pelo menos 1 minúscula (a-z)</p>
+                                <p id="has-number" class="validation-item invalid"><i data-feather="x" class="icon-status"></i> Pelo menos 1 número (0-9)</p>
+                                <p id="has-special" class="validation-item invalid"><i data-feather="x" class="icon-status"></i> Pelo menos 1 caractere especial</p>
+                            </div>
                         </div>
-                       <div class="form-group password-group">
+                        <div class="form-group password-group">
                             <label for="confirmar-senha-candidato">Confirme sua senha:</label>
                             <input type="password" id="confirmar-senha-candidato" name="confirmar-senha" placeholder="Confirme sua senha:" required>
                             <span class="password-toggle" data-target="confirmar-senha-candidato"><i data-feather="eye"></i></span>
@@ -72,7 +85,9 @@
                     </form>
                 </div>
             </main>
-  <script src="https://unpkg.com/feather-icons"></script>
+        </div>
+        
+        <script src="https://unpkg.com/feather-icons"></script>
         <script> feather.replace(); </script>
 
         <script>
@@ -91,18 +106,14 @@
                         passwordInput.type = 'password';
                         icon.setAttribute('data-feather', 'eye');
                     }
-                    feather.replace();
+                    feather.replace(); 
                 });
             });
         </script>
-            <footer class="footer">
-                </footer>
-        </div>
+        
         <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
         <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
         <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
         <script src="js/auth-candidato.js"></script>
-        <script src="https://unpkg.com/feather-icons"></script>
-        <script> feather.replace(); </script>
     </body>
 </html>
