@@ -1,3 +1,5 @@
+// auth-candidato.js
+
 // --- CONFIGURAÇÃO DO FIREBASE ---
 const firebaseConfig = {
     apiKey: "AIzaSyA8Q9cKB4oVmFM6ilHK_70h8JDvgsOQhLY",
@@ -174,7 +176,7 @@ Para confirmar a exclusão, digite seu EMAIL (${userEmail}) no campo abaixo:`);
         let errorMessage = "Ocorreu um erro ao tentar excluir sua conta.";
 
         if (error.code === 'auth/wrong-password' || error.message.includes('password')) {
-              errorMessage = "Senha incorreta. A exclusão da conta foi cancelada.";
+             errorMessage = "Senha incorreta. A exclusão da conta foi cancelada.";
         } else if (error.code === 'auth/requires-recent-login') {
             errorMessage = "Erro de Segurança: Você precisa ter feito login *recentemente*. Por favor, saia e entre novamente, e tente excluir a conta em seguida.";
         }
@@ -187,6 +189,30 @@ Para confirmar a exclusão, digite seu EMAIL (${userEmail}) no campo abaixo:`);
 // === PONTO DE ENTRADA PRINCIPAL E LÓGICA VISUAL ===
 // =======================================================
 document.addEventListener('DOMContentLoaded', () => {
+
+    // --- 0. FUNCIONALIDADE MOSTRAR/ESCONDER SENHA (CORREÇÃO INCLUÍDA) ---
+    document.querySelectorAll('.password-toggle').forEach(toggle => {
+        toggle.addEventListener('click', () => {
+            const targetId = toggle.getAttribute('data-target');
+            const passwordInput = document.getElementById(targetId);
+            if (!passwordInput) return;
+            
+            const icon = toggle.querySelector('i');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                icon.setAttribute('data-feather', 'eye-off');
+            } else {
+                passwordInput.type = 'password';
+                icon.setAttribute('data-feather', 'eye');
+            }
+            // Chama feather.replace() para que o ícone mude
+            if (typeof feather !== 'undefined' && feather.replace) {
+                feather.replace();
+            }
+        });
+    });
+
 
     // --- ELEMENTOS DE VALIDAÇÃO VISUAL ---
     const senhaInput = document.getElementById('senha-candidato');
@@ -226,7 +252,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         
         // 3. Recarrega os ícones do Feather para mostrar a mudança
-        // Verifica se feather.replace existe antes de chamar
         if (typeof feather !== 'undefined' && feather.replace) {
             feather.replace(); 
         }
@@ -243,7 +268,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     // Opcional: Limpa mensagem de erro ao digitar na confirmação
-     if (confirmarSenhaInput && errorMessageDiv) {
+    if (confirmarSenhaInput && errorMessageDiv) {
         confirmarSenhaInput.addEventListener('input', () => {
              errorMessageDiv.textContent = '';
         });
@@ -326,7 +351,9 @@ document.addEventListener('DOMContentLoaded', () => {
         formCandidato.addEventListener('submit', async (e) => {
             e.preventDefault();
             
-            errorMessageDiv.textContent = ''; 
+            // Assume que existe um campo de erro no cadastro, se não, use alert
+            const cadastroErrorMessageDiv = document.getElementById('form-error-message') || errorMessageDiv;
+            if (cadastroErrorMessageDiv) cadastroErrorMessageDiv.textContent = '';
 
             const email = document.getElementById('email-candidato').value;
             const senha = document.getElementById('senha-candidato').value;
@@ -339,20 +366,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // 1. Validação de Curso
             if (!cursoId) {
-                errorMessageDiv.textContent = "Por favor, selecione um curso válido da lista de sugestões.";
+                if (cadastroErrorMessageDiv) cadastroErrorMessageDiv.textContent = "Por favor, selecione um curso válido da lista de sugestões.";
                 return;
             }
             
             // 2. Validação de Confirmação de Senha
             if (senha !== confirmarSenha) {
-                errorMessageDiv.textContent = "As senhas não coincidem. Por favor, tente novamente.";
+                if (cadastroErrorMessageDiv) cadastroErrorMessageDiv.textContent = "As senhas não coincidem. Por favor, tente novamente.";
                 return;
             }
             
             // 3. Validação de Força de Senha (Usando a função)
             const passwordCheck = isPasswordStrong(senha);
             if (!passwordCheck.valid) {
-                errorMessageDiv.textContent = passwordCheck.message;
+                if (cadastroErrorMessageDiv) cadastroErrorMessageDiv.textContent = passwordCheck.message;
                 return;
             }
 
@@ -385,7 +412,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     friendlyError = "Este e-mail já está em uso. Tente fazer login ou use outro e-mail.";
                 }
                 
-                errorMessageDiv.textContent = `Erro ao cadastrar: ${friendlyError}`;
+                if (cadastroErrorMessageDiv) cadastroErrorMessageDiv.textContent = `Erro ao cadastrar: ${friendlyError}`;
             }
         });
     }
@@ -397,6 +424,7 @@ document.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
             const email = document.getElementById('email-login-candidato').value;
             const senha = document.getElementById('senha-login-candidato').value;
+            // Adicione aqui a manipulação de erro de login se houver um div para isso no login-candidato.html
 
             try {
                 const userCredential = await auth.signInWithEmailAndPassword(email, senha);
@@ -507,8 +535,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
             } else {
                 // Usuário deslogado: Redireciona
-                alert("Você precisa estar logado para acessar esta página.");
-                window.location.href = 'login-candidato.html';
+                // Apenas se a URL não for a de login
+                if (!window.location.href.includes('login-candidato.html') && !window.location.href.includes('cadastro-candidato.html')) {
+                    alert("Você precisa estar logado para acessar esta página.");
+                    window.location.href = 'login-candidato.html';
+                }
             }
         });
     }
