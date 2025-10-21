@@ -6,12 +6,14 @@
     <title>Dashboard da Empresa | FuturoTEC</title>
     <link rel="stylesheet" href="css/styles.css" />
     <link rel="stylesheet" href="css/empresa.css" />
+    
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
   </head>
   <body>
       <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-       <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
-       <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
-        <script>
+      <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+      <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+      <script>
         // Use a mesma configuração do seu projeto
         const firebaseConfig = {
           apiKey: "AIzaSyA8Q9cKB4oVmFM6ilHK_70h8JDvgsOQhLY",
@@ -26,10 +28,11 @@
     </script>
     
     <script src="js/empresa.js"></script>
+    
     <div class="app">
       <header class="header">
-            <div class="container"> 
-                <div class="nav-wrapper">
+          <div class="container"> 
+              <div class="nav-wrapper">
                 <div class="logo">
                     <img src="img/FuturoTecInicial.jpeg" alt="FuturoTEC Logo" />
                 </div>
@@ -44,9 +47,9 @@
                 <div class="nav-actions">
                     <a href="PerfilEmpresa.html" class="logout-btn">Meu Perfil</a>
                 </div>
-                </div>
-            </div>
-        </header>
+              </div>
+          </div>
+      </header>
 
       <main class="company-dashboard">
         <div class="container">
@@ -54,26 +57,29 @@
           <p>
             Aqui você encontra um resumo rápido sobre suas vagas e candidaturas.
           </p>
+          
           <div class="dashboard-grid">
-            <div class="dashboard-card published-jobs">
-              <h3>Vagas Publicadas</h3>
-              <p class="card-number" id="vagas-publicadas-count">0</p>
+            
+            <div class="stat-card published-jobs">
+              <i class="ph-bold ph-briefcase"></i>
+              <div class="card-content">
+                <h3>Vagas Publicadas</h3>
+                <p class="card-number" id="vagas-publicadas-count">0</p>
+              </div>
             </div>
-            <div class="dashboard-card applications-received">
-              <h3>Candidaturas Recebidas</h3>
-              <p class="card-number" id="candidaturas-count">0</p>
+            
+            <div class="stat-card applications-received">
+              <i class="ph-bold ph-users"></i>
+              <div class="card-content">
+                <h3>Candidaturas Recebidas</h3>
+                <p class="card-number" id="candidaturas-count">0</p>
+              </div>
             </div>
-            <div class="dashboard-card new-applications">
-              <h3>Novas Candidaturas</h3>
-              <p class="card-number" id="novas-candidaturas-count">0</p>
-            </div>
-            <div class="dashboard-card recent-activity">
-              <h3>Atividade Recente</h3>
-              <ul id="atividade-recente-list">
-                </ul>
-            </div>
+
           </div>
-        </div>
+         
+            </div>
+        
       </main>
 
       <footer class="footer">
@@ -98,9 +104,12 @@
             </ul>
           </div>
           <div class="footer-social">
-            <div class="footer-logo">
-              <img src="img/FuturoTecInicial.jpeg" alt="FuturoTEC Logo" />
-            </div>
+              <div class="container">
+                <div class="nav-wrapper">
+                    <div class="logo">
+                        <img src="img/FuturoTecInicial.jpeg" alt="FuturoTEC Logo" />
+                    </div>
+                    <br></div>
             <h4>Conecte-se</h4>
             <div class="social-icons">
               <a href="#">
@@ -164,5 +173,5 @@
         </div>
       </footer>
     </div>
-</body>
+  </body>
 </html>
