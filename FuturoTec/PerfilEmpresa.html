@@ -18,7 +18,7 @@
                     </div>
                     <nav class="nav-desktop">
                         <a href="InicialEmpresa.html" class="nav-link">Início</a>
-                        <a href="Vagas.html" class="nav-link">Vagas</a>
+                        <a href="MinhasVagas.html" class="nav-link">Vagas</a>
                         </nav>
                     <a href="MeuPerfilEmpresa.html" class="login-btn">Meu Perfil</a>
                 </div>
@@ -76,14 +76,6 @@
         
             <section class="danger-zone">
                 <h2>Zona de Perigo</h2>
-                
-                <p>Use esta opção para sair da sua conta sem excluí-la permanentemente.</p>
-                <button type="button" class="delete-account-btn" id="btn-logout-empresa">
-                    Deslogar da Conta
-                </button>
-                
-                <hr style="margin: 20px 0;">
-
                 <p>A exclusão da conta é uma ação **permanente**. Se você prosseguir, todas as vagas ativas e candidaturas serão removidas do sistema, e sua conta será apagada. Não há como reverter.</p>
                 <button type="button" class="delete-account-btn" id="btn-excluir-conta-empresa">
                     Excluir Minha Conta Permanentemente
@@ -97,15 +89,10 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script> 
-    <script src="https://unpkg.com/feather-icons"></script>
-    <script>
-        // Inicializa o Feather Icons após carregar
-        document.addEventListener('DOMContentLoaded', () => {
-            if (typeof feather !== 'undefined') feather.replace();
-        });
-    </script>
 
     <script src="js/auth-empresa.js"></script>
     <script src="js/empresa.js"></script>
 </body>
 </html>
+
+
