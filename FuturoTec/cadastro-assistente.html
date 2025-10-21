@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Cadastro - FuturoTEC</title>
+    <title>Login Assistente Técnico - FuturoTEC</title>
     <meta name="description" content="Plataforma que conecta estudantes da ETEC com empresas parceiras." />
     <meta name="author" content="FuturoTEC" />
     <link rel="stylesheet" href="css/styles.css">
@@ -13,51 +13,46 @@
 
 <body>
     <div class="app">
-        <header class="header">...</header>
         <main class="auth-section">
             <div class="auth-card">
-                <h2 class="auth-title">Cadastro</h2>
-                <h3>Cadastro do Assistente Técnico</h3>
+                
+                <a href="index.html" class="back-link">
+                    <i data-feather="arrow-left" class="back-icon"></i>
+                    Voltar
+                </a>
 
-                <form id="form-assistente" class="auth-form">
+                <h1 class="auth-title">FuturoTEC</h1>
+                <h2 class="auth-subtitle">Login do Assistente Técnico</h2>
+
+                <button id="btn-google-login-assistente" class="google-btn google-login-button">
+                    <img src="https://img.icons8.com/color/48/000000/google-logo.png"
+                        alt="Google Logo" class="google-logo-icon">
+                    Entrar com o Google
+                </button>
+
+                <div class="divider">ou</div>
+
+                <form id="form-login-assistente" class="auth-form">
                     <div class="form-group">
-                        <label for="nome-assistente">Nome:</label>
-                        <input type="text" id="nome-assistente" name="nome" placeholder="Seu nome:" required>
+                        <label for="email-login-assistente">Email:</label>
+                        <input type="email" id="email-login-assistente" name="email" placeholder="Email:" required>
                     </div>
-                    <div class="form-group">
-                        <label for="email-assistente">Email:</label>
-                        <input type="email" id="email-assistente" name="email" placeholder="Email de login:" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="nome-etec">Nome ou Código da Etec:</label>
-                        <input type="text" id="nome-etec" name="nome-etec" placeholder="Digite o nome ou código da Etec"
-                            required>
-                        <div id="etec-results" class="search-results"></div>
+                    <div class="form-group password-group">
+                        <label for="senha-login-assistente">Senha:</label>
+                        <input type="password" id="senha-login-assistente" name="senha" placeholder="Senha:" required>
+                        <span class="password-toggle" data-target="senha-login-assistente">
+                            <i data-feather="eye"></i>
+                        </span>
                     </div>
                     
-                    <div class="form-group">
-                        <label for="endereco-etec">Endereço da Etec:</label>
-                        <input type="text" id="endereco-etec" name="endereco-etec" readonly>
-                    </div>
-                    <div class="form-group password-group">
-                        <label for="senha-assistente">Senha:</label>
-                        <input type="password" id="senha-assistente" name="senha" placeholder="Senha:" required>
-                        <span class="password-toggle" data-target="senha-assistente"><i data-feather="eye"></i></span>
-                    </div>
-                    <div class="form-group password-group">
-                        <label for="confirmar-senha-assistente">Confirme sua senha:</label>
-                        <input type="password" id="confirmar-senha-assistente" name="confirmar-senha"
-                            placeholder="Confirme sua senha:" required>
-                        <span class="password-toggle" data-target="confirmar-senha-assistente"><i
-                                data-feather="eye"></i></span>
-                    </div>
-<div id="form-error-message" class="error-message"></div>
-
-                    <button type="submit" class="submit-btn">Criar Conta</button>
-                    <p class="login-link">Já possui uma conta? <a href="login-assistente.html">Fazer Login</a></p>
+                    <p class="forgot-password"><a href="#" id="btn-esqueci-senha-assistente">Esqueceu sua senha?</a></p>
+                    
+                    <button type="submit" class="submit-btn">Entrar</button>
+                    <p class="login-link">Não tem uma conta? <a href="cadastro-assistente.html">Cadastre-se</a></p>
                 </form>
             </div>
         </main>
+        
         <footer>...</footer>
     </div>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
@@ -67,5 +62,4 @@
     <script src="https://unpkg.com/feather-icons"></script>
     <script> feather.replace(); </script>
 </body>
-
 </html>
