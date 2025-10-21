@@ -3,12 +3,12 @@
 /* --- Estilos do Dashboard da Empresa --- */
 .company-dashboard {
     padding: 40px 20px;
-    background-color: #f4f7f9;
+    background-color: #ffffff;
     min-height: calc(100vh - 200px);
 }
 
 .company-dashboard .container {
-    max-width: 1200px;
+    max-width: 1000px;
     margin: 0 auto;
 }
 
@@ -32,7 +32,7 @@
 }
 
 .dashboard-card {
-    background-color: #ffffff;
+    background-color: #499C94;
     border-radius: 12px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
     padding: 25px;
@@ -120,43 +120,73 @@
 }
 
 /* Ajusta o nav-wrapper para usar flexbox e centralizar o conteúdo */
+/* ======= HEADER ======= */
+.header {
+    background-color: #fff;
+    padding: 15px 40px;
+    border-bottom: 2px solid #e0e0e0;
+}
+
 .nav-wrapper {
     display: flex;
     align-items: center;
     justify-content: space-between;
 }
 
-/* Centraliza a navegação principal (nav-desktop) */
-.nav-desktop.company-nav {
-    display: flex;
-    flex-grow: 1; /* Faz a navegação ocupar o espaço disponível */
-    justify-content: center; /* Centraliza os links de navegação */
-    gap: 2.5rem;
+/* Logo alinhada à esquerda */
+.logo img {
+    width: 90px;
 }
 
-/* Adiciona um container para os botões de ação para alinhamento */
+/* Centraliza os links de navegação */
+.nav-desktop {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 2rem; /* Espaçamento entre os links */
+    flex: 1;
+}
+
+/* Aparência dos links */
+.nav-link {
+    color: #333;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+.nav-link:hover,
+.nav-link.active {
+    color: #1B7F86;
+}
+
+/* Botão “Meu Perfil” no canto direito */
+.nav-actions {
+    margin-left: auto;
+}
+
+.profile-btn {
+    background-color: #1B7F86;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 500;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.profile-btn:hover {
+    background-color: #16666b;
+}
+
+/* Garante que o botão fique alinhado à direita */
 .nav-actions {
     display: flex;
     align-items: center;
     gap: 1rem;
-}
-
-/* Estilo para o novo botão "Meu Perfil" */
-.nav-actions .profile-btn {
-    background-color: transparent;
-    color: var(--primary);
-    border: 2px solid var(--primary);
-    padding: 0.5rem 1rem;
-    border-radius: 0.375rem;
-    font-weight: 500;
-    cursor: pointer;
-    text-decoration: none;
-    transition: all 0.2s ease;
-}
-
-.nav-actions .profile-btn:hover {
-    background-color: var(--primary);
-    color: var(--primary-foreground);
 }
 
 /* Estilo para o botão de "Sair" */
@@ -192,6 +222,15 @@
         font-size: 1.8em;
     }
 
+    /* Responsivo */
+    @media (max-width: 600px) {
+        footer {
+            font-size: 0.85rem;
+            padding: 15px 8px;
+        }
+    }
+
+
     .dashboard-card .card-number {
         font-size: 2.5em;
     }
@@ -222,7 +261,7 @@
 /* --- Estilos da Página de Criar Vaga --- */
 .create-job-section {
     padding: 60px 20px;
-    background-color: #f4f7f9;
+    background-color: #ffffff;
     min-height: calc(100vh - 150px);
     display: flex;
     justify-content: center;
@@ -256,7 +295,8 @@
 
 .form-group {
     text-align: left;
-    margin-bottom: 15px; /* Espaçamento reduzido entre os campos */
+    margin-bottom: 15px;
+    /* Espaçamento reduzido entre os campos */
 }
 
 .form-group label {
@@ -269,20 +309,21 @@
 
 .form-group input,
 .form-group textarea {
-    width: 100%;
+    width: 95%;
     padding: 15px;
-    border: 1px solid var(--primary-foreground);
+    border: 1px solid #ffffff;
     border-radius: 8px;
     font-size: 1em;
     color: var(--foreground);
-    background-color: var(--primary-foreground);
+    background-color: #ffffff;
     transition: border-color 0.2s ease;
 }
 
 .form-group input:focus,
 .form-group textarea:focus {
     outline: none;
-    border-color: #5a9ca8; /* Um azul sutil no foco */
+    border-color: #5a9ca8;
+    /* Um azul sutil no foco */
 }
 
 .submit-btn {
@@ -297,11 +338,110 @@
     cursor: pointer;
     transition: background-color 0.2s ease;
     width: 100%;
-    margin-top: 25px; /* Espaçamento acima do botão */
+    margin-top: 25px;
+    /* Espaçamento acima do botão */
 }
 
 .submit-btn:hover {
-    background-color: #e0e0e0;
+    background-color: #fad4d4;
+}
+
+/* Footer */
+.footer {
+    background-color: #2c6e7e; /* Cor do cabeçalho do seu site */
+    color: #fff;
+    padding: 40px 0;
+    font-family: 'Arial', sans-serif;
+    line-height: 1.6;
+}
+
+.footer-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.footer h4 {
+    font-size: 1.2rem;
+    margin-bottom: 15px;
+    color: #fff;
+    border-bottom: 2px solid #5a9ca8; /* Linha de destaque */
+    padding-bottom: 5px;
+}
+
+.footer p {
+    margin: 0 0 10px;
+}
+
+.footer a {
+    color: #fff;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.footer a:hover {
+    color: #d1e2e4; /* Cor mais clara no hover */
+}
+
+/* Footer Info Section */
+.footer-info .school {
+    font-weight: bold;
+}
+
+.footer-info .copyright {
+    font-size: 0.8rem;
+    margin-top: 20px;
+}
+
+/* Footer Links Section */
+.footer-links ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.footer-links ul li {
+    margin-bottom: 10px;
+}
+
+/* Footer Social Section */
+.footer-social {
+    text-align: right;
+}
+
+.footer-logo img {
+    max-width: 100px; /* Tamanho do logo no footer */
+    margin-bottom: 15px;
+    filter: brightness(0) invert(1); /* Deixa a imagem branca para contrastar com o fundo */
+}
+
+.social-icons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+    margin-top: 10px;
+}
+
+.social-icons svg {
+    width: 24px;
+    height: 24px;
+    color: #fff;
+    transition: color 0.3s ease;
+}
+
+.social-icons a:hover svg {
+    color: #d1e2e4; /* Cor do ícone no hover */
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+    .footer-container {
+        flex-direction: column;
+        text-align: center;
+    }
 }
 
 /* --- Estilos para a página Minhas Vagas --- */
@@ -335,7 +475,8 @@
 
 .vaga-card p {
     color: #666;
-    flex-grow: 1; /* Faz a descrição ocupar o espaço disponível */
+    flex-grow: 1;
+    /* Faz a descrição ocupar o espaço disponível */
 }
 
 .actions-vaga {
@@ -344,7 +485,8 @@
     gap: 10px;
 }
 
-.actions-vaga .action-button { /* Aplica os estilos nos botões de Editar/Excluir */
+.actions-vaga .action-button {
+    /* Aplica os estilos nos botões de Editar/Excluir */
     padding: 8px 12px;
     border: none;
     border-radius: 5px;
@@ -362,11 +504,13 @@
 }
 
 .edit-btn {
-    background-color: #007bff; /* Azul */
+    background-color: #007bff;
+    /* Azul */
 }
 
 .delete-btn {
-    background-color: #dc3545; /* Vermelho */
+    background-color: #dc3545;
+    /* Vermelho */
 }
 
 /* --- Estilos para o Modal de Edição --- */
@@ -377,7 +521,8 @@
     width: 100%;
     height: 100%;
     background-color: rgba(0, 0, 0, 0.7);
-    display: flex; /* Para centralizar o modal-content */
+    display: flex;
+    /* Para centralizar o modal-content */
     justify-content: center;
     align-items: center;
     z-index: 1000;
@@ -391,7 +536,7 @@
     width: 90%;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
     /* Ajusta o fundo para o branco, pois o form-card usa um background colorido */
-    background-color: white !important; 
+    background-color: white !important;
 }
 
 .modal-content h2 {
@@ -446,13 +591,13 @@
     background-color: #ffffff;
     border-radius: 4px;
     border: 1px solid #ddd;
-    min-height: 40px; 
+    min-height: 40px;
 }
 
 .course-tag {
     display: flex;
     align-items: center;
-    background-color: var(--primary); 
+    background-color: var(--primary);
     color: white;
     padding: 5px 10px;
     border-radius: 15px;
@@ -475,7 +620,7 @@
     max-height: 150px;
     overflow-y: auto;
     width: 100%;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .autocomplete-item {
@@ -493,3 +638,4 @@
     font-style: italic;
     cursor: default;
 }
+
