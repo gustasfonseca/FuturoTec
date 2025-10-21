@@ -1,150 +1,217 @@
-/* auth.css - COMPLETO E FINAL COM ESTILO UNIFICADO PARA AUTOCOMPLETE */
+/* auth.css - REVISADO E MELHORADO PARA O ÍCONE DA SENHA */
 
-/* Seção principal de login/cadastro */
+/* --------------------
+   1. Estilo da Seção e Fundo (Minimalista)
+   -------------------- */
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    background: #f0f4f8; /* Fundo suave, quase branco */
+}
+
 .auth-section {
     padding: 60px 20px;
-    background-color: #ffffff;
-    min-height: calc(100vh - 150px);
+    background-color: transparent; 
+    min-height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
-/* Cartão com o formulário */
+/* --------------------
+   2. Cartão de Login (Card)
+   -------------------- */
 .auth-card {
-    background-color: hsl(174, 36%, 45%);
+    --main-color: hsl(174, 36%, 45%); 
+    --light-color: #fff; 
+    
+    background-color: var(--main-color);
     padding: 40px;
-    border-radius: 12px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-    max-width: 450px;
+    border-radius: 16px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15), 0 5px 15px rgba(0, 0, 0, 0.08); 
+    max-width: 420px;
     width: 100%;
     text-align: center;
-    color: #fff;
+    color: var(--light-color);
+    transition: transform 0.4s ease-out, box-shadow 0.4s ease;
 }
 
 .auth-title {
-    font-size: 2em;
-    font-weight: 600;
-    margin-bottom: 20px;
+    font-size: 2.2em;
+    font-weight: 700;
+    margin-bottom: 5px;
 }
 
-/* Botões de seleção de perfil (se houver) */
-.role-selector {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-    margin-bottom: 25px;
+.auth-subtitle {
+    font-size: 1.2em;
+    font-weight: 300;
+    margin-bottom: 30px;
+    opacity: 0.9;
 }
 
-.role-button {
-    background-color: rgba(255, 255, 255, 0.2);
-    border: none;
-    color: #fff;
-    padding: 10px 20px;
-    border-radius: 20px;
-    cursor: pointer;
+/* --------------------
+   3. Botão do Google
+   -------------------- */
+.google-login-button {
+    background-color: var(--light-color);
+    color: #333;
+    border: 1px solid #ccc;
+    padding: 12px 20px;
+    border-radius: 8px;
     font-size: 1em;
-    transition: background-color 0.3s ease;
-}
-
-.role-button.active {
-    background-color: #fff;
-    color: hsl(174, 36%, 45%);
-    font-weight: bold;
-}
-
-/* Título do formulário */
-.auth-form h3 {
-    font-size: 1.5em;
-    font-weight: 500;
+    font-weight: 600;
+    cursor: pointer;
+    width: 100%;
     margin-bottom: 25px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
-/* Grupo de campo de entrada */
+.google-login-button:hover {
+    background-color: #f7f7f7;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.google-logo-icon {
+    width: 20px;
+    vertical-align: middle;
+    margin-right: 10px;
+}
+
+/* --------------------
+   4. Divisor 'ou'
+   -------------------- */
+.divider {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    color: rgba(255, 255, 255, 0.7);
+    margin: 20px 0;
+    font-size: 0.9em;
+}
+
+.divider::before,
+.divider::after {
+    content: '';
+    flex: 1;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.divider:not(:empty)::before {
+    margin-right: .25em;
+}
+
+.divider:not(:empty)::after {
+    margin-left: .25em;
+}
+
+/* --------------------
+   5. Inputs e Foco (Minimalista com Animação)
+   -------------------- */
 .form-group {
     text-align: left;
-    margin-bottom: 15px;
+    margin-bottom: 20px;
     position: relative;
-    /* ESSENCIAL: Permite que a lista de resultados flutue (position: absolute) */
 }
 
 .form-group label {
     display: none;
-    /* Rótulos escondidos para manter o estilo minimalista */
 }
 
 .form-group input {
-    width: 95%;
-    padding: 15px;
-    border: none;
+    width: 100%;
+    padding: 14px;
+    /* Adiciona padding à direita para o ícone */
+    padding-right: 45px; /* Espaço para o ícone */
+    border: 1px solid transparent;
     border-radius: 8px;
     font-size: 1em;
     color: #333;
-    background-color: #fff;
+    background-color: rgba(255, 255, 255, 0.95);
+    transition: all 0.3s ease; 
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05) inset;
+    box-sizing: border-box;
+}
+
+.form-group input::placeholder {
+    color: #999;
 }
 
 .form-group input:focus {
-    outline: 2px solid #5a9ca8;
-}
-
-/* Ícone de mostrar/esconder senha */
-.password-group {
-    position: relative;
-}
-
-.password-toggle {
-    position: absolute;
-    right: 15px;
-    top: 50%;
-    transform: translateY(-50%);
-    cursor: pointer;
-    color: #777;
-}
-
-/* Botão de envio do formulário */
-.submit-btn {
+    border-color: #5a9ca8; 
+    box-shadow: 0 0 0 3px rgba(90, 156, 168, 0.4); 
+    outline: none;
     background-color: #fff;
-    color: hsl(174, 36%, 45%);
+}
+
+/* Ícone de mostrar/esconder senha - POSIÇÃO REAJUSTADA */
+.password-group .password-toggle {
+    position: absolute;
+    right: 15px; /* Posição à direita */
+    top: 50%; /* Centraliza verticalmente */
+    transform: translateY(-50%); /* Ajuste fino */
+    cursor: pointer;
+    color: #666; 
+    transition: color 0.2s ease;
+    z-index: 2; /* Garante que o ícone fique acima do input */
+}
+
+.password-toggle:hover {
+    color: #333;
+}
+
+
+/* --------------------
+   6. Botão de Envio (Animação de Clique)
+   -------------------- */
+.submit-btn {
+    background-color: var(--light-color);
+    color: var(--main-color);
     border: none;
     padding: 15px 30px;
     border-radius: 8px;
     font-size: 1.1em;
     font-weight: bold;
     cursor: pointer;
-    transition: background-color 0.2s ease;
+    transition: background-color 0.2s ease, transform 0.1s ease;
     width: 100%;
-    margin-top: 25px;
+    margin-top: 30px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .submit-btn:hover {
-    background-color: #e0e0e0;
+    background-color: #e6e6e6;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
 }
 
-/* Links de texto */
+.submit-btn:active {
+    background-color: #dcdcdc;
+    transform: translateY(1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* --------------------
+   7. Links e Rodapé
+   -------------------- */
 .forgot-password,
 .login-link a {
-    color: #fff;
-    text-decoration: none;
-    font-size: 0.9em;
-    margin-top: 10px;
-    display: inline-block;
-    opacity: 0.9;
-}
-
-.login-link {
-    margin-top: 20px;
+    color: var(--light-color);
     font-size: 0.95em;
+    opacity: 0.8;
+    transition: opacity 0.2s ease;
 }
 
-.forgot-password:hover,
+.forgot-password a:hover,
 .login-link a:hover {
+    opacity: 1;
     text-decoration: underline;
 }
 
-
-/* --- ESTILOS UNIFICADOS PARA AUTOCOMPLETE (CURSOS e ETECs) --- */
-
-/* Estilo para o container dos resultados (aplicado a .search-results e .autocomplete-list) */
+/* --- ESTILOS UNIFICADOS PARA AUTOCOMPLETE (CURSOS e ETECs) ---
+   Mantenha os estilos que você já tinha aqui, eles não foram alterados
+*/
 .search-results,
 .autocomplete-list {
     position: absolute;
@@ -161,18 +228,16 @@
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* Estilo para cada item individual na lista (aplicado a .etec-result-item e .autocomplete-item) */
 .etec-result-item,
 .autocomplete-item {
     padding: 12px 15px;
     cursor: pointer;
     text-align: left;
     border-bottom: 1px solid #eee;
-    color: #333; /* Garante visibilidade do texto */
+    color: #333;
     font-weight: 500;
 }
 
-/* Efeito visual ao passar o mouse sobre um item */
 .etec-result-item:hover,
 .autocomplete-item:hover {
     background-color: #f0f0f0;
@@ -183,7 +248,6 @@
     border-bottom: none;
 }
 
-/* Estilos específicos para ETEC (se usarem tags diferentes) */
 .etec-result-item h4 {
     margin: 0 0 4px 0;
     font-size: 1em;
@@ -196,4 +260,45 @@
     font-size: 0.85em;
     color: #666;
 }
+/* --- Novo Estilo: Link de Voltar Elegante --- */
 
+.auth-card {
+    /* É importante que o auth-card tenha position: relative; se não tiver, adicione. */
+    position: relative; 
+    /* ... o resto dos estilos do auth-card ... */
+}
+
+.back-link {
+    /* Posição no topo esquerdo do cartão */
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    
+    color: var(--light-color); /* Cor branca/clara */
+    text-decoration: none;
+    font-size: 0.9em;
+    font-weight: 500;
+    opacity: 0.8;
+    
+    /* Para alinhar o ícone e o texto */
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.back-link .back-icon {
+    width: 16px; /* Tamanho do ícone */
+}
+
+.back-link:hover {
+    opacity: 1;
+    transform: translateX(-2px); /* Efeito sutil de movimento */
+}
+
+/* Compensar o espaço extra no topo, se necessário */
+.auth-title {
+    /* Aumenta a margem do topo para não colidir com o link de voltar */
+    margin-top: 20px; 
+}
