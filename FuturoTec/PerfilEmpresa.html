@@ -5,74 +5,80 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Perfil da Empresa - FuturoTEC</title>
     <link rel="stylesheet" href="css/perfil.css"> 
-    <link rel="stylesheet" href="css/styles.css">
+   <link rel="stylesheet" href="css/empresa.css">
+<link rel="stylesheet" href="css/empresa.css">
 </head>
 
 <body>
-    <div class="app">
-        <header class="header">
-            <div class="container">
-                <div class="nav-wrapper">
-                    <div class="logo">
-                        <img src="img/FuturoTecInicial.jpeg" alt="FuturoTEC Logo">
-                    </div>
-                    <nav class="nav-desktop">
-                        <a href="InicialEmpresa.html" class="nav-link">Início</a>
-                        <a href="MinhasVagas.html" class="nav-link">Vagas</a>
-                        </nav>
-                    <a href="MeuPerfilEmpresa.html" class="login-btn">Meu Perfil</a>
-                </div>
-            </div>
-        </header>
+   <div class="app">
+        <header class="header">
+          <div class="container"> 
+              <div class="nav-wrapper">
+                  <div class="logo">
+                      <img src="img/FuturoTecInicial.jpeg" alt="FuturoTEC Logo" />
+                  </div>
+                  <nav class="nav-desktop company-nav">
+                      <a href="InicialEmpresa.html" class="nav-link">Início</a>
+                      <a href="MinhasVagas.html" class="nav-link">Minhas Vagas</a>
+                      <a href="CriarVagaEmpresa.html" class="nav-link ">Criar Vaga</a>
+                      <a href="EmpresaCandidatos.html" class="nav-link">Candidaturas</a>
+                  </nav>
+                  <div class="nav-actions">
+                      <a href="PerfilEmpresa.html" class="logout-btn">Meu Perfil</a>
+                  </div>
+              </div>
+          </div>
+        </header>
+        
+        <main class="profile-page-container">
+            <div class="profile-header">
+                <h1>Seu Perfil</h1>
+                <p>Aqui você pode ver e editar seus dados de cadastro.</p>
+            </div>
 
-        <main class="profile-page-container">
-            <div class="profile-header">
-                <h1>Perfil da Empresa</h1>
-                <p>Veja e edite os dados da sua empresa.</p>
-            </div>
+            <div class="profile-grid">
+                <aside class="profile-info">
+                    <h3>Dados da Empresa</h3>
+                    <p>Mantenha os dados da sua empresa sempre atualizados.</p>
+                </aside>
 
-            <div class="profile-grid">
-                <aside class="profile-info">
-                    <h3>Dados Corporativos</h3>
-                    <p>Mantenha os dados da sua empresa sempre atualizados para os candidatos.</p>
-                </aside>
+                <section class="profile-form-card">
+                    <div class="user-summary">
+                        <div class="user-details">
+                            <h2 id="user-name">Carregando...</h2>
+                            <p class="email" id="user-email">Carregando...</p>
+                        </div>
+                    </div>
+                    <hr>
 
-                <section class="profile-form-card">
-                    <div class="user-summary">
-                        <div class="profile-picture">
-                            <img id="profile-img" src="https://i.imgur.com/m3d5v8B.png" alt="Logo da Empresa">
-                            <input type="file" id="photo-upload-input" accept="image/*" style="display: none;">
-                            <button id="change-photo-btn" class="change-photo-btn">trocar logo</button>
-                        </div>
-                        <div class="user-details">
-                            <h2 id="user-name">Carregando...</h2>
-                            <p class="email" id="user-email">Carregando...</p>
-                        </div>
-                    </div>
-                    <hr>
+                    <form id="profile-form-empresa">
+                        <div class="form-group full-width">
+                            <label for="email">Email de Login</label>
+                            <input type="email" id="email" disabled>
+                        </div>
 
-                    <form id="profile-form-empresa">
-                        <div class="form-group">
-                            <label for="email">Email de Login</label>
-                            <input type="email" id="email" disabled>
-                        </div>
+                        <div class="form-group">
+                            <label for="nome-empresa" class="required">Nome da Empresa</label>
+                            <input type="text" id="nome-empresa" required>
+                        </div>
 
-                        <div class="form-group">
-                            <label for="nome-empresa" class="required">Nome da Empresa</label>
-                            <input type="text" id="nome-empresa" required>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="cnpj-empresa" class="required">CNPJ</label>
-                            <input type="text" id="cnpj-empresa" required>
-                        </div>
+                        <div class="form-group">
+                            <label for="cnpj-empresa" class="required">CNPJ</label>
+                            <input type="text" id="cnpj-empresa" required>
+                        </div>
 
-                        <div class="form-actions">
-                            <button type="submit" class="save-button">Salvar Alterações</button>
-                        </div>
-                    </form>
-                </section>
-            </div>
+                        <div class="form-actions">
+                            <button type="submit" class="save-button">Salvar Alterações</button>
+                        </div>
+                    </form>
+                </section>
+            </div>
+
+
+
+
+
+
         
             <section class="danger-zone">
                 <h2>Zona de Perigo</h2>
@@ -82,6 +88,96 @@
                 </button>
             </section>
                 </main>
+        <footer class="footer">
+        <div class="container footer-grid">
+          <div class="footer-info">
+            <h4>FuturoTEC</h4>
+            <p>Projeto de Conclusão de Curso (TCC)</p>
+            <p class="school">ETEC Albert Einstein</p>
+            <p class="copyright">© 2025 FuturoTEC. Todos os direitos reservados.</p>
+            <p class="authors">
+              Desenvolvido por: Nátaly Lima, Gustavo Fonseca, Eduarda Marques,
+              Amanda Silva, Gabrielly Mendes, Uillian Oliveira e Felipe Cardoso.
+            </p>
+          </div>
+          <div class="footer-links">
+            <h4>Links Úteis</h4>
+            <ul>
+              <li><a href="#">Termos de Uso</a></li>
+              <li><a href="#">Política de Privacidade</a></li>
+              <li><a href="#">Sobre nós</a></li>
+              <li><a href="#">Contato</a></li>
+            </ul>
+          </div>
+          <div class="footer-social">
+              <div class="container">
+                <div class="nav-wrapper">
+                    <div class="logo">
+                        <img src="img/FuturoTecInicial.jpeg" alt="FuturoTEC Logo" />
+                    </div>
+                    <br></div>
+            <h4>Conecte-se</h4>
+            <div class="social-icons">
+              <a href="#">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path
+                    d="M4 4v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6H6a2 2 0 0 0-2 2z"
+                  ></path>
+                  <path d="M14 2v6h6"></path>
+                  <path d="M8 12h8"></path>
+                  <path d="M8 16h8"></path>
+                </svg>
+              </a>
+              <a href="#">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path
+                    d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"
+                  ></path>
+                  <rect x="2" y="9" width="4" height="12"></rect>
+                  <circle cx="4" cy="4" r="2"></circle>
+                </svg>
+              </a>
+              <a href="#">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path
+                    d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"
+                  ></path>
+                </svg>
+              </a>
+            </div>
+          </div>
+        </div>
+      </footer>
 
         </div>
 
