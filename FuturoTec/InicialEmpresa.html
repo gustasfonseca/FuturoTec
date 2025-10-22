@@ -3,32 +3,12 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Dashboard da Empresa | FuturoTEC</title>
+    <title>Página Inical da Empresa | FuturoTEC</title>
     <link rel="stylesheet" href="css/styles.css" />
     <link rel="stylesheet" href="css/empresa.css" />
-    
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
   </head>
   <body>
-      <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-      <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
-      <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
-      <script>
-        // Use a mesma configuração do seu projeto
-        const firebaseConfig = {
-          apiKey: "AIzaSyA8Q9cKB4oVmFM6ilHK_70h8JDvgsOQhLY",
-          authDomain: "futurotec-e3a69.firebaseapp.com",
-          projectId: "futurotec-e3a69",
-          storageBucket: "futurotec-e3a69.firebasestorage.app",
-          messagingSenderId: "234233783827",
-          appId: "1:234233783827:web:bf9376dee78d8924ef01e6",
-          measurementId: "G-C7EEMP1146"
-        };
-        firebase.initializeApp(firebaseConfig);
-    </script>
-    
-    <script src="js/empresa.js"></script>
-    
     <div class="app">
       <header class="header">
           <div class="container"> 
@@ -173,5 +153,16 @@
         </div>
       </footer>
     </div>
+        <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    
+        <script src="js/auth-empresa.js"></script> 
+
+        <script src="js/empresa.js"></script> 
+
+        <script>
+          feather.replace(); 
+        </script>
   </body>
 </html>
