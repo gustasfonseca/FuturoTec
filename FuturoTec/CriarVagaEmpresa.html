@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Criar Vaga | FuturoTEC</title>
+  <title>Criar Vaga</title>
   <link rel="stylesheet" href="css/styles.css" />
   <link rel="stylesheet" href="css/empresa.css" />
   <script src="https://unpkg.com/feather-icons"></script>
@@ -173,28 +173,15 @@
       </footer>
   </div>
 
-  <!-- ===== SCRIPTS ===== -->
-  <script>
-    feather.replace();
-  </script>
+ <script>feather.replace();</script>
 
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script> 
 
-  <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyA8Q9cKB4oVmFM6ilHK_70h8JDvgsOQhLY",
-      authDomain: "futurotec-e3a69.firebaseapp.com",
-      projectId: "futurotec-e3a69",
-      storageBucket: "futurotec-e3a69.firebasestorage.app",
-      messagingSenderId: "234233783827",
-      appId: "1:234233783827:web:bf9376dee78d8924ef01e6",
-      measurementId: "G-C7EEMP1146"
-    };
-    firebase.initializeApp(firebaseConfig);
-  </script>
-
+  <script src="js/auth-empresa.js"></script>
+  
   <script src="js/empresa.js"></script>
 </body>
 </html>
