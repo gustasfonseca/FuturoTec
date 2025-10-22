@@ -934,3 +934,136 @@ body {
     gap: 8px;
   }
 }
+/* ===================================================================== */
+/* CSS FINAL E CORRETO PARA "CANDIDATURAS" (BASEADO NO SEU HTML REAL) */
+/* ===================================================================== */
+
+/* --- 1. LAYOUT GERAL (GRID LADO A LADO) --- */
+#candidaturas-empresa-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(450px, 1fr));
+    gap: 30px;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 15px;
+}
+
+
+/* --- 2. CARD DA VAGA (O ITEM DO ACORDEÃO) --- */
+#candidaturas-empresa-container .accordion-item {
+    background-color: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+    margin-bottom: 0;
+    overflow: hidden;
+}
+
+
+/* --- 3. BOTÃO DO CABEÇALHO --- */
+#candidaturas-empresa-container .accordion-header {
+    -webkit-appearance: none; -moz-appearance: none; appearance: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    text-align: left;
+    padding: 14px 20px;
+    cursor: pointer;
+    color: #ffffff;
+    background-color: #208e8e;
+    border: none;
+    border-radius: 0;
+    transition: background-color 0.3s ease;
+}
+#candidaturas-empresa-container .accordion-header:hover { background-color: #1a7878; }
+
+
+/* --- 4. TEXTO DENTRO DO BOTÃO --- */
+.accordion-header .job-info { display: flex; align-items: center; gap: 15px; }
+.accordion-header .job-title { font-size: 1.2rem; font-weight: 600; }
+
+
+/* --- 5. O ESTILO DO "VAGA ATIVA" --- */
+.accordion-header .vaga-ativa {
+    background-color: #28a745;
+    color: #ffffff;
+    padding: 5px 12px;
+    border-radius: 15px;
+    font-size: 0.85rem;
+    font-weight: 700;
+}
+
+
+/* --- 6. CORPO DO ACORDEÃO E CARD DO CANDIDATO --- */
+.accordion-body {
+    background-color: #fdfdfd;
+    padding: 10px 25px 25px 25px;
+}
+.accordion-body .candidate-list {
+    list-style-type: none !important;
+    padding: 0;
+    margin: 0;
+}
+.accordion-body .candidate-card {
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    padding: 25px;
+    margin-top: 15px;
+    background-color: #ffffff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+.accordion-body .candidate-card h4 {
+    margin-top: 0; margin-bottom: 15px; font-size: 1.8rem; color: #007bff;
+}
+.accordion-body .candidate-card p {
+    margin: 10px 0; display: flex; align-items: center;
+}
+
+
+/*
+*
+* AQUI ESTÁ A CORREÇÃO DO BOTÃO "VER PERFIL COMPLETO"
+*
+*/
+/* Alvo: O botão que está DENTRO do <li class="candidate-card"> */
+#candidaturas-empresa-container .candidate-card .btn-view-profile {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 12px 25px;
+    font-size: 1rem;
+    font-weight: 600;
+    text-decoration: none;
+    text-align: center;
+    cursor: pointer;
+    color: #fff !important; /* !important para garantir */
+    background-color: #28a745 !important; /* Cor verde correta, com !important */
+    border: none;
+    border-radius: 8px;
+    transition: background-color 0.3s ease;
+}
+
+#candidaturas-empresa-container .candidate-card .btn-view-profile:hover {
+    background-color: #218838 !important; /* Verde mais escuro */
+}
+/* --- 6. BOTÃO "VER PERFIL COMPLETO" --- */
+#candidaturas-empresa-container > div li button,
+#candidaturas-empresa-container > div li a {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 12px 25px;
+    font-size: 1rem;
+    font-weight: 600;
+    text-decoration: none;
+    text-align: center;
+    cursor: pointer;
+    color: #fff;
+    background-color: #208e8e; /* Cor verde */
+    border: none;
+    border-radius: 8px;
+    transition: background-color 0.3s ease;
+}
+#candidaturas-empresa-container > div li button:hover,
+#candidaturas-empresa-container > div li a:hover {
+    background-color: #1a7878;
+}
