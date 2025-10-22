@@ -1,42 +1,38 @@
-const auth = firebase.auth();
-const db = firebase.firestore();
-let currentUser = null; // O usuário da empresa autenticado
-let selectedCourses = []; // Variável para armazenar os cursos selecionados (USADA PARA CRIAÇÃO E EDIÇÃO)
-let availableCourses = []; // Variável para armazenar os cursos carregados do Firestore
+// empresa.js
+let currentUser = null;
+let selectedCourses = [];
+let availableCourses = [];
+
+// Assume-se que 'auth', 'db' e 'firebase' estão globalmente disponíveis (carregados via script em seus HTMLs)
+// Ex: <script src="https://www.gstatic.com/firebasejs/.../firebase-app.js"></script>
 
 const logoutBtn = document.querySelector('.logout-btn');
-
 // =================================================================
 // FUNÇÃO PARA CARREGAR OS CURSOS DO FIRESTORE
 // =================================================================
-
 const loadAvailableCourses = async () => {
     try {
         console.log("[Cursos] Buscando cursos na coleção 'cursos'...");
+        // db.collection('cursos') deve ser acessível globalmente
         const snapshot = await db.collection('cursos').get();
-        
-        // Mapeia os documentos para um array de strings (assumindo que o campo do nome do curso é 'nome')
+        // Filtra para garantir que apenas nomes válidos sejam incluídos
         availableCourses = snapshot.docs.map(doc => doc.data().nome).filter(nome => nome); 
         
         console.log(`[Cursos] ${availableCourses.length} cursos carregados com sucesso.`);
     } catch (error) {
         console.error("Erro ao carregar cursos do Firestore:", error);
-        // Fallback em caso de erro de conexão ou regra de segurança
         availableCourses = ["Erro ao carregar (Tente recarregar)"];
         alert("Atenção: Houve um erro ao carregar a lista de cursos. Verifique o console.");
     }
 };
-
 // =================================================================
 // FUNÇÕES DE CARREGAMENTO DE DADOS (Dashboard e Minhas Vagas)
 // =================================================================
-
 const loadDashboardData = async (user) => {
     const empresaNameEl = document.querySelector('.company-dashboard .container h2');
     const vagasCountEl = document.getElementById('vagas-publicadas-count');
     const candidaturasCountEl = document.getElementById('candidaturas-count');
     
-    // 1. Buscar Nome da Empresa
     if (empresaNameEl) {
         try {
              const empresaDoc = await db.collection('usuarios').doc(user.uid).get(); 
@@ -52,7 +48,6 @@ const loadDashboardData = async (user) => {
         }
     }
     
-    // 2. Contar Vagas Publicadas
     let vagaIds = [];
     if (vagasCountEl) {
         try {
@@ -68,7 +63,6 @@ const loadDashboardData = async (user) => {
         }
     }
 
-    // 3. Contar Candidaturas Recebidas
     if (candidaturasCountEl) {
         try {
             if (vagaIds.length === 0) {
@@ -78,6 +72,9 @@ const loadDashboardData = async (user) => {
 
             let totalCandidaturas = 0;
             
+            // Nota: Este loop pode ser ineficiente para muitas vagas. 
+            // Uma Query Collection Group seria mais escalável se fosse usada uma estrutura 
+            // diferente ou se 'candidaturas' fosse uma subcoleção.
             for (const vagaId of vagaIds) {
                  const candidaturasSnapshot = await db.collection('candidaturas')
                       .where('vagaId', '==', vagaId)
@@ -115,7 +112,6 @@ const loadCompanyJobs = () => {
              snapshot.forEach(doc => {
                  const vaga = doc.data();
                  const vagaId = doc.id;
-                 // Exibe os cursos requeridos
                  const cursos = (vaga.cursosRequeridos && vaga.cursosRequeridos.length > 0) 
                      ? `<p class="job-courses">Cursos: ${vaga.cursosRequeridos.join(', ')}</p>` 
                      : '<p class="job-courses">Cursos: Não especificado</p>';
@@ -123,22 +119,23 @@ const loadCompanyJobs = () => {
                  const vagaCard = document.createElement('div');
                  vagaCard.className = 'vaga-card';
                  vagaCard.innerHTML = `
-                     <h3 class="job-title">${vaga.titulo}</h3>
-                     <p class="job-description">${vaga.descricao.substring(0, 150)}...</p> 
-                     ${cursos}
-                     <p class="job-time">Carga Horária: ${vaga.cargaHoraria}</p>
-                     <div class="actions-vaga">
-                         <button class="edit-btn action-button" data-id="${vagaId}" title="Editar Vaga">
-                             <i data-feather="edit"></i> Editar
-                         </button>
-                         <button class="delete-btn action-button delete" data-id="${vagaId}" title="Excluir Vaga">
-                             <i data-feather="trash-2"></i> Excluir
-                         </button>
-                     </div>
-                 `;
+                      <h3 class="job-title">${vaga.titulo}</h3>
+                      <p class="job-description">${vaga.descricao.substring(0, 150)}...</p> 
+                      ${cursos}
+                      <p class="job-time">Carga Horária: ${vaga.cargaHoraria}</p>
+                      <div class="actions-vaga">
+                          <button class="edit-btn action-button" data-id="${vagaId}" title="Editar Vaga">
+                              <i data-feather="edit"></i> Editar
+                          </button>
+                          <button class="delete-btn action-button delete" data-id="${vagaId}" title="Excluir Vaga">
+                              <i data-feather="trash-2"></i> Excluir
+                          </button>
+                      </div>
+                    `;
                  vagaCard.appendChild(document.createElement('div')); 
                  vagasContainer.appendChild(vagaCard);
              });
+             // feather.replace() deve ser acessível globalmente (carregado via script em seus HTMLs)
              if (typeof feather !== 'undefined') {
                  feather.replace(); 
              }
@@ -150,7 +147,6 @@ const loadCompanyJobs = () => {
 };
 
 const loadCandidaciesForCompany = async () => {
-    // ... (Código para carregamento de candidaturas, sem alterações)
     const container = document.getElementById('candidaturas-empresa-container');
     
     console.log(`[CandidaturasEmpresa - DEBUG INICIAL] Container existe: ${!!container}, Usuário logado: ${!!currentUser}`);
@@ -187,9 +183,9 @@ const loadCandidaciesForCompany = async () => {
              
              // 3. Buscar TODAS AS CANDIDATURAS para esta VAGA
              const candidaturasSnapshot = await db.collection('candidaturas')
-                 .where('vagaId', '==', vagaId)
-                 .orderBy('dataCandidatura', 'asc')
-                 .get();
+                  .where('vagaId', '==', vagaId)
+                  .orderBy('dataCandidatura', 'asc')
+                  .get();
 
              console.log(`[CandidaturasEmpresa - DEBUG] Vaga ID: ${vagaId}, Título: "${vaga.titulo}", Candidaturas encontradas: ${candidaturasSnapshot.size}`);
 
@@ -206,50 +202,51 @@ const loadCandidaciesForCompany = async () => {
                  
                  // 4. Iterar sobre cada CANDIDATURA para buscar os dados do ALUNO
                  for (const candDoc of candidaturasSnapshot.docs) {
-                     const candidatura = candDoc.data();
-                     
-                     let aluno = { nome: 'Aluno Não Encontrado', email: 'N/A', telefone: 'N/A', cidade: 'N/A', estado: 'N/A', curso: 'N/A', area: 'N/A' };
+                      const candidatura = candDoc.data();
+                      
+                      let aluno = { nome: 'Aluno Não Encontrado', email: 'N/A', telefone: 'N/A', cidade: 'N/A', estado: 'N/A', curso: 'N/A', area: 'N/A' };
 
-                     try {
-                         if (!candidatura.alunoId) {
-                             console.warn(`Candidatura ${candDoc.id} não tem alunoId.`);
-                             continue;
-                         }
-                         
-                         const alunoDoc = await db.collection('usuarios').doc(candidatura.alunoId).get();
-                         if (alunoDoc.exists) {
-                             aluno = { ...aluno, ...alunoDoc.data() }; 
-                             if (aluno.email === 'N/A' && auth.currentUser) {
-                                 aluno.email = auth.currentUser.email;
-                             }
-                         } else {
-                              console.warn(`[CandidaturasEmpresa] Perfil do aluno ${candidatura.alunoId} não encontrado.`);
-                         }
-                     } catch (e) {
-                          console.error("Erro ao buscar perfil do aluno:", candidatura.alunoId, e);
-                     }
-                     
-                     const alunoCurso = aluno.curso || aluno.area || 'Informação de perfil indisponível'; 
-                     const alunoLocalizacao = (aluno.cidade && aluno.estado) ? `${aluno.cidade}, ${aluno.estado}` : 'Localização não informada';
-                     
-                     candidatosHtml += `
-                           <li class="candidate-card">
-                               <div class="candidate-details">
-                                   <h4 class="candidate-name">${aluno.nome}</h4>
-                                   <p class="candidate-role">**Curso/Área:** ${alunoCurso}</p>
-                                   <p class="candidate-contact">
-                                        <i data-feather="mail" class="icon-small"></i> **Email:** ${aluno.email}
-                                   </p>
-                                   <p class="candidate-contact">
-                                        <i data-feather="phone" class="icon-small"></i> **Telefone:** ${aluno.telefone}
-                                   </p>
-                                   <p class="candidate-location">
-                                        <i data-feather="map-pin" class="icon-small"></i> **Local:** ${alunoLocalizacao}
-                                   </p>
-                               </div>
-                               <button class="view-cv-btn" data-aluno-id="${candidatura.alunoId}">Ver Perfil Completo</button>
-                           </li>
-                     `;
+                      try {
+                          if (!candidatura.alunoId) {
+                              console.warn(`Candidatura ${candDoc.id} não tem alunoId.`);
+                              continue;
+                          }
+                          
+                          const alunoDoc = await db.collection('usuarios').doc(candidatura.alunoId).get();
+                          if (alunoDoc.exists) {
+                              aluno = { ...aluno, ...alunoDoc.data() }; 
+                              if (aluno.email === 'N/A' && auth.currentUser) {
+                                  // Linha comentada na lógica original: 
+                                  // aluno.email = auth.currentUser.email; 
+                              }
+                          } else {
+                               console.warn(`[CandidaturasEmpresa] Perfil do aluno ${candidatura.alunoId} não encontrado.`);
+                          }
+                      } catch (e) {
+                           console.error("Erro ao buscar perfil do aluno:", candidatura.alunoId, e);
+                      }
+                      
+                      const alunoCurso = aluno.curso || aluno.area || 'Informação de perfil indisponível'; 
+                      const alunoLocalizacao = (aluno.cidade && aluno.estado) ? `${aluno.cidade}, ${aluno.estado}` : 'Localização não informada';
+                      
+                      candidatosHtml += `
+                            <li class="candidate-card">
+                                 <div class="candidate-details">
+                                     <h4 class="candidate-name">${aluno.nome}</h4>
+                                     <p class="candidate-role">**Curso/Área:** ${alunoCurso}</p>
+                                     <p class="candidate-contact">
+                                          <i data-feather="mail" class="icon-small"></i> **Email:** ${aluno.email}
+                                     </p>
+                                     <p class="candidate-contact">
+                                          <i data-feather="phone" class="icon-small"></i> **Telefone:** ${aluno.telefone}
+                                     </p>
+                                     <p class="candidate-location">
+                                          <i data-feather="map-pin" class="icon-small"></i> **Local:** ${alunoLocalizacao}
+                                     </p>
+                                 </div>
+                                 <button class="view-cv-btn" data-aluno-id="${candidatura.alunoId}">Ver Perfil Completo</button>
+                            </li>
+                      `;
                  }
                  
                  candidatosHtml = `<ul class="candidate-list">${candidatosHtml}</ul>`;
@@ -257,26 +254,27 @@ const loadCandidaciesForCompany = async () => {
              
              // 5. Constrói o Item do Acordeão
              fullHtml += `
-                 <div class="accordion-item">
-                     <button class="accordion-header">
-                         <div class="job-info">
-                             <span class="job-title">${vaga.titulo}</span>
-                             <span class="job-status ${vagaStatusClass}">${vagaStatusText}</span>
-                         </div>
-                         <div class="candidate-count">
-                             <span>${totalCandidatos} Candidato${totalCandidatos !== 1 ? 's' : ''}</span>
-                             <i data-feather="chevron-down" class="chevron"></i>
-                         </div>
-                     </button>
-                     <div class="accordion-body">
-                         ${candidatosHtml}
-                     </div>
-                 </div>
+                  <div class="accordion-item">
+                      <button class="accordion-header">
+                          <div class="job-info">
+                              <span class="job-title">${vaga.titulo}</span>
+                              <span class="job-status ${vagaStatusClass}">${vagaStatusText}</span>
+                          </div>
+                          <div class="candidate-count">
+                              <span>${totalCandidatos} Candidato${totalCandidatos !== 1 ? 's' : ''}</span>
+                              <i data-feather="chevron-down" class="chevron"></i>
+                          </div>
+                      </button>
+                      <div class="accordion-body">
+                          ${candidatosHtml}
+                      </div>
+                  </div>
              `;
         } 
 
         // 6. Insere o HTML final e configura os listeners
         container.innerHTML = fullHtml;
+        // As funções setupAccordionListeners e feather.replace() devem ser acessíveis
         if (typeof setupAccordionListeners !== 'undefined') {
              setupAccordionListeners(); 
         }
@@ -300,15 +298,144 @@ const loadCandidaciesForCompany = async () => {
 };
 
 // =================================================================
-// LÓGICA DE AUTOCOMPLETE PARA MÚLTIPLOS CURSOS (Não alterada)
+// FUNÇÕES DE PERFIL DA EMPRESA (PerfilEmpresa.html)
+// =================================================================
+const loadAndSetupProfile = async (user) => {
+    // Referências aos elementos HTML
+    const userNameElement = document.getElementById('user-name'); 
+    const userEmailElement = document.getElementById('user-email'); 
+    const inputEmail = document.getElementById('email'); 
+    const inputNomeEmpresa = document.getElementById('nome-empresa'); 
+    const inputCnpj = document.getElementById('cnpj-empresa'); 
+    const profileForm = document.getElementById('profile-form-empresa'); 
+    const btnExcluir = document.getElementById('btn-excluir-conta-empresa');
+    // NOVO: Referência ao botão de logout na Danger Zone
+    const btnLogoutDanger = document.getElementById('btn-logout-danger-zone');
+
+    // 1. CARREGAR DADOS
+    if (inputEmail && inputNomeEmpresa && inputCnpj && userNameElement && userEmailElement) {
+        try {
+            const docRef = db.collection('usuarios').doc(user.uid);
+            const docSnap = await docRef.get();
+
+            if (docSnap.exists) {
+                const data = docSnap.data();
+                
+                // Preencher a seção de resumo
+                userNameElement.textContent = data.nome || 'Nome não definido';
+                userEmailElement.textContent = user.email;
+
+                // Preencher o formulário
+                inputEmail.value = user.email; // Email do Auth (campo desabilitado)
+                inputNomeEmpresa.value = data.nome || '';
+                inputCnpj.value = data.cnpj || '';
+
+            } else {
+                userNameElement.textContent = 'Perfil Incompleto';
+                userEmailElement.textContent = user.email;
+                inputEmail.value = user.email;
+                console.warn("Perfil da empresa não encontrado no Firestore, mas usuário está logado.");
+            }
+
+        } catch (error) {
+            console.error("Erro ao carregar os dados do perfil:", error);
+        }
+    }
+    
+    // 2. CONFIGURAR O FORMULÁRIO DE EDIÇÃO (Salvar Alterações)
+    if (profileForm) {
+        profileForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const currentUser = auth.currentUser;
+            if (!currentUser) {
+                alert("Nenhum usuário logado. Por favor, faça login novamente.");
+                return;
+            }
+
+            const nomeAtualizado = inputNomeEmpresa.value.trim();
+            const cnpjAtualizado = inputCnpj.value.trim();
+
+            if (!nomeAtualizado || !cnpjAtualizado) {
+                 alert("Nome da Empresa e CNPJ são obrigatórios.");
+                 return;
+            }
+            // Validação simples de 14 dígitos numéricos
+            if (cnpjAtualizado.length !== 14 || isNaN(cnpjAtualizado)) {
+                 alert("O CNPJ deve ter 14 dígitos e conter somente números.");
+                 return;
+            }
+
+            const submitButton = profileForm.querySelector('.save-button');
+            submitButton.disabled = true;
+            submitButton.textContent = 'Salvando...';
+
+            try {
+                // firebase.firestore.FieldValue deve ser acessível globalmente
+                await db.collection('usuarios').doc(currentUser.uid).update({
+                    nome: nomeAtualizado,
+                    cnpj: cnpjAtualizado,
+                    dataAtualizacao: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                
+                if(userNameElement) userNameElement.textContent = nomeAtualizado; // Atualiza o resumo
+                alert('✅ Perfil atualizado com sucesso!');
+
+            } catch (error) {
+                console.error("Erro ao salvar o perfil:", error);
+                alert(`❌ Erro ao salvar as alterações: ${error.message}`);
+            } finally {
+                submitButton.disabled = false;
+                submitButton.textContent = 'Salvar Alterações';
+            }
+        });
+    }
+    
+    // 3. LÓGICA DO BOTÃO DE EXCLUIR CONTA
+    // Assume-se que a função 'excluirContaEmpresa' está definida em auth-empresa.js
+    if (btnExcluir && typeof excluirContaEmpresa !== 'undefined') {
+        btnExcluir.addEventListener('click', () => { 
+             excluirContaEmpresa(user); 
+        });
+    } else if (btnExcluir) {
+        console.warn("Atenção: A função 'excluirContaEmpresa' não foi encontrada. O botão de exclusão de conta pode não funcionar.");
+    }
+    
+    // 4. LÓGICA DO BOTÃO DE LOGOUT NA DANGER ZONE (NOVO)
+    if (btnLogoutDanger) {
+        btnLogoutDanger.addEventListener('click', (e) => {
+            e.preventDefault();
+            auth.signOut().then(() => {
+                window.location.href = 'login-empresa.html';
+            }).catch(error => {
+                console.error("Erro ao fazer logout:", error);
+                alert("Ocorreu um erro ao tentar fazer logout. Verifique sua conexão.");
+            });
+        });
+    }
+
+};
+
+// =================================================================
+// LÓGICA DE AUTOCOMPLETE PARA MÚLTIPLOS CURSOS 
 // =================================================================
 
 const renderSelectedCourses = () => {
+    // ATENÇÃO: Esta função deve ser usada para renderizar *tanto* no form Criar Vaga *quanto* no modal de Edição.
+    // Os containers devem ter o mesmo ID: 'cursos-selecionados' (no HTML principal e no modal).
+    
     const container = document.getElementById('cursos-selecionados');
-    if (!container) return;
+    // Adiciona o suporte para o container de edição (caso seja um modal com ID diferente, ajuste aqui)
+    const containerEdit = document.getElementById('cursos-selecionados-edit') || container;
+    
+    // Define qual container deve ser usado (prioriza o da página se não for o modal)
+    const targetContainer = document.getElementById('edit-modal') && document.getElementById('edit-modal').style.display === 'flex' 
+        ? document.getElementById('cursos-selecionados-edit') || container 
+        : container;
+
+    if (!targetContainer) return;
 
     // Constrói o HTML das tags
-    container.innerHTML = selectedCourses.map(course => `
+    targetContainer.innerHTML = selectedCourses.map(course => `
         <span class="course-tag" data-course="${course}">
             ${course}
             <i data-feather="x" class="remove-tag" data-course="${course}"></i>
@@ -327,69 +454,87 @@ const setupCourseAutocomplete = () => {
     const suggestionsContainer = document.getElementById('sugestoes-curso-vaga');
     const selectedContainer = document.getElementById('cursos-selecionados');
     
-    if (!input || !suggestionsContainer || !selectedContainer) {
-        console.warn("Elementos de Autocomplete de Curso não encontrados. Verifique os IDs 'curso-vaga', 'sugestoes-curso-vaga' e 'cursos-selecionados'.");
+    // Elementos para o modal de edição (se existirem)
+    const inputEdit = document.getElementById('edit-curso-vaga'); 
+    const suggestionsContainerEdit = document.getElementById('edit-sugestoes-curso-vaga');
+    const selectedContainerEdit = document.getElementById('edit-cursos-selecionados');
+
+    // Array de pares [input, suggestionsContainer, selectedContainer] para iterar
+    const setupElements = [
+        [input, suggestionsContainer, selectedContainer],
+        [inputEdit, suggestionsContainerEdit, selectedContainerEdit]
+    ].filter(arr => arr[0]); // Filtra os que têm input
+
+    if (setupElements.length === 0) {
+        console.warn("Elementos de Autocomplete de Curso não encontrados. Verifique os IDs 'curso-vaga' (e seus equivalentes 'edit-').");
         return;
     }
 
-    // 1. Lógica do Input (Buscar Sugestões)
-    input.addEventListener('input', () => {
-        const query = input.value.toLowerCase().trim();
-        suggestionsContainer.innerHTML = '';
-
-        if (query.length === 0) {
-            return;
-        }
-
-        // AGORA USA availableCourses (Carregado do Firestore)
-        const filteredCourses = availableCourses.filter(course => 
-            course.toLowerCase().includes(query) && !selectedCourses.includes(course)
-        );
-
-        if (filteredCourses.length > 0) {
-            filteredCourses.forEach(course => {
-                const item = document.createElement('div');
-                item.className = 'autocomplete-item';
-                item.textContent = course;
-                item.addEventListener('click', () => handleCourseSelection(course));
-                suggestionsContainer.appendChild(item);
-            });
-        } else {
-            suggestionsContainer.innerHTML = '<div class="autocomplete-item no-results">Nenhum curso encontrado.</div>';
-        }
-    });
-    
-    // 2. Lógica de Seleção de Curso
-    const handleCourseSelection = (course) => {
+    // Lógica de Seleção de Curso
+    const handleCourseSelection = (course, inputEl, suggestionsEl) => {
         if (!selectedCourses.includes(course)) {
             selectedCourses.push(course);
             renderSelectedCourses();
-            input.value = ''; // Limpa o input
-            suggestionsContainer.innerHTML = ''; // Esconde as sugestões
+            inputEl.value = ''; // Limpa o input
+            suggestionsEl.innerHTML = ''; // Esconde as sugestões
         }
     };
     
-    // 3. Lógica de Remover Tag (usando delegação de eventos no container)
-    selectedContainer.addEventListener('click', (e) => {
-        const removeButton = e.target.closest('.remove-tag');
-        if (removeButton) {
-            const courseToRemove = removeButton.dataset.course;
-            selectedCourses = selectedCourses.filter(c => c !== courseToRemove);
-            renderSelectedCourses();
-            
-            // Reabilita o autocomplete, caso o input esteja focado
-            const inputEl = document.getElementById('curso-vaga');
-            if (inputEl && document.activeElement === inputEl) {
-                 inputEl.dispatchEvent(new Event('input'));
-            }
-        }
-    });
+    setupElements.forEach(([inputEl, suggestionsEl, selectedEl]) => {
+        if (!inputEl) return;
+        
+        // 1. Lógica do Input (Buscar Sugestões)
+        inputEl.addEventListener('input', () => {
+            const query = inputEl.value.toLowerCase().trim();
+            suggestionsEl.innerHTML = '';
 
-    // 4. Fechar Sugestões ao clicar fora
-    document.addEventListener('click', (e) => {
-        if (!e.target.closest('.autocomplete-container')) {
-            suggestionsContainer.innerHTML = '';
+            if (query.length === 0) {
+                return;
+            }
+
+            // Usa availableCourses (Carregado do Firestore)
+            const filteredCourses = availableCourses.filter(course => 
+                course.toLowerCase().includes(query) && !selectedCourses.includes(course)
+            );
+
+            if (filteredCourses.length > 0) {
+                filteredCourses.forEach(course => {
+                    const item = document.createElement('div');
+                    item.className = 'autocomplete-item';
+                    item.textContent = course;
+                    // Passa os elementos específicos para a função de seleção
+                    item.addEventListener('click', () => handleCourseSelection(course, inputEl, suggestionsEl));
+                    suggestionsEl.appendChild(item);
+                });
+            } else {
+                suggestionsEl.innerHTML = '<div class="autocomplete-item no-results">Nenhum curso encontrado.</div>';
+            }
+        });
+        
+        // 3. Lógica de Remover Tag (usando delegação de eventos no container)
+        // Adicionada a verificação para garantir que o evento só é anexado uma vez
+        if (selectedEl) {
+             selectedEl.addEventListener('click', (e) => {
+                const removeButton = e.target.closest('.remove-tag');
+                if (removeButton) {
+                    const courseToRemove = removeButton.dataset.course;
+                    selectedCourses = selectedCourses.filter(c => c !== courseToRemove);
+                    renderSelectedCourses();
+                    
+                    // Reabilita o autocomplete, caso o input esteja focado
+                    if (document.activeElement === inputEl) {
+                         inputEl.dispatchEvent(new Event('input'));
+                    }
+                }
+            });
         }
+        
+        // 4. Fechar Sugestões ao clicar fora
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.autocomplete-container') && suggestionsEl) {
+                 suggestionsEl.innerHTML = '';
+            }
+        });
     });
 }
 
@@ -398,8 +543,6 @@ const setupCourseAutocomplete = () => {
 // LÓGICA DO FORMULÁRIO CRIAR VAGA
 // =================================================================
 const setupCreateJobForm = () => {
-    // A lógica de autocomplete foi movida para o onAuthStateChanged
-    
     const createJobForm = document.getElementById('create-job-form');
     if (createJobForm) {
         createJobForm.addEventListener('submit', (e) => {
@@ -407,6 +550,7 @@ const setupCreateJobForm = () => {
             
             if (!currentUser) { 
                 console.error("Erro: Usuário não autenticado no momento da submissão.");
+                alert("Erro de autenticação. Tente recarregar a página.");
                 return; 
             }
             
@@ -424,7 +568,8 @@ const setupCreateJobForm = () => {
                 cursosRequeridos: selectedCourses, // <<=== ARRAY DE CURSOS
                 empresaId: currentUser.uid, 
                 status: 'Vaga Ativa', 
-                criadaEm: firebase.firestore.FieldValue.serverTimestamp()
+                // firebase.firestore.FieldValue deve ser acessível globalmente
+                criadaEm: firebase.firestore.FieldValue.serverTimestamp() 
             };
 
             const submitButton = createJobForm.querySelector('button[type="submit"]');
@@ -432,21 +577,21 @@ const setupCreateJobForm = () => {
             submitButton.textContent = 'Publicando...';
 
             db.collection('vagas').add(vagaData)
-                .then(() => {
-                    console.log('Vaga criada com sucesso! Redirecionando...');
-                    createJobForm.reset();
-                    selectedCourses = []; // Limpa o estado após o envio
-                    renderSelectedCourses();
-                    window.location.href = 'MinhasVagas.html';
-                })
-                .catch(error => {
-                    console.error("Erro ao criar a vaga: ", error); 
-                    alert(`Erro ao criar a vaga: ${error.message}`);
-                })
-                .finally(() => {
-                    submitButton.disabled = false;
-                    submitButton.textContent = 'Publicar Vaga';
-                });
+                 .then(() => {
+                     console.log('Vaga criada com sucesso! Redirecionando...');
+                     createJobForm.reset();
+                     selectedCourses = []; // Limpa o estado após o envio
+                     renderSelectedCourses();
+                     window.location.href = 'MinhasVagas.html';
+                 })
+                 .catch(error => {
+                     console.error("Erro ao criar a vaga: ", error); 
+                     alert(`Erro ao criar a vaga: ${error.message}`);
+                 })
+                 .finally(() => {
+                     submitButton.disabled = false;
+                     submitButton.textContent = 'Publicar Vaga';
+                 });
         });
     }
 }
@@ -473,48 +618,49 @@ const setupJobActions = () => {
             console.warn(`[Atenção] Tentativa de excluir vaga: ${vagaId}. Esta ação deve ter um modal de confirmação.`);
             
             if (!confirm("Tem certeza que deseja excluir esta vaga?")) {
-                return;
+                 return;
             }
 
             db.collection('vagas').doc(vagaId).delete()
                  .then(() => {
-                     console.log('Vaga excluída com sucesso! 🗑️');
-                     loadCompanyJobs();
+                      console.log('Vaga excluída com sucesso! 🗑️');
+                      loadCompanyJobs();
                  })
                  .catch(error => {
-                     console.error("Erro ao excluir vaga (Verifique as regras de segurança para 'delete'): ", error);
+                      console.error("Erro ao excluir vaga (Verifique as regras de segurança para 'delete'): ", error);
                  });
         }
         
         // AÇÃO DE EDITAR (ABRIR MODAL)
         if (targetButton.classList.contains('edit-btn') && editModal) {
-             db.collection('vagas').doc(vagaId).get().then(doc => {
-                 if (doc.exists) {
-                     const vaga = doc.data();
-                     document.getElementById('edit-vaga-id').value = vagaId;
-                     document.getElementById('edit-titulo').value = vaga.titulo;
-                     document.getElementById('edit-descricao').value = vaga.descricao;
-                     document.getElementById('edit-requisitos').value = vaga.requisitos;
-                     document.getElementById('edit-cargaHoraria').value = vaga.cargaHoraria;
-                     
-                     // **CORREÇÃO 1: PRÉ-PREENCHIMENTO DOS CURSOS**
-                     // 1. Limpa o estado global
-                     selectedCourses = [];
-                     
-                     // 2. Popula com os cursos da vaga, se existirem
-                     if (vaga.cursosRequeridos && Array.isArray(vaga.cursosRequeridos)) {
-                         // Importante: Cria uma cópia para o array global ser manipulado pelo modal
-                         selectedCourses = [...vaga.cursosRequeridos]; 
-                     }
-                     
-                     // 3. Renderiza as tags no modal
-                     renderSelectedCourses(); 
-                     
-                     editModal.style.display = 'flex';
-                 } else {
-                     console.error('Vaga não encontrada!');
-                 }
-             });
+              db.collection('vagas').doc(vagaId).get().then(doc => {
+                  if (doc.exists) {
+                      const vaga = doc.data();
+                      // Preenche o formulário
+                      document.getElementById('edit-vaga-id').value = vagaId;
+                      document.getElementById('edit-titulo').value = vaga.titulo;
+                      document.getElementById('edit-descricao').value = vaga.descricao;
+                      document.getElementById('edit-requisitos').value = vaga.requisitos;
+                      document.getElementById('edit-cargaHoraria').value = vaga.cargaHoraria;
+                      
+                      // **PRÉ-PREENCHIMENTO DOS CURSOS**
+                      // 1. Limpa o estado global
+                      selectedCourses = [];
+                      
+                      // 2. Popula com os cursos da vaga, se existirem
+                      if (vaga.cursosRequeridos && Array.isArray(vaga.cursosRequeridos)) {
+                           // Cria uma cópia para o array global ser manipulado pelo modal
+                           selectedCourses = [...vaga.cursosRequeridos]; 
+                      }
+                      
+                      // 3. Renderiza as tags no modal (usa o ID 'edit-cursos-selecionados' se definido no modal)
+                      renderSelectedCourses(); 
+                      
+                      editModal.style.display = 'flex';
+                  } else {
+                      console.error('Vaga não encontrada!');
+                  }
+              });
         }
     });
     
@@ -535,8 +681,9 @@ const setupJobActions = () => {
                  descricao: document.getElementById('edit-descricao').value,
                  requisitos: document.getElementById('edit-requisitos').value,
                  cargaHoraria: document.getElementById('edit-cargaHoraria').value,
-                 cursosRequeridos: selectedCourses, // **CORREÇÃO 2: SALVA OS CURSOS EDITADOS**
-                 ultimaAtualizacao: firebase.firestore.FieldValue.serverTimestamp()
+                 cursosRequeridos: selectedCourses, // **SALVA OS CURSOS EDITADOS**
+                 // firebase.firestore.FieldValue deve ser acessível globalmente
+                 ultimaAtualizacao: firebase.firestore.FieldValue.serverTimestamp() 
             };
 
             const submitButton = editForm.querySelector('button[type="submit"]');
@@ -545,32 +692,42 @@ const setupJobActions = () => {
 
             db.collection('vagas').doc(vagaId).update(updatedData)
                  .then(() => {
-                     console.log('Vaga atualizada com sucesso! ✅');
-                     editModal.style.display = 'none';
-                     
-                     // Limpa o estado global após salvar, para não afetar outras ações
-                     selectedCourses = [];
-                     
-                     loadCompanyJobs();
+                      console.log('Vaga atualizada com sucesso! ✅');
+                      editModal.style.display = 'none';
+                      
+                      // Limpa o estado global após salvar
+                      selectedCourses = [];
+                      
+                      loadCompanyJobs();
                  })
                  .catch(error => {
-                     console.error("Erro ao atualizar vaga (Verifique as regras de segurança para 'update'): ", error);
+                      console.error("Erro ao atualizar vaga (Verifique as regras de segurança para 'update'): ", error);
                  })
                  .finally(() => {
-                     submitButton.disabled = false;
-                     submitButton.textContent = 'Salvar Alterações';
+                      submitButton.disabled = false;
+                      submitButton.textContent = 'Salvar Alterações';
                  });
         });
     }
 
     // FECHAR MODAL
+    const closeModal = () => {
+         if (editModal) {
+             editModal.style.display = 'none'; 
+             selectedCourses = []; 
+             renderSelectedCourses(); // Limpa as tags no DOM
+         }
+    };
+    
     if (cancelEditBtn) {
-        cancelEditBtn.addEventListener('click', () => { editModal.style.display = 'none'; selectedCourses = []; renderSelectedCourses(); });
+         cancelEditBtn.addEventListener('click', closeModal);
     }
     if (editModal) {
-         editModal.addEventListener('click', (e) => {
-             if (e.target.id === 'edit-modal') { editModal.style.display = 'none'; selectedCourses = []; renderSelectedCourses(); }
-         });
+          editModal.addEventListener('click', (e) => {
+               if (e.target.id === 'edit-modal') { 
+                 closeModal();
+               }
+           });
     }
 };
 
@@ -579,6 +736,8 @@ const setupJobActions = () => {
 // PONTO PRINCIPAL: AUTENTICAÇÃO (CONTROLE DE FLUXO)
 // =================================================================
 
+// Correção: Assume-se que 'auth' e 'db' são declaradas em outro arquivo e estão globalmente acessíveis.
+// Esta função é o coração do roteamento e carregamento de dados
 auth.onAuthStateChanged(async (user) => { 
     if (user) {
         currentUser = user;
@@ -586,17 +745,16 @@ auth.onAuthStateChanged(async (user) => {
 
         const currentPath = window.location.pathname;
         
-        // **CORREÇÃO 3: CARREGA OS CURSOS E CONFIGURA O AUTOCOMPLETE NAS PÁGINAS NECESSÁRIAS**
+        // 1. CARREGA OS CURSOS e configura o AUTOCOMPLETE APENAS nas páginas que precisam
         if (currentPath.includes('CriarVagaEmpresa.html') || currentPath.includes('MinhasVagas.html')) {
              await loadAvailableCourses(); 
              setupCourseAutocomplete(); 
         }
 
+        // 2. CHAMA AS FUNÇÕES ESPECÍFICAS DE CADA PÁGINA
         if (currentPath.includes('CriarVagaEmpresa.html')) {
             setupCreateJobForm();
         } 
-        
-        // Outras páginas...
         else if (currentPath.includes('InicialEmpresa.html')) {
             loadDashboardData(currentUser);
         } else if (currentPath.includes('MinhasVagas.html')) {
@@ -604,21 +762,28 @@ auth.onAuthStateChanged(async (user) => {
             setupJobActions();
         } else if (currentPath.includes('EmpresaCandidatos.html')) { 
             loadCandidaciesForCompany();
+        } 
+        else if (currentPath.includes('PerfilEmpresa.html')) {
+            loadAndSetupProfile(currentUser);
         }
     } else {
-        // Redireciona para o login se não estiver logado
+        // Redireciona para o login se não estiver logado, exceto se já estiver na página de login
         if (!window.location.pathname.includes('login-empresa.html')) {
             window.location.href = 'login-empresa.html'; 
         }
     }
 });
 
-// Lógica de Logout
+// Lógica de Logout (Para o botão de logout padrão no cabeçalho/navegação com a classe .logout-btn)
 if (logoutBtn) {
     logoutBtn.addEventListener('click', (e) => {
         e.preventDefault();
+        // auth.signOut() deve ser acessível globalmente
         auth.signOut().then(() => { 
             window.location.href = 'login-empresa.html'; 
+        }).catch(error => {
+            console.error("Erro ao fazer logout:", error);
+            alert("Ocorreu um erro ao tentar fazer logout. Verifique sua conexão.");
         });
     });
 }
