@@ -35,6 +35,49 @@ const getCompanyName = async (empresaId) => {
     }
 };
 
+
+// =================================================================
+// NOVO: FUNÇÃO PARA EXCLUIR CANDIDATURA (Desistir ou Limpar Vaga Excluída)
+// POSICIONADA AQUI PARA EVITAR O ReferenceError
+// =================================================================
+const handleCandidacyDeletion = async (candidacyId, cardElement) => {
+    if (!currentCandidate) {
+        alert('Você precisa estar logado para realizar esta ação!');
+        return;
+    }
+
+    if (!confirm('Tem certeza que deseja desistir desta candidatura? Esta ação é irreversível e irá removê-la da lista de candidatos da empresa.')) {
+        return;
+    }
+
+    // Desabilita o card para evitar múltiplos cliques
+    cardElement.style.opacity = 0.5;
+    cardElement.style.pointerEvents = 'none';
+
+    try {
+        // 1. Apaga o documento de candidatura no Firestore
+        await db.collection('candidaturas').doc(candidacyId).delete();
+
+        // 2. Remove o card da interface após o sucesso
+        cardElement.remove();
+        alert('Candidatura removida com sucesso! 🎉');
+        
+        // Opcional: Verifica se não restou nenhuma candidatura
+        const candidaturasContainer = document.getElementById('candidaturas-container');
+        if (candidaturasContainer && candidaturasContainer.children.length === 0) {
+            candidaturasContainer.innerHTML = '<p class="info-message">Você ainda não se candidatou a nenhuma vaga.</p>';
+        }
+
+    } catch (error) {
+        console.error("Erro ao excluir candidatura:", error);
+        alert('Erro ao excluir a candidatura. Tente novamente.');
+        // Reativa o card em caso de erro
+        cardElement.style.opacity = 1;
+        cardElement.style.pointerEvents = 'auto';
+    }
+};
+
+
 // =================================================================
 // FUNÇÃO PARA RENDERIZAR VAGAS (COM DESCRIÇÃO DA VAGA)
 // =================================================================
@@ -208,7 +251,7 @@ const setupFilterListeners = () => {
 }
 
 // =================================================================
-// FUNÇÃO: CARREGAR MINHAS CANDIDATURAS
+// FUNÇÃO: CARREGAR MINHAS CANDIDATURAS (ATUALIZADA)
 // =================================================================
 
 const loadMyCandidacies = async () => {
@@ -236,33 +279,60 @@ const loadMyCandidacies = async () => {
         // Usamos Promise.all para carregar todas as vagas em paralelo (mais rápido)
         const promises = candidaciesSnapshot.docs.map(async (doc) => {
             const candidatura = doc.data();
+            const candidaturaId = doc.id; // Pegando o ID da candidatura!
+            
             const vagaDoc = await db.collection('vagas').doc(candidatura.vagaId).get();
 
-            let vagaData = { titulo: 'Vaga Excluída ou Expirada', empresaId: null };
+            // Usamos null se a vaga não existe
+            let vagaData = null; 
 
             if (vagaDoc.exists) {
                 vagaData = vagaDoc.data();
             }
 
+            // Se a vaga não existe, retornamos null para o filtro
+            if (!vagaData) {
+                return null; 
+            }
+
             // BUSCA O NOME DA EMPRESA AQUI TAMBÉM
             const nomeEmpresaInfo = await getCompanyName(vagaData.empresaId);
 
-            return { ...candidatura, vaga: { ...vagaData, empresaNome: nomeEmpresaInfo.nomeCompleto } };
+            return { 
+                ...candidatura, 
+                candidaturaId: candidaturaId, // Inclui o ID da candidatura no objeto
+                vaga: { 
+                    ...vagaData, 
+                    empresaNome: nomeEmpresaInfo.nomeCompleto 
+                } 
+            };
         });
 
-        const candidaciesDetails = await Promise.all(promises);
+        const candidaciesDetailsWithNulls = await Promise.all(promises);
+
+        // MODIFICAÇÃO CHAVE 1: Filtra as vagas que retornaram null (Vagas Excluídas/Expiradas)
+        const candidaciesDetails = candidaciesDetailsWithNulls.filter(item => item !== null);
 
         candidaturasContainer.innerHTML = '';
 
+        if (candidaciesDetails.length === 0) {
+            candidaturasContainer.innerHTML = '<p class="info-message">Você ainda não se candidatou a nenhuma vaga ou todas as vagas pendentes foram excluídas.</p>';
+            return;
+        }
+
+
         candidaciesDetails.forEach(item => {
             const vaga = item.vaga;
+            const candidaturaId = item.candidaturaId; // Pega o ID da candidatura
+            
             // FIX ADICIONAL: Tratamento do status para estilização futura (opcional, mas recomendado)
             const statusClass = item.status === 'Pendente' ? 'status-pending' 
-                              : item.status === 'Entrevista' ? 'status-interview' 
-                              : item.status === 'Contratado' ? 'status-hired' : 'status-default';
+                                 : item.status === 'Entrevista' ? 'status-interview' 
+                                 : item.status === 'Contratado' ? 'status-hired' : 'status-default';
 
             const card = document.createElement('article');
             card.className = 'vaga-card';
+            card.dataset.candidacyId = candidaturaId; // Adiciona o ID da candidatura ao card
 
             card.innerHTML = `
                 <div class="vaga-info">
@@ -273,9 +343,18 @@ const loadMyCandidacies = async () => {
                 <div class="vaga-action status-display ${statusClass}">
                     <span>Status</span>
                     <strong>${item.status || 'Pendente'}</strong>
+                    <button class="btn-desistir" data-candidacy-id="${candidaturaId}">Desistir/Excluir</button>
                 </div>
             `;
             candidaturasContainer.appendChild(card);
+            
+            // Adiciona o listener de evento ao novo botão
+            // ATENÇÃO: É aqui que a função handleCandidacyDeletion é chamada
+            card.querySelector('.btn-desistir').addEventListener('click', (e) => {
+                e.preventDefault();
+                const cardElement = e.target.closest('.vaga-card');
+                handleCandidacyDeletion(candidaturaId, cardElement);
+            });
         });
 
     } catch (error) {
