@@ -1,6 +1,6 @@
 :root {
-  --primary-color: #008080;
-  --primary-hover-color: #006666;
+  --primary-color: #2c6e7e;
+  --primary-hover-color: #2c6e7e;
   --background-color: #f8f9fa;
   --text-color: #343a40;
   --light-gray-color: #ced4da;
@@ -8,80 +8,16 @@
   --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
 }
 
-body {
-  font-family: 'Poppins', sans-serif;
-  background-color: var(--background-color);
-  color: var(--text-color);
-  margin: 0;
-}
 
-.header {
-  background-color: #fff;
-  box-shadow: var(--box-shadow);
-  padding: 1rem 0;
-}
-
-.header .container {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
 
 .logo img {
   height: 50px;
-}
-
-.nav-desktop {
-  display: flex;
-  gap: 1.5rem;
-}
-
-.nav-desktop a {
-  text-decoration: none;
-  color: var(--text-color);
-  font-weight: 500;
-  transition: color 0.3s ease;
-}
-
-.nav-desktop a.active, .nav-desktop a:hover {
-  color: var(--primary-color);
-}
-
-.nav-actions a {
-  background-color: var(--primary-color);
-  color: #fff;
-  padding: 0.6rem 1rem;
-  border-radius: var(--border-radius);
-  text-decoration: none;
-  font-weight: 500;
-  transition: background-color 0.3s ease;
-}
-
-.nav-actions a:hover {
-  background-color: var(--primary-hover-color);
 }
 
 .main-content {
   padding: 2rem 20px;
   max-width: 1200px;
   margin: 0 auto;
-}
-
-.page-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1.5rem;
-}
-
-.page-header h1 {
-  font-size: 2rem;
-  margin: 0;
-}
-
-.page-header p {
-  color: #6c757d;
-  margin: 0.3rem 0 0;
 }
 
 .btn-primary {
@@ -177,12 +113,4 @@ body {
 
 .btn-delete:hover {
   color: #5a6268;
-}
-
-.footer {
-  text-align: center;
-  padding: 1rem 0;
-  background-color: #fff;
-  box-shadow: var(--box-shadow);
-  margin-top: 2rem;
 }
