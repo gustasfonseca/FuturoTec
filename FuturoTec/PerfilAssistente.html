@@ -7,6 +7,7 @@
   <title>Perfil do Assistente - FuturoTEC</title>
   <link rel="stylesheet" href="css/perfil.css">
   <link rel="stylesheet" href="css/styles.css">
+  <script src="https://unpkg.com/feather-icons"></script>
 </head>
 
 <body>
@@ -88,10 +89,14 @@
       <div class="danger-zone">
         <h3>Zona de Perigo</h3>
         <p>Use esta opção para sair da sua conta sem excluí-la permanentemente.</p>
-        <button type="button" class="delete-account-btn" id="btn-deslogar">Deslogar da Conta</button>
+        <button type="button" class="delete-account-btn" id="btn-deslogar">Deslogar da Conta
+          <i data-feather="log-out"></i>
+        </button>
         <hr>
         <p>A exclusão da sua conta é irreversível e removerá todos os seus dados e acessos administrativos.</p>
-        <button type="button" class="delete-account-btn" id="btn-excluir-conta-assistente">Excluir Minha Conta Permanentemente</button>
+        <button type="button" class="delete-account-btn" id="btn-excluir-conta-assistente">Excluir Minha Conta Permanentemente
+          <i data-feather="alert-triangle"></i>
+        </button>
       </div>
 
     </main>
@@ -132,10 +137,17 @@
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+  <script>
+    // Inicializa Feather Icons para que os ícones (log-out e alert-triangle) apareçam
+    document.addEventListener('DOMContentLoaded', () => {
+        if (typeof feather !== 'undefined') {
+            feather.replace(); // ESTA É A FUNÇÃO CHAVE!
+        }
+    });
+</script>
 
   <!-- Script do assistente -->
   <script src="js/auth-assistente.js"></script>
 
 </body>
 </html>
-
