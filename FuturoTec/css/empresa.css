@@ -715,9 +715,12 @@ body {
 
 .modal-content .form-card input,
 .modal-content .form-card textarea {
-  background-color: #f8f9fa; /* Fundo levemente cinza */
-  border: 1px solid var(--border);
+  background-color: #f8f9fa8f; /* Fundo levemente cinza */
+ border-color: hsl(174, 36%, 35%); /* Destaca a borda com a sua cor principal */
+  box-shadow: 0 0 0 2px hsl(174, 36%, 35%); /* Adiciona um brilho suave */
+  outline: none; /* Remove a borda padrão do navegador */
 }
+
 
 .modal-content .form-card input:focus,
 .modal-content .form-card textarea:focus {
@@ -761,103 +764,6 @@ body {
 }
 
 
-/* --- Footer --- */
-.footer {
-  background-color: #124a50; /* Tom mais escuro da paleta */
-  color: #e0e0e0; /* Cinza claro para texto */
-  padding: 50px 0;
-  font-family: 'Arial', sans-serif;
-  line-height: 1.6;
-}
-
-.footer-grid {
-  display: grid;
-  grid-template-columns: 2fr 1fr 1fr; /* Coluna da info maior */
-  gap: 40px;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 20px;
-}
-
-.footer h4 {
-  font-size: 1.2rem;
-  margin-bottom: 20px;
-  color: #fff;
-  position: relative;
-  padding-bottom: 10px;
-}
-.footer h4::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 40px;
-  height: 3px;
-  background-color: var(--primary-light);
-  border-radius: 2px;
-}
-
-.footer p {
-  margin: 0 0 10px;
-  font-size: 0.95em;
-}
-
-.footer a {
-  color: #e0e0e0;
-  text-decoration: none;
-  transition: color 0.3s ease;
-}
-.footer a:hover {
-  color: #fff;
-  text-decoration: underline;
-}
-
-.footer-info .school {
-  font-weight: bold;
-  color: #fff;
-}
-.footer-info .copyright {
-  font-size: 0.85rem;
-  margin-top: 25px;
-  opacity: 0.7;
-}
-
-.footer-links ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-.footer-links ul li {
-  margin-bottom: 12px;
-}
-
-.footer-social {
-  text-align: left; 
-}
-
-.footer-logo img {
-  max-width: 100px;
-  margin-bottom: 15px;
-  filter: brightness(0) invert(1);
-}
-
-.social-icons {
-  display: flex;
-  justify-content: flex-start;
-  gap: 15px;
-  margin-top: 10px;
-}
-
-.social-icons svg {
-  width: 24px;
-  height: 24px;
-  color: #fff;
-  transition: color 0.3s ease, transform 0.3s ease;
-}
-.social-icons a:hover svg {
-  color: var(--primary-light);
-  transform: scale(1.1);
-}
 
 
 /* --- Responsividade --- */
@@ -1066,4 +972,27 @@ body {
 #candidaturas-empresa-container > div li button:hover,
 #candidaturas-empresa-container > div li a:hover {
     background-color: #1a7878;
+}
+/* 1. MUDAR A COR DO TÍTULO DO MODAL */
+/* Seletor: h2 dentro do formulário do modal */
+#edit-job-form h2 {
+    color:hsl(174, 36%, 35%); /* Substitua por sua cor preferida (ex: blue, #FF4500) */
+    /* Garante que o título se destaque */
+    margin-bottom: 20px;
+}
+
+/* 2. MUDAR A COR DE TODAS AS TAGS <LABEL> DENTRO DO MODAL */
+/* Seletor: todas as tags label dentro do formulário do modal */
+#edit-job-form label {
+    color:hsl(174, 36%, 35%); /* Substitua por sua cor preferida */
+    font-weight: 600; /* Opcional: Torna o texto da label mais forte */
+    margin-bottom: 5px;
+    display: block; /* Garante que a label ocupe a linha toda */
+}
+
+/* 3. Ajuste Opcional para as tags requeridas, se houver um estilo separado */
+#edit-job-form label.required::after {
+    content: " *"; /* Mantém o asterisco vermelho para campos obrigatórios (se houver) */
+    color: #dc3545; /* Cor vermelha para indicar que é obrigatório */
+    font-weight: normal;
 }
