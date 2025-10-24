@@ -109,6 +109,9 @@ const loadCompanyJobs = () => {
                       ? `<p class="job-courses">Cursos: ${vaga.cursosRequeridos.join(', ')}</p>` 
                       : '<p class="job-courses">Cursos: Não especificado</p>';
                  
+                 // >>> INÍCIO DA MODIFICAÇÃO: PERÍODO <<<
+                 const periodoVaga = vaga.periodo || 'Não Informado'; // Novo campo
+
                  const vagaCard = document.createElement('div');
                  vagaCard.className = 'vaga-card';
                  vagaCard.innerHTML = `
@@ -116,7 +119,7 @@ const loadCompanyJobs = () => {
                       <p class="job-description">${vaga.descricao.substring(0, 150)}...</p> 
                       ${cursos}
                       <p class="job-time">Carga Horária: ${vaga.cargaHoraria}</p>
-                      <div class="actions-vaga">
+                      <p class="job-periodo">Período: ${periodoVaga}</p> <div class="actions-vaga">
                           <button class="edit-btn action-button" data-id="${vagaId}" title="Editar Vaga">
                               <i data-feather="edit"></i> Editar
                           </button>
@@ -125,12 +128,14 @@ const loadCompanyJobs = () => {
                           </button>
                       </div>
                  `;
+                 // >>> FIM DA MODIFICAÇÃO: PERÍODO <<<
                  vagaCard.appendChild(document.createElement('div')); 
                  vagasContainer.appendChild(vagaCard);
              });
              if (typeof feather !== 'undefined') {
                  feather.replace(); 
              }
+             setupJobActions(); // Chama a função para configurar os botões de ação (editar/excluir)
       })
       .catch(error => {
              console.error("ERRO FATAL AO BUSCAR VAGAS:", error);
@@ -196,22 +201,22 @@ const loadCandidaciesForCompany = async () => {
                       const alunoLocalizacao = (aluno.cidade && aluno.estado) ? `${aluno.cidade}, ${aluno.estado}` : 'Localização não informada';
                       
                       candidatosHtml += `
-                                      <li class="candidate-card">
-                                          <div class="candidate-details">
-                                              <h4 class="candidate-name">${aluno.nome}</h4>
-                                              <p class="candidate-role">**Curso/Área:** ${alunoCurso}</p>
-                                              <p class="candidate-contact">
-                                                   <i data-feather="mail" class="icon-small"></i> **Email:** ${aluno.email}
-                                              </p>
-                                              <p class="candidate-contact">
-                                                   <i data-feather="phone" class="icon-small"></i> **Telefone:** ${aluno.telefone || 'N/A'}
-                                              </p>
-                                              <p class="candidate-location">
-                                                   <i data-feather="map-pin" class="icon-small"></i> **Local:** ${alunoLocalizacao}
-                                              </p>
-                                          </div>
-                                          <button class="view-cv-btn" data-aluno-id="${candidatura.alunoId}">Ver Perfil Completo</button>
-                                      </li>
+                                         <li class="candidate-card">
+                                             <div class="candidate-details">
+                                                 <h4 class="candidate-name">${aluno.nome}</h4>
+                                                 <p class="candidate-role">**Curso/Área:** ${alunoCurso}</p>
+                                                 <p class="candidate-contact">
+                                                     <i data-feather="mail" class="icon-small"></i> **Email:** ${aluno.email}
+                                                 </p>
+                                                 <p class="candidate-contact">
+                                                     <i data-feather="phone" class="icon-small"></i> **Telefone:** ${aluno.telefone || 'N/A'}
+                                                 </p>
+                                                 <p class="candidate-location">
+                                                     <i data-feather="map-pin" class="icon-small"></i> **Local:** ${alunoLocalizacao}
+                                                 </p>
+                                             </div>
+                                             <button class="view-cv-btn" data-aluno-id="${candidatura.alunoId}">Ver Perfil Completo</button>
+                                         </li>
                       `;
                  }
                  
@@ -343,6 +348,7 @@ const setupCourseAutocomplete = () => {
     setupAutocompleteForElements('curso-vaga', 'sugestoes-curso-vaga', 'cursos-selecionados');
     
     // Configura para o modal de edição (MinhasVagas.html)
+    // OBS: O HTML DO MODAL PRECISARÁ TER OS IDs 'edit-curso-vaga', 'edit-sugestoes-curso-vaga', 'edit-cursos-selecionados' para funcionar
     setupAutocompleteForElements('edit-curso-vaga', 'edit-sugestoes-curso-vaga', 'edit-cursos-selecionados');
 }
 
@@ -370,11 +376,20 @@ const setupCreateJobForm = () => {
                  return;
             }
 
+            // >>> INÍCIO DA MODIFICAÇÃO: PERÍODO <<<
+            const periodoSelecionado = document.getElementById('periodo').value;
+            if (!periodoSelecionado) {
+                alert("Por favor, selecione o Período de trabalho.");
+                return;
+            }
+
             const vagaData = {
                 titulo: document.getElementById('titulo').value,
                 descricao: document.getElementById('descricao').value,
                 requisitos: document.getElementById('requisitos').value,
                 cargaHoraria: document.getElementById('cargaHoraria').value,
+                periodo: periodoSelecionado, // Adiciona o campo período
+                // >>> FIM DA MODIFICAÇÃO: PERÍODO <<<
                 cursosRequeridos: selectedCourses,
                 empresaId: currentUser.uid, 
                 status: 'Vaga Ativa', 
@@ -421,7 +436,7 @@ const setupJobActions = () => {
         if (!targetButton) return;
         const vagaId = targetButton.dataset.id;
 
-        // AÇÃO DE EXCLUIR
+        // AÇÃO DE EXCLUIR (Preservada)
         if (targetButton.classList.contains('delete-btn')) {
             if (!confirm("Tem certeza que deseja excluir esta vaga?")) return;
             
@@ -446,6 +461,13 @@ const setupJobActions = () => {
                      document.getElementById('edit-requisitos').value = vaga.requisitos;
                      document.getElementById('edit-cargaHoraria').value = vaga.cargaHoraria;
                      
+                     // >>> INÍCIO DA MODIFICAÇÃO: PERÍODO - PREENCHER MODAL <<<
+                     const editPeriodoEl = document.getElementById('edit-periodo');
+                     if (editPeriodoEl) {
+                         editPeriodoEl.value = vaga.periodo || '';
+                     }
+                     // >>> FIM DA MODIFICAÇÃO: PERÍODO - PREENCHER MODAL <<<
+                     
                      // 1. Limpa o estado global
                      selectedCourses = [];
                      
@@ -453,7 +475,7 @@ const setupJobActions = () => {
                      if (vaga.cursosRequeridos && Array.isArray(vaga.cursosRequeridos)) {
                           selectedCourses = [...vaga.cursosRequeridos]; 
                      }
-                     renderSelectedCourses('edit-cursos-selecionados'); 
+                     renderSelectedCourses('cursos-selecionados'); // Nota: Usando 'cursos-selecionados' ou 'edit-cursos-selecionados' dependendo do seu HTML. No seu HTML, o ID é 'cursos-selecionados'.
                      
                      editModal.style.display = 'flex';
                  } else {
@@ -474,11 +496,20 @@ const setupJobActions = () => {
                  return;
             }
             
+            // >>> INÍCIO DA MODIFICAÇÃO: PERÍODO - CAPTURAR E VALIDAR <<<
+            const periodoSelecionado = document.getElementById('edit-periodo').value;
+            if (!periodoSelecionado) {
+                alert("Por favor, selecione o Período de trabalho.");
+                return;
+            }
+            // >>> FIM DA MODIFICAÇÃO: PERÍODO - CAPTURAR E VALIDAR <<<
+
             const updatedData = {
                  titulo: document.getElementById('edit-titulo').value,
                  descricao: document.getElementById('edit-descricao').value,
                  requisitos: document.getElementById('edit-requisitos').value,
                  cargaHoraria: document.getElementById('edit-cargaHoraria').value,
+                 periodo: periodoSelecionado, // Adiciona o campo período
                  cursosRequeridos: selectedCourses,
                  ultimaAtualizacao: firebase.firestore.FieldValue.serverTimestamp()
             };
@@ -504,14 +535,14 @@ const setupJobActions = () => {
         });
     }
 
-    // FECHAR MODAL
-    const closeModal = () => { editModal.style.display = 'none'; selectedCourses = []; renderSelectedCourses('edit-cursos-selecionados'); };
+    // FECHAR MODAL (Preservada)
+    const closeModal = () => { editModal.style.display = 'none'; selectedCourses = []; renderSelectedCourses('cursos-selecionados'); };
     if (cancelEditBtn) {
         cancelEditBtn.addEventListener('click', closeModal);
     }
     if (editModal) {
           editModal.addEventListener('click', (e) => {
-              if (e.target.id === 'edit-modal') { closeModal(); }
+               if (e.target.id === 'edit-modal') { closeModal(); }
           });
     }
 };
