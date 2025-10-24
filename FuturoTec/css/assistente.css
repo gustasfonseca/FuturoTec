@@ -1,39 +1,325 @@
-/* Adicione no final de css/assistente.css */
+/* ======================================= */
+/* ARQUIVO ESPECÍFICO: ASSISTENTE.CSS */
+/* Estilos para Páginas de Gerenciamento (Cards, Tabelas, Modais) */
+/* ======================================= */
 
-.section-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1rem;
+/* As variáveis de cor são repetidas aqui para consistência e escopo. */
+:root {
+    --primary-color:  #2c6e7e; 
+    --primary-dark:  #2c6e7e; 
+    --background-light: #f4f6f9; 
+    --text-dark: #333;
+    --text-medium: #555;
+    --text-light: #6c757d; 
+    --shadow-light: rgba(0, 0, 0, 0.05);
+    --shadow-medium: rgba(0, 0, 0, 0.15);
+    --border-radius: 10px; 
+    --border-light: #e9ecef;
+    --border-input: #ced4da;
+    --action-delete: #dc3545; 
 }
 
-.btn-primary {
-    background-color: var(--primary);
+/* Reset de Box-sizing */
+* {
+    box-sizing: border-box;
+}
+
+/* ======================================= */
+/* A) ESTILOS DA PÁGINA INICIAL (CARDS) */
+/* ======================================= */
+
+main {
+    /* Padding ajustado para aproximar do footer */
+    padding: 60px 20px 30px; 
+    text-align: center;
+}
+
+main h2 {
+    font-size: 2.2rem;
+    margin-bottom: 10px;
+    color: var(--primary-color); 
+}
+
+main p {
+    font-size: 1.1rem;
+    color: var(--text-medium);
+    margin-bottom: 50px;
+}
+
+/* Contêiner de Cards */
+.cards-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 30px;
+}
+
+/* Cards (Aumentados e aprimorados) */
+.card {
+    background-color: white;
+    width: 300px; 
+    padding: 35px; 
+    border-radius: 16px;
+    box-shadow: 0 8px 15px var(--shadow-light); 
+    text-align: center;
+    transition: all 0.3s ease;
+    border: 1px solid transparent; 
+}
+
+.card:hover {
+    transform: translateY(-8px); 
+    box-shadow: 0 15px 30px var(--shadow-medium); 
+    border-color: var(--primary-color); 
+}
+
+.card i {
+    font-size: 38px; 
+    color: var(--primary-color);
+    background-color: #e6f0f1;
+    padding: 22px; 
+    border-radius: 50%;
+    margin-bottom: 25px; 
+}
+
+.card h3 { 
+    margin-bottom: 12px; 
+    color: var(--text-dark); 
+    font-size: 1.6rem; 
+}
+
+.card p { 
+    color: var(--text-medium); 
+    font-size: 1.1rem; 
+    margin-bottom: 25px; 
+}
+
+.card a {
+    display: inline-block;
+    background: linear-gradient(145deg, var(--primary-color), var(--primary-dark));
     color: white;
     border: none;
-    padding: 0.6rem 1.2rem;
-    border-radius: 5px;
+    padding: 14px 30px; 
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 500;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card a:hover { 
+    transform: translateY(-2px); 
+    box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+}
+
+/* RESPONSIVIDADE PARA CARDS */
+@media (max-width: 768px) {
+    main {
+        padding: 40px 15px 20px;
+    }
+    main h2 {
+        font-size: 1.8rem;
+    }
+    .card {
+        width: 100%; 
+    }
+}
+
+
+/* ======================================= */
+/* B) ESTILOS DA PÁGINA DE GERENCIAMENTO (TABELA/MODAL) */
+/* ======================================= */
+
+.main-content {
+    padding: 40px 20px; 
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.page-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.page-header h1 {
+    font-size: 2.5rem;
+    color: var(--primary-color);
+    margin-bottom: 5px;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+}
+
+.page-header p {
+    font-size: 1.1rem;
+    color: var(--text-medium);
+}
+
+/* Busca */
+.search-container {
+    margin: 0 auto 30px; 
+    position: relative;
+    max-width: 600px;
+}
+.search-container input[type="text"] {
+    width: 100%;
+    padding: 12px 18px; 
+    border: 2px solid var(--border-input); 
+    border-radius: var(--border-radius);
+    font-size: 1rem;
+    transition: border-color 0.3s, box-shadow 0.3s;
+    background-color: white;
+}
+.search-container input[type="text"]:focus {
+    border-color: var(--primary-color);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(54, 102, 111, 0.2); 
+}
+
+/* Tabela de Dados */
+.table-card { 
+    background-color: white; 
+    padding: 2rem; 
+    border-radius: var(--border-radius); 
+    box-shadow: 0 10px 25px var(--shadow-light); 
+    margin-top: 1rem; 
+    overflow-x: auto; 
+}
+
+.table-card h3 {
+    margin-bottom: 1.5rem;
+    font-size: 1.6rem;
+    color: var(--primary-dark);
+    text-align: left;
+}
+
+table { 
+    width: 100%; 
+    border-collapse: collapse; 
+    min-width: 800px; 
+}
+
+th, td { 
+    text-align: left; 
+    padding: 1rem; 
+    border-bottom: 1px solid var(--border-light); 
+    word-wrap: break-word; 
+}
+
+th { 
+    font-weight: 700; 
+    color: var(--text-light); 
+    text-transform: uppercase; 
+    font-size: 0.85rem; 
+    background-color: var(--background-light); 
+    border-top: 1px solid var(--border-light);
+}
+
+tr:hover { 
+    background-color: #e6f0f1; 
+}
+
+.action-buttons button { 
+    border: none; 
+    background: none; 
+    font-size: 1.3rem; 
+    margin-right: 0.8rem; 
     cursor: pointer;
-    font-weight: bold;
-    transition: background-color 0.2s ease;
+    transition: color 0.2s ease, transform 0.2s ease; 
+    padding: 5px;
 }
 
-.btn-primary:hover {
-    background-color: var(--primary-hover);
+.action-buttons button:hover { 
+    transform: scale(1.15); 
 }
 
-.status {
-    padding: 4px 8px;
-    border-radius: 12px;
-    font-size: 0.8em;
-    font-weight: bold;
-    color: white;
+.edit-btn i {
+    color: var(--primary-color);
 }
 
-.status-active {
-    background-color: #28a745; /* Verde */
+.delete-btn i {
+    color: var(--action-delete);
 }
 
-.status-inactive {
-    background-color: #6c757d; /* Cinza */
+/* Modal */
+.modal { 
+    display: none; 
+    position: fixed; 
+    top: 0; 
+    left: 0; 
+    width: 100%; 
+    height: 100%; 
+    background: rgba(0,0,0,0.6); 
+    justify-content: center; 
+    align-items: center; 
+    z-index: 2000; 
+    backdrop-filter: blur(3px); 
+}
+.modal-content { 
+    background: #fff; 
+    padding: 30px; 
+    border-radius: var(--border-radius); 
+    width: 95%; 
+    max-width: 550px; 
+    display: flex; 
+    flex-direction: column; 
+    gap: 15px; 
+    box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+}
+
+.modal-content input, 
+.modal-content textarea { 
+    padding: 10px; 
+    border-radius: 6px; 
+    border: 1px solid var(--border-input); 
+    width: 100%; 
+    resize: vertical; 
+    font-size: 1rem;
+}
+
+.modal-content input:focus, 
+.modal-content textarea:focus {
+    border-color: var(--primary-color);
+    outline: none;
+    box-shadow: 0 0 0 1px var(--primary-color);
+}
+
+.modal-content button { 
+    padding: 12px; 
+    border: none; 
+    border-radius: 8px; 
+    font-weight: 600; 
+    cursor: pointer; 
+    transition: opacity 0.2s;
+    text-transform: uppercase;
+}
+
+#saveBtn { 
+    background: var(--primary-color); 
+    color: #fff; 
+}
+#saveBtn:hover { 
+    background: var(--primary-dark); 
+}
+
+#cancelBtn { 
+    background: #e9ecef; 
+    color: var(--text-dark); 
+}
+#cancelBtn:hover { 
+    background: var(--text-light); 
+}
+
+/* RESPONSIVIDADE PARA GERENCIAMENTO */
+@media (max-width: 768px) {
+    .main-content {
+        padding: 20px 10px;
+    }
+    .page-header h1 {
+        font-size: 2rem;
+    }
+    .table-card {
+        padding: 1rem;
+    }
+    .modal-content {
+        padding: 20px;
+    }
 }
