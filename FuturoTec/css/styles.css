@@ -897,6 +897,11 @@ body {
             color: var(--primary);
             border-bottom-color: var(--primary);
         }
+        .nav-link.active {
+    color: var(--primary); 
+    border-bottom-color: var(--primary);
+    font-weight: 600;
+}
         
         .nav-actions {
             display: flex;
