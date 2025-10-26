@@ -3,8 +3,6 @@
 const auth = firebase.auth();
 const db = firebase.firestore();
 let currentCandidate = null;
-
-// Armazenar todas as vagas com nomes de empresa para filtrar localmente
 let allVagasData = [];
 
 // =================================================================
@@ -52,25 +50,19 @@ const renderJobs = (vagasToRender) => {
         const nomeEmpresa = item.nomeEmpresaCompleto;
         const isVagaAtiva = vaga.status === 'Vaga Ativa';
 
-        let buttonHtml;
-        let statusTagHtml;
+        const buttonHtml = isVagaAtiva
+            ? `<a href="#" class="btn-candidatar" data-vaga-id="${vagaId}">Candidatar-se</a>`
+            : `<a href="#" class="btn-candidatar disabled" data-vaga-id="${vagaId}" style="background-color: #aaa; pointer-events: none;">${vaga.status || 'Vaga Finalizada'}</a>`;
 
-        if (isVagaAtiva) {
-            buttonHtml = `<a href="#" class="btn-candidatar" data-vaga-id="${vagaId}">Candidatar-se</a>`;
-            statusTagHtml = '<span class="status-tag active" style="color: #28a745; border: 1px solid #28a745; padding: 3px 6px; border-radius: 4px; font-size: 0.8em; margin-left: 10px;">Vaga Ativa</span>';
-        } else {
-            const statusDisplay = vaga.status || 'Vaga Finalizada';
-            buttonHtml = `<a href="#" class="btn-candidatar disabled" data-vaga-id="${vagaId}" style="background-color: #aaa; pointer-events: none;">${statusDisplay}</a>`;
-            statusTagHtml = `<span class="status-tag inactive" style="color: #dc3545; border: 1px solid #dc3545; padding: 3px 6px; border-radius: 4px; font-size: 0.8em; margin-left: 10px;">${statusDisplay}</span>`;
-        }
+        const statusTagHtml = isVagaAtiva
+            ? '<span class="status-tag active" style="color: #28a745; border: 1px solid #28a745; padding: 3px 6px; border-radius: 4px; font-size: 0.8em; margin-left: 10px;">Vaga Ativa</span>'
+            : `<span class="status-tag inactive" style="color: #dc3545; border: 1px solid #dc3545; padding: 3px 6px; border-radius: 4px; font-size: 0.8em; margin-left: 10px;">${vaga.status || 'Vaga Finalizada'}</span>`;
 
-        let cursosDisplay = 'Não informado';
-        if (vaga.cursosRequeridos) {
-            if (Array.isArray(vaga.cursosRequeridos))
-                cursosDisplay = vaga.cursosRequeridos.join(', ');
-            else if (typeof vaga.cursosRequeridos === 'string')
-                cursosDisplay = vaga.cursosRequeridos;
-        }
+        const cursosDisplay = vaga.cursosRequeridos
+            ? (Array.isArray(vaga.cursosRequeridos) ? vaga.cursosRequeridos.join(', ') : vaga.cursosRequeridos)
+            : 'Não informado';
+
+        const localDisplay = vaga.local || 'Não informado'; // <-- CAMPO LOCAL GARANTIDO
 
         return `
             <article class="vaga-card">
@@ -82,6 +74,7 @@ const renderJobs = (vagasToRender) => {
                     <p class="detalhes">Carga Horária: ${vaga.cargaHoraria || 'Não informada'}</p>
                     <p class="detalhes">Requisitos: ${vaga.requisitos || 'Não informado'}</p>
                     <p class="detalhes">Período: ${vaga.periodo || 'Não informado'}</p>
+                    <p class="detalhes">Local: ${localDisplay}</p>
                 </div>
                 <div class="vaga-action">
                     ${buttonHtml}
@@ -115,6 +108,12 @@ const loadAvailableJobs = async () => {
         const jobsWithCompanyNamesPromises = snapshot.docs.map(async doc => {
             const vaga = doc.data();
             const vagaId = doc.id;
+
+            // 🔹 Garantir que o campo 'local' sempre exista
+            if (!vaga.hasOwnProperty('local') || !vaga.local) {
+                vaga.local = 'Não informado';
+            }
+
             const nomeEmpresaInfo = await getCompanyName(vaga.empresaId);
             return {
                 vagaId,
@@ -126,7 +125,6 @@ const loadAvailableJobs = async () => {
 
         const allVagas = await Promise.all(jobsWithCompanyNamesPromises);
 
-        // 🔹 FILTRA APENAS VAGAS ATIVAS
         allVagasData = allVagas.filter(item =>
             item.vaga.status === 'Vaga Ativa' || item.vaga.status === 'Ativa'
         );
@@ -140,7 +138,7 @@ const loadAvailableJobs = async () => {
 };
 
 // =================================================================
-// RESTANTE DO CÓDIGO IGUAL AO SEU ORIGINAL
+// FILTRO E PESQUISA
 // =================================================================
 const filterAndSearchJobs = () => {
     const filtroCurso = document.getElementById('filtroCurso').value.toLowerCase().trim();
@@ -176,6 +174,9 @@ const setupFilterListeners = () => {
         aplicarFiltrosButton.addEventListener('click', filterAndSearchJobs);
 };
 
+// =================================================================
+// CANDIDATURA
+// =================================================================
 const setupCandidacyListeners = () => {
     document.querySelectorAll('.btn-candidatar').forEach(button => {
         if (button.classList.contains('disabled') || button.textContent === 'Vaga Finalizada') return;
@@ -228,6 +229,9 @@ const handleCandidacy = async (vagaId, button) => {
     }
 };
 
+// =================================================================
+// AUTENTICAÇÃO
+// =================================================================
 auth.onAuthStateChanged((user) => {
     if (user) {
         currentCandidate = user;
