@@ -5,12 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Minhas Candidaturas | FuturoTEC</title>
     <link rel="stylesheet" href="css/styles.css" />
-   
+    
     <script src="https://unpkg.com/feather-icons"></script>
 </head>
 <body>
 
-    <!-- Scripts de Firebase devem vir ANTES do conteúdo para autenticação rápida -->
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
@@ -35,7 +34,6 @@
                     <div class="logo">
                         <img src="img/FuturoTecInicial.jpeg" alt="FuturoTEC Logo" />
                     </div>
-                    <!-- Adapte esta navegação para a do Aluno -->
                     <nav class="nav-desktop student-nav">
                         <a href="InicialAluno.html" class="nav-link">Início</a>
                         <a href="InicialAluno.html#cursos" class="nav-link">Cursos</a>
@@ -65,7 +63,7 @@
     </div>
 </main>
 
-       
+        
     <footer class="footer">
     <div class="container footer-grid">
         <div class="footer-info">
@@ -87,11 +85,11 @@
         </div>
 
       <div class="container">
-                <div class="nav-wrapper">
-                    <div class="logo">
-                        <img src="img/FuturoTecInicial.jpeg" alt="FuturoTEC Logo" />
-                    </div>
-                    <br></div>
+            <div class="nav-wrapper">
+                <div class="logo">
+                    <img src="img/FuturoTecInicial.jpeg" alt="FuturoTEC Logo" />
+                </div>
+                <br></div>
             <h4>Conecte-se</h4>
             <div class="social-icons">
                 <a href="#"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6H6a2 2 0 0 0-2 2z"></path><path d="M14 2v6h6"></path><path d="M8 12h8"></path><path d="M8 16h8"></path></svg></a>
@@ -106,6 +104,97 @@
         feather.replace();
     </script>
     <script src="js/aluno.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const candidaturasContainer = document.getElementById('candidaturas-container');
+    
+            // 1. Verifica o estado de autenticação do usuário
+            firebase.auth().onAuthStateChanged(user => {
+                if (user) {
+                    // Usuário está logado, busca as candidaturas
+                    carregarCandidaturas(user.uid);
+                } else {
+                    // Usuário não está logado
+                    candidaturasContainer.innerHTML = `
+                        <p class="info-message">Você precisa estar logado para ver suas candidaturas.</p>
+                        <a href="login.html" class="login-btn-center">Fazer Login</a>
+                    `;
+                }
+            });
+    
+            // 2. Função assíncrona para buscar os dados no Firebase
+            const carregarCandidaturas = async (alunoId) => {
+                try {
+                    const db = firebase.firestore();
+                    // Busca as candidaturas do aluno logado
+                    const candidaturasSnapshot = await db.collection('candidaturas')
+                                                         .where('alunoId', '==', alunoId)
+                                                         .get();
+    
+                    if (candidaturasSnapshot.empty) {
+                        candidaturasContainer.innerHTML = '<p class="info-message">Você ainda não se candidatou a nenhuma vaga.</p>';
+                        return;
+                    }
+    
+                    // Limpa a mensagem "Carregando..."
+                    candidaturasContainer.innerHTML = '';
+    
+                    // 3. Mapeia cada candidatura para buscar os detalhes da vaga
+                    const promessasVagas = candidaturasSnapshot.docs.map(doc => {
+                        const candidaturaData = doc.data();
+                        // Busca o documento da vaga usando o vagaId da candidatura
+                        return db.collection('vagas').doc(candidaturaData.vagaId).get().then(vagaDoc => {
+                            if (vagaDoc.exists) {
+                                return { 
+                                    status: candidaturaData.status, 
+                                    vaga: vagaDoc.data() 
+                                };
+                            }
+                            return null; // Retorna nulo se a vaga não for encontrada
+                        });
+                    });
+    
+                    const resultados = await Promise.all(promessasVagas);
+    
+                    // 4. Cria o HTML e exibe na tela
+                    resultados.forEach(item => {
+                        if (item) { // Verifica se o item não é nulo
+                            const vaga = item.vaga;
+                            const status = item.status;
+                            
+                            const card = document.createElement('div');
+                            // Adicione estilos para .candidatura-card no seu CSS para ficar mais bonito
+                            card.style.backgroundColor = '#fff';
+                            card.style.border = '1px solid #ddd';
+                            card.style.borderRadius = '8px';
+                            card.style.padding = '20px';
+                            card.style.marginBottom = '20px';
+                            card.style.boxShadow = '0 2px 4px rgba(0,0,0,0.1)';
+    
+                            // Define a cor do status
+                            let statusColor = '#333'; // Cor padrão
+                            if (status === 'Em análise') statusColor = '#f0ad4e'; // Laranja
+                            if (status === 'Aprovado') statusColor = '#5cb85c'; // Verde
+                            if (status === 'Recusado') statusColor = '#d9534f'; // Vermelho
+    
+                            card.innerHTML = `
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                                    <h3 style="margin: 0; color: #333;">${vaga.titulo || 'Título não encontrado'}</h3>
+                                    <span style="background-color: ${statusColor}; color: white; padding: 5px 10px; border-radius: 15px; font-size: 14px;">${status}</span>
+                                </div>
+                                <p style="margin: 0; color: #666;">${vaga.empresa || 'Empresa não encontrada'}</p>
+                            `;
+                            candidaturasContainer.appendChild(card);
+                        }
+                    });
+    
+                } catch (error) {
+                    console.error("Erro ao buscar candidaturas: ", error);
+                    candidaturasContainer.innerHTML = '<p class="info-message" style="color: red;">Ocorreu um erro ao carregar suas candidaturas. Tente novamente mais tarde.</p>';
+                }
+            };
+        });
+    </script>
 </body>
 </html>
-
