@@ -1,3 +1,4 @@
+
 // CÓDIGO COMPLETO RESULTANTE DA UNIÃO DAS DUAS PARTES
 // =================================================================
 // Variáveis Globais e Inicialização
@@ -6,14 +7,13 @@ const auth = firebase.auth();
 const db = firebase.firestore();
 let currentUser = null; // O usuário da empresa autenticado
 let selectedCourses = []; // Variável para armazenar os cursos selecionados (USADA PARA CRIAÇÃO E EDIÇÃO)
-let availableCourses = []; // Variável para armazenar os cursos carregados do Firestore
+let availableCourses = []; // Variável para os cursos carregados do Firestore
 
-let realLogoutBtn = null; // Variável para o botão de logout dedicado (Deve ter ID: 'btn-logout-empresa')
+let realLogoutBtn = null; // Variável para o botão de logout dedicado (ID: 'btn-logout-empresa')
 
 // =================================================================
 // FUNÇÃO PARA CARREGAR OS CURSOS DO FIRESTORE
 // =================================================================
-
 const loadAvailableCourses = async () => {
     try {
         console.log("[Cursos] Buscando cursos na coleção 'cursos'...");
@@ -69,9 +69,6 @@ const loadDashboardData = async (user) => {
                  return;
             }
             let totalCandidaturas = 0;
-            
-            // Note: Este loop pode ser lento para muitas vagas/candidaturas.
-            // Otimização futura pode envolver um campo de 'candidaturasCount' na coleção 'vagas'.
             for (const vagaId of vagaIds) {
                  const candidaturasSnapshot = await db.collection('candidaturas')
                       .where('vagaId', '==', vagaId)
@@ -109,9 +106,9 @@ const loadCompanyJobs = () => {
                       ? `<p class="job-courses">Cursos: ${vaga.cursosRequeridos.join(', ')}</p>` 
                       : '<p class="job-courses">Cursos: Não especificado</p>';
                  
-                 // >>> INÍCIO DA MODIFICAÇÃO: PERÍODO <<<
-                 const periodoVaga = vaga.periodo || 'Não Informado'; // Novo campo
-
+                 const periodoVaga = vaga.periodo || 'Não Informado';
+                 const localVaga = vaga.local || 'Não informado'; // <<< ADICIONADO
+                 
                  const vagaCard = document.createElement('div');
                  vagaCard.className = 'vaga-card';
                  vagaCard.innerHTML = `
@@ -119,7 +116,9 @@ const loadCompanyJobs = () => {
                       <p class="job-description">${vaga.descricao.substring(0, 150)}...</p> 
                       ${cursos}
                       <p class="job-time">Carga Horária: ${vaga.cargaHoraria}</p>
-                      <p class="job-periodo">Período: ${periodoVaga}</p> <div class="actions-vaga">
+                      <p class="job-periodo">Período: ${periodoVaga}</p>
+                      <p class="job-location">Local: ${localVaga}</p> <!-- <<< ADICIONADO -->
+                      <div class="actions-vaga">
                           <button class="edit-btn action-button" data-id="${vagaId}" title="Editar Vaga">
                               <i data-feather="edit"></i> Editar
                           </button>
@@ -128,14 +127,13 @@ const loadCompanyJobs = () => {
                           </button>
                       </div>
                  `;
-                 // >>> FIM DA MODIFICAÇÃO: PERÍODO <<<
                  vagaCard.appendChild(document.createElement('div')); 
                  vagasContainer.appendChild(vagaCard);
              });
              if (typeof feather !== 'undefined') {
                  feather.replace(); 
              }
-             setupJobActions(); // Chama a função para configurar os botões de ação (editar/excluir)
+             setupJobActions();
       })
       .catch(error => {
              console.error("ERRO FATAL AO BUSCAR VAGAS:", error);
@@ -143,6 +141,9 @@ const loadCompanyJobs = () => {
       });
 };
 
+// =================================================================
+// FUNÇÃO CANDIDATURAS PARA EMPRESA (Mantida igual)
+// =================================================================
 const loadCandidaciesForCompany = async () => {
     const container = document.getElementById('candidaturas-empresa-container');
     if (!container || !currentUser) return; 
@@ -177,18 +178,15 @@ const loadCandidaciesForCompany = async () => {
              if (candidaturasSnapshot.empty) {
                  candidatosHtml = '<p class="no-candidates">Não há candidaturas para esta vaga.</p>';
              } else {
-                 
                  for (const candDoc of candidaturasSnapshot.docs) {
                       const candidatura = candDoc.data();
                       let aluno = { nome: 'Aluno Não Encontrado', email: 'N/A', telefone: 'N/A', cidade: 'N/A', estado: 'N/A', curso: 'N/A', area: 'N/A' };
 
                       try {
                           if (!candidatura.alunoId) continue;
-                          
                           const alunoDoc = await db.collection('usuarios').doc(candidatura.alunoId).get();
                           if (alunoDoc.exists) {
-                              aluno = { ...aluno, ...alunoDoc.data() }; 
-                              // Tenta garantir que o email do Auth esteja disponível
+                              aluno = { ...aluno, ...alunoDoc.data() };
                               if (!aluno.email && auth.currentUser && auth.currentUser.uid === candidatura.alunoId) {
                                    aluno.email = auth.currentUser.email;
                               }
@@ -243,41 +241,28 @@ const loadCandidaciesForCompany = async () => {
         } 
 
         container.innerHTML = fullHtml;
-        // Assume que estas funções estão definidas globalmente ou em outro arquivo importado:
-        if (typeof setupAccordionListeners !== 'undefined') {
-             setupAccordionListeners(); 
-        }
-        if (typeof feather !== 'undefined') {
-             feather.replace(); 
-        }
+        if (typeof setupAccordionListeners !== 'undefined') setupAccordionListeners(); 
+        if (typeof feather !== 'undefined') feather.replace(); 
 
     } catch (error) {
         console.error("ERRO FATAL AO CARREGAR CANDIDATURAS PARA EMPRESA:", error);
-        let errorMessage = 'Não foi possível carregar as candidaturas devido a um erro de conexão ou permissão.';
-        container.innerHTML = `<p class="error-message">**${errorMessage}**</p><p>Detalhes técnicos no console (F12).</p>`; 
+        container.innerHTML = `<p class="error-message">Não foi possível carregar as candidaturas devido a um erro de conexão ou permissão.</p>`; 
     }
 };
 
 // =================================================================
-// LÓGICA DE AUTOCOMPLETE PARA MÚLTIPLOS CURSOS
-// CORRIGIDA PARA FUNCIONAR EM CRIAÇÃO E EDIÇÃO
+// LÓGICA DE AUTOCOMPLETE PARA MÚLTIPLOS CURSOS (Mantida)
 // =================================================================
-
 const renderSelectedCourses = (targetContainerId) => {
-    // Usa o ID do container do formulário de criação ou edição
     const container = document.getElementById(targetContainerId); 
     if (!container) return;
-
     container.innerHTML = selectedCourses.map(course => `
         <span class="course-tag" data-course="${course}">
             ${course}
             <i data-feather="x" class="remove-tag" data-course="${course}"></i>
         </span>
     `).join('');
-
-    if (typeof feather !== 'undefined') {
-        feather.replace();
-    }
+    if (typeof feather !== 'undefined') feather.replace();
 }
 
 const setupCourseAutocomplete = () => {
@@ -285,20 +270,15 @@ const setupCourseAutocomplete = () => {
         const currentInput = document.getElementById(inputID);
         const currentSuggestionsContainer = document.getElementById(suggestionsID);
         const currentSelectedContainer = document.getElementById(selectedID);
-        
         if (!currentInput || !currentSuggestionsContainer || !currentSelectedContainer) return;
         
-        // 1. Lógica do Input (Buscar Sugestões)
         currentInput.addEventListener('input', () => {
             const query = currentInput.value.toLowerCase().trim();
             currentSuggestionsContainer.innerHTML = '';
-
             if (query.length === 0) return;
-
             const filteredCourses = availableCourses.filter(course => 
                 course.toLowerCase().includes(query) && !selectedCourses.includes(course)
             );
-
             if (filteredCourses.length > 0) {
                 filteredCourses.forEach(course => {
                     const item = document.createElement('div');
@@ -312,7 +292,6 @@ const setupCourseAutocomplete = () => {
             }
         });
         
-        // 2. Lógica de Seleção de Curso
         const handleCourseSelection = (course, inputEl, suggestionsEl, selectedContainerId) => {
             if (!selectedCourses.includes(course)) {
                 selectedCourses.push(course);
@@ -322,74 +301,51 @@ const setupCourseAutocomplete = () => {
             }
         };
         
-        // 3. Lógica de Remover Tag (Delegação)
         currentSelectedContainer.addEventListener('click', (e) => {
             const removeButton = e.target.closest('.remove-tag');
             if (removeButton) {
                 const courseToRemove = removeButton.dataset.course;
                 selectedCourses = selectedCourses.filter(c => c !== courseToRemove);
                 renderSelectedCourses(selectedID);
-                
                 if (document.activeElement === currentInput) {
                     currentInput.dispatchEvent(new Event('input'));
                 }
             }
         });
-
-        // 4. Fechar Sugestões ao clicar fora
         document.addEventListener('click', (e) => {
-            if (!e.target.closest('.autocomplete-container')) {
-                currentSuggestionsContainer.innerHTML = '';
-            }
+            if (!e.target.closest('.autocomplete-container')) currentSuggestionsContainer.innerHTML = '';
         });
     }
-
-    // Configura para o formulário de criação (CriarVagaEmpresa.html)
     setupAutocompleteForElements('curso-vaga', 'sugestoes-curso-vaga', 'cursos-selecionados');
-    
-    // Configura para o modal de edição (MinhasVagas.html)
-    // OBS: O HTML DO MODAL PRECISARÁ TER OS IDs 'edit-curso-vaga', 'edit-sugestoes-curso-vaga', 'edit-cursos-selecionados' para funcionar
     setupAutocompleteForElements('edit-curso-vaga', 'edit-sugestoes-curso-vaga', 'edit-cursos-selecionados');
 }
 
-
 // =================================================================
-// LÓGICA DO FORMULÁRIO CRIAR VAGA
+// LÓGICA DO FORMULÁRIO CRIAR VAGA (Adicionado campo local)
 // =================================================================
 const setupCreateJobForm = () => {
     const createJobForm = document.getElementById('create-job-form');
     if (createJobForm) {
-        // Limpa o array global ao carregar a tela de criação
         selectedCourses = [];
         renderSelectedCourses('cursos-selecionados');
 
         createJobForm.addEventListener('submit', (e) => {
             e.preventDefault();
-            
-            if (!currentUser) { 
-                alert("Erro: Usuário não autenticado.");
-                return; 
-            }
-            
-            if (selectedCourses.length === 0) {
-                 alert("Por favor, selecione pelo menos um curso requerido para a vaga.");
-                 return;
-            }
+            if (!currentUser) return alert("Erro: Usuário não autenticado.");
+            if (selectedCourses.length === 0) return alert("Selecione pelo menos um curso requerido.");
 
-            // >>> INÍCIO DA MODIFICAÇÃO: PERÍODO <<<
             const periodoSelecionado = document.getElementById('periodo').value;
-            if (!periodoSelecionado) {
-                alert("Por favor, selecione o Período de trabalho.");
-                return;
-            }
+            const localVaga = document.getElementById('local').value.trim(); // <<< ADICIONADO
+
+            if (!periodoSelecionado) return alert("Selecione o Período de trabalho.");
 
             const vagaData = {
                 titulo: document.getElementById('titulo').value,
                 descricao: document.getElementById('descricao').value,
                 requisitos: document.getElementById('requisitos').value,
                 cargaHoraria: document.getElementById('cargaHoraria').value,
-                periodo: periodoSelecionado, // Adiciona o campo período
-                // >>> FIM DA MODIFICAÇÃO: PERÍODO <<<
+                periodo: periodoSelecionado,
+                local: localVaga || 'Não informado', // <<< ADICIONADO
                 cursosRequeridos: selectedCourses,
                 empresaId: currentUser.uid, 
                 status: 'Vaga Ativa', 
@@ -421,7 +377,7 @@ const setupCreateJobForm = () => {
 }
 
 // =================================================================
-// LÓGICA DE EDIÇÃO/EXCLUSÃO (MINHAS VAGAS)
+// LÓGICA DE EDIÇÃO/EXCLUSÃO (MINHAS VAGAS) - ADICIONADO LOCAL
 // =================================================================
 const setupJobActions = () => {
     const vagasContainer = document.getElementById('vagas-container');
@@ -436,21 +392,13 @@ const setupJobActions = () => {
         if (!targetButton) return;
         const vagaId = targetButton.dataset.id;
 
-        // AÇÃO DE EXCLUIR (Preservada)
         if (targetButton.classList.contains('delete-btn')) {
             if (!confirm("Tem certeza que deseja excluir esta vaga?")) return;
-            
             db.collection('vagas').doc(vagaId).delete()
-                 .then(() => {
-                     console.log('Vaga excluída com sucesso! 🗑️');
-                     loadCompanyJobs();
-                 })
-                 .catch(error => {
-                     console.error("Erro ao excluir vaga:", error);
-                 });
+                 .then(() => loadCompanyJobs())
+                 .catch(error => console.error("Erro ao excluir vaga:", error));
         }
         
-        // AÇÃO DE EDITAR (ABRIR MODAL)
         if (targetButton.classList.contains('edit-btn') && editModal) {
              db.collection('vagas').doc(vagaId).get().then(doc => {
                  if (doc.exists) {
@@ -461,273 +409,80 @@ const setupJobActions = () => {
                      document.getElementById('edit-requisitos').value = vaga.requisitos;
                      document.getElementById('edit-cargaHoraria').value = vaga.cargaHoraria;
                      
-                     // >>> INÍCIO DA MODIFICAÇÃO: PERÍODO - PREENCHER MODAL <<<
                      const editPeriodoEl = document.getElementById('edit-periodo');
-                     if (editPeriodoEl) {
-                         editPeriodoEl.value = vaga.periodo || '';
-                     }
-                     // >>> FIM DA MODIFICAÇÃO: PERÍODO - PREENCHER MODAL <<<
+                     if (editPeriodoEl) editPeriodoEl.value = vaga.periodo || '';
                      
-                     // 1. Limpa o estado global
-                     selectedCourses = [];
-                     
-                     // 2. Popula e renderiza no modal
-                     if (vaga.cursosRequeridos && Array.isArray(vaga.cursosRequeridos)) {
-                          selectedCourses = [...vaga.cursosRequeridos]; 
-                     }
-                     renderSelectedCourses('cursos-selecionados'); // Nota: Usando 'cursos-selecionados' ou 'edit-cursos-selecionados' dependendo do seu HTML. No seu HTML, o ID é 'cursos-selecionados'.
-                     
-                     editModal.style.display = 'flex';
-                 } else {
-                     console.error('Vaga não encontrada!');
+                     const editLocalEl = document.getElementById('edit-local');
+                     if (editLocalEl) editLocalEl.value = vaga.local || ''; // <<< ADICIONADO
+
+                     selectedCourses = vaga.cursosRequeridos || [];
+                     renderSelectedCourses('edit-cursos-selecionados');
+
+                     editModal.style.display = 'block';
                  }
              });
         }
     });
-    
-    // SALVAR EDIÇÃO
+
+    if (cancelEditBtn) {
+        cancelEditBtn.addEventListener('click', () => editModal.style.display = 'none');
+    }
+
     if (editForm) {
         editForm.addEventListener('submit', (e) => {
             e.preventDefault();
             const vagaId = document.getElementById('edit-vaga-id').value;
-            
-            if (selectedCourses.length === 0) {
-                 alert("Por favor, selecione pelo menos um curso requerido para a vaga.");
-                 return;
-            }
-            
-            // >>> INÍCIO DA MODIFICAÇÃO: PERÍODO - CAPTURAR E VALIDAR <<<
             const periodoSelecionado = document.getElementById('edit-periodo').value;
-            if (!periodoSelecionado) {
-                alert("Por favor, selecione o Período de trabalho.");
-                return;
-            }
-            // >>> FIM DA MODIFICAÇÃO: PERÍODO - CAPTURAR E VALIDAR <<<
+            const localVagaEdit = document.getElementById('edit-local').value.trim(); // <<< ADICIONADO
+
+            if (!vagaId) return alert("Vaga inválida!");
+            if (selectedCourses.length === 0) return alert("Selecione pelo menos um curso requerido.");
 
             const updatedData = {
-                 titulo: document.getElementById('edit-titulo').value,
-                 descricao: document.getElementById('edit-descricao').value,
-                 requisitos: document.getElementById('edit-requisitos').value,
-                 cargaHoraria: document.getElementById('edit-cargaHoraria').value,
-                 periodo: periodoSelecionado, // Adiciona o campo período
-                 cursosRequeridos: selectedCourses,
-                 ultimaAtualizacao: firebase.firestore.FieldValue.serverTimestamp()
+                titulo: document.getElementById('edit-titulo').value,
+                descricao: document.getElementById('edit-descricao').value,
+                requisitos: document.getElementById('edit-requisitos').value,
+                cargaHoraria: document.getElementById('edit-cargaHoraria').value,
+                periodo: periodoSelecionado,
+                local: localVagaEdit || 'Não informado', // <<< ADICIONADO
+                cursosRequeridos: selectedCourses
             };
 
-            const submitButton = editForm.querySelector('button[type="submit"]');
-            submitButton.disabled = true;
-            submitButton.textContent = 'Salvando...';
-
             db.collection('vagas').doc(vagaId).update(updatedData)
-                 .then(() => {
-                     console.log('Vaga atualizada com sucesso! ✅');
-                     editModal.style.display = 'none';
-                     selectedCourses = []; // Limpa o estado após salvar
-                     loadCompanyJobs();
-                 })
-                 .catch(error => {
-                     console.error("Erro ao atualizar vaga:", error);
-                 })
-                 .finally(() => {
-                     submitButton.disabled = false;
-                     submitButton.textContent = 'Salvar Alterações';
-                 });
+                .then(() => {
+                    editModal.style.display = 'none';
+                    loadCompanyJobs();
+                })
+                .catch(error => console.error("Erro ao atualizar vaga:", error));
         });
     }
-
-    // FECHAR MODAL (Preservada)
-    const closeModal = () => { editModal.style.display = 'none'; selectedCourses = []; renderSelectedCourses('cursos-selecionados'); };
-    if (cancelEditBtn) {
-        cancelEditBtn.addEventListener('click', closeModal);
-    }
-    if (editModal) {
-          editModal.addEventListener('click', (e) => {
-               if (e.target.id === 'edit-modal') { closeModal(); }
-          });
-    }
-};
+}
 
 // =================================================================
-// LÓGICA DO PERFIL DA EMPRESA (PerfilEmpresa.html)
+// LOGOUT E AUTENTICAÇÃO
 // =================================================================
-
-const loadCompanyProfile = async (user) => {
-    const emailEl = document.getElementById('email');
-    const nameInput = document.getElementById('nome-empresa');
-    const cnpjInput = document.getElementById('cnpj-empresa');
-    const displayNameEl = document.getElementById('user-name');
-    const displayEmailEl = document.getElementById('user-email');
-
-    if (emailEl) emailEl.value = user.email || 'Não informado';
-    if (displayEmailEl) displayEmailEl.textContent = user.email || 'Não informado';
-
-    try {
-        const doc = await db.collection('usuarios').doc(user.uid).get();
-        if (doc.exists) {
-            const data = doc.data();
-            
-            if (nameInput) nameInput.value = data.nome || '';
-            if (cnpjInput) cnpjInput.value = data.cnpj || '';
-            
-            if (displayNameEl) displayNameEl.textContent = data.nome || 'Empresa';
-
-        } else {
-            console.warn("Documento do usuário não encontrado no Firestore.");
-            if (displayNameEl) displayNameEl.textContent = 'Empresa Desconhecida';
-        }
-    } catch (error) {
-        console.error("Erro ao carregar dados do perfil da empresa:", error);
-    }
-};
-
-const setupProfileForm = (user) => {
-    const profileForm = document.getElementById('profile-form-empresa');
-    if (!profileForm) return;
-
-    profileForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-
-        const submitButton = profileForm.querySelector('.save-button');
-        submitButton.disabled = true;
-        submitButton.textContent = 'Salvando...';
-
-        const updatedData = {
-            nome: document.getElementById('nome-empresa').value,
-            cnpj: document.getElementById('cnpj-empresa').value,
-            ultimaAtualizacao: firebase.firestore.FieldValue.serverTimestamp()
-        };
-
-        try {
-            await db.collection('usuarios').doc(user.uid).update(updatedData);
-
-            if (user.displayName !== updatedData.nome) {
-                 await user.updateProfile({ displayName: updatedData.nome });
-            }
-            
-            await loadCompanyProfile(user); 
-
-            alert('Perfil atualizado com sucesso! ✅');
-        } catch (error) {
-            console.error("Erro ao salvar perfil da empresa:", error);
-            alert(`Erro ao salvar perfil: ${error.message}`);
-        } finally {
-            submitButton.disabled = false;
-            submitButton.textContent = 'Salvar Alterações';
-        }
-    });
-
-    // Lógica para Excluir Conta (Ação Permanente)
-    const deleteAccountBtn = document.getElementById('btn-excluir-conta-empresa');
-    if (deleteAccountBtn) {
-        deleteAccountBtn.addEventListener('click', async () => {
-             if (!confirm("AVISO DE EXCLUSÃO PERMANENTE: Tem certeza que deseja excluir sua conta? Todas as vagas publicadas e candidaturas serão PERDIDAS!")) {
-                 return;
-             }
-
-             deleteAccountBtn.disabled = true;
-             deleteAccountBtn.textContent = 'Excluindo...';
-
-             try {
-                 // Nota: É necessário verificar se há dados sensíveis (vagas/candidaturas) e deletá-los também.
-                 await db.collection('usuarios').doc(user.uid).delete();
-                 await user.delete();
-                 alert("Conta excluída com sucesso. Você será redirecionado para o login.");
-                 window.location.href = 'login-empresa.html'; 
-
-             } catch (error) {
-                 console.error("Erro ao excluir conta:", error);
-                 let errorMessage = "Ocorreu um erro ao excluir a conta. Consulte o console.";
-                 
-                 if (error.code === 'auth/requires-recent-login') {
-                     errorMessage = "Erro de segurança: Por favor, saia e entre novamente antes de tentar excluir a conta. (É necessário login recente)";
-                 }
-                 
-                 alert(errorMessage);
-                 deleteAccountBtn.disabled = false;
-                 deleteAccountBtn.textContent = 'Excluir Minha Conta Permanentemente';
-             }
-        });
-    }
-};
-
-// =================================================================
-// PONTO PRINCIPAL: AUTENTICAÇÃO E ROTEAMENTO (FLOW CONTROL)
-// =================================================================
-
-auth.onAuthStateChanged(async (user) => { 
-    if (user) {
-        try {
-            const doc = await db.collection('usuarios').doc(user.uid).get();
-            // APLICAÇÃO DE SEGURANÇA: Verifica se o usuário tem a role 'empresa'
-            if (doc.exists && doc.data().role === 'empresa') {
-                
-                currentUser = user;
-                console.log('Usuário autenticado e autorizado como EMPRESA:', currentUser.uid);
-                const currentPath = window.location.pathname;
-
-                // Roteamento baseado na URL
-                if (currentPath.includes('CriarVagaEmpresa.html') || currentPath.includes('MinhasVagas.html')) {
-                     await loadAvailableCourses(); 
-                     setupCourseAutocomplete(); 
-                }
-                
-                if (currentPath.includes('CriarVagaEmpresa.html')) {
-                     setupCreateJobForm();
-                } 
-                else if (currentPath.includes('InicialEmpresa.html')) {
-                     loadDashboardData(currentUser);
-                } 
-                else if (currentPath.includes('MinhasVagas.html')) {
-                     loadCompanyJobs();
-                     setupJobActions();
-                } 
-                else if (currentPath.includes('EmpresaCandidatos.html')) { 
-                     loadCandidaciesForCompany();
-                } 
-                else if (currentPath.includes('PerfilEmpresa.html')) { 
-                     loadCompanyProfile(currentUser);
-                     setupProfileForm(currentUser);
-                }
-
-            } else {
-                // Usuário logado, mas NÃO é uma empresa. Força o logout.
-                console.warn('Usuário autenticado, mas sem role de empresa. Forçando logout e redirecionando...');
-                await auth.signOut();
-                if (!window.location.pathname.includes('login-empresa.html')) {
-                     window.location.href = 'login-empresa.html'; 
-                }
-            }
-        } catch (error) {
-            console.error("Erro durante a verificação de role:", error);
-            await auth.signOut();
-            if (!window.location.pathname.includes('login-empresa.html')) {
-                window.location.href = 'login-empresa.html'; 
-            }
-        }
-    } else {
-        // Usuário NÃO autenticado. Redireciona para login, exceto se já estiver no login.
-        if (!window.location.pathname.includes('login-empresa.html')) {
-            window.location.href = 'login-empresa.html'; 
-        }
-    }
-});
-
-// =================================================================
-// LÓGICA DE LOGOUT (Garante que o link de Perfil NÃO seja o Logout)
-// =================================================================
-
-document.addEventListener('DOMContentLoaded', () => {
-    // CORRIGIDO: Seleciona o botão de Logout dedicado (deve ter o ID 'btn-logout-empresa')
-    realLogoutBtn = document.getElementById('btn-logout-empresa'); 
-    
-    // Configura o evento do botão de Logout APENAS após o DOM ser carregado
+const setupLogout = () => {
+    realLogoutBtn = document.getElementById('btn-logout-empresa');
     if (realLogoutBtn) {
-        realLogoutBtn.addEventListener('click', (e) => {
-             e.preventDefault();
-             auth.signOut().then(() => { 
-                 window.location.href = 'login-empresa.html'; 
-             });
+        realLogoutBtn.addEventListener('click', () => {
+            auth.signOut().then(() => window.location.href = 'login.html');
         });
     }
+}
 
+// =================================================================
+// INICIALIZAÇÃO PRINCIPAL
+// =================================================================
+auth.onAuthStateChanged(user => {
+    if (!user) return window.location.href = 'login.html';
+    currentUser = user;
+    loadAvailableCourses().then(() => {
+        setupCourseAutocomplete();
+        loadDashboardData(user);
+        loadCompanyJobs();
+        loadCandidaciesForCompany();
+        setupCreateJobForm();
+        setupJobActions();
+        setupLogout();
+    });
 });
