@@ -1,16 +1,19 @@
+// =================================================================
+// CORREÇÃO: Importa 'auth', 'db' e 'storage' do módulo auth-empresa.js
+// As variáveis globais NÃO são mais necessárias aqui, mas 'firebase' é
+// necessário para FieldValue e EmailAuthProvider.
+// =================================================================
+import { auth, db, storage } from './auth-empresa.js';
+// É necessário importar 'firebase' do SDK se você não o estiver
+// importando explicitamente em auth-empresa.js, mas como você o carrega no HTML
+// (conforme a prática comum para SDK v8), vamos manter o uso direto,
+// confiando que o auth-empresa.js o inicializou e o escopo funciona.
 
-// CÓDIGO COMPLETO RESULTANTE DA UNIÃO DAS DUAS PARTES
-// =================================================================
-// Variáveis Globais e Inicialização
-// =================================================================
-const auth = firebase.auth();
-const db = firebase.firestore();
 let currentUser = null; // O usuário da empresa autenticado
 let selectedCourses = []; // Variável para armazenar os cursos selecionados (USADA PARA CRIAÇÃO E EDIÇÃO)
 let availableCourses = []; // Variável para os cursos carregados do Firestore
 
 let realLogoutBtn = null; // Variável para o botão de logout dedicado (ID: 'btn-logout-empresa')
-
 // =================================================================
 // FUNÇÃO PARA CARREGAR OS CURSOS DO FIRESTORE
 // =================================================================
@@ -26,7 +29,6 @@ const loadAvailableCourses = async () => {
         alert("Atenção: Houve um erro ao carregar a lista de cursos. Verifique o console.");
     }
 };
-
 // =================================================================
 // FUNÇÕES DE CARREGAMENTO DE DADOS (Dashboard e Minhas Vagas)
 // =================================================================
@@ -117,8 +119,7 @@ const loadCompanyJobs = () => {
                       ${cursos}
                       <p class="job-time">Carga Horária: ${vaga.cargaHoraria}</p>
                       <p class="job-periodo">Período: ${periodoVaga}</p>
-                      <p class="job-location">Local: ${localVaga}</p> <!-- <<< ADICIONADO -->
-                      <div class="actions-vaga">
+                      <p class="job-location">Local: ${localVaga}</p> <div class="actions-vaga">
                           <button class="edit-btn action-button" data-id="${vagaId}" title="Editar Vaga">
                               <i data-feather="edit"></i> Editar
                           </button>
@@ -165,9 +166,9 @@ const loadCandidaciesForCompany = async () => {
              const vaga = vagaDoc.data();
              const vagaId = vagaDoc.id;
              const candidaturasSnapshot = await db.collection('candidaturas')
-                 .where('vagaId', '==', vagaId)
-                 .orderBy('dataCandidatura', 'asc')
-                 .get();
+                  .where('vagaId', '==', vagaId)
+                  .orderBy('dataCandidatura', 'asc')
+                  .get();
 
              const totalCandidatos = candidaturasSnapshot.size;
              const vagaStatusText = vaga.status || 'Vaga Ativa';
@@ -199,22 +200,22 @@ const loadCandidaciesForCompany = async () => {
                       const alunoLocalizacao = (aluno.cidade && aluno.estado) ? `${aluno.cidade}, ${aluno.estado}` : 'Localização não informada';
                       
                       candidatosHtml += `
-                                         <li class="candidate-card">
-                                             <div class="candidate-details">
-                                                 <h4 class="candidate-name">${aluno.nome}</h4>
-                                                 <p class="candidate-role">**Curso/Área:** ${alunoCurso}</p>
-                                                 <p class="candidate-contact">
-                                                     <i data-feather="mail" class="icon-small"></i> **Email:** ${aluno.email}
-                                                 </p>
-                                                 <p class="candidate-contact">
-                                                     <i data-feather="phone" class="icon-small"></i> **Telefone:** ${aluno.telefone || 'N/A'}
-                                                 </p>
-                                                 <p class="candidate-location">
-                                                     <i data-feather="map-pin" class="icon-small"></i> **Local:** ${alunoLocalizacao}
-                                                 </p>
-                                             </div>
-                                             <button class="view-cv-btn" data-aluno-id="${candidatura.alunoId}">Ver Perfil Completo</button>
-                                         </li>
+                                             <li class="candidate-card">
+                                                 <div class="candidate-details">
+                                                     <h4 class="candidate-name">${aluno.nome}</h4>
+                                                     <p class="candidate-role">**Curso/Área:** ${alunoCurso}</p>
+                                                     <p class="candidate-contact">
+                                                         <i data-feather="mail" class="icon-small"></i> **Email:** ${aluno.email}
+                                                     </p>
+                                                     <p class="candidate-contact">
+                                                         <i data-feather="phone" class="icon-small"></i> **Telefone:** ${aluno.telefone || 'N/A'}
+                                                     </p>
+                                                     <p class="candidate-location">
+                                                         <i data-feather="map-pin" class="icon-small"></i> **Local:** ${alunoLocalizacao}
+                                                     </p>
+                                                 </div>
+                                                 <button class="view-cv-btn" data-aluno-id="${candidatura.alunoId}">Ver Perfil Completo</button>
+                                             </li>
                       `;
                  }
                  
@@ -223,19 +224,19 @@ const loadCandidaciesForCompany = async () => {
              
              fullHtml += `
                  <div class="accordion-item">
-                     <button class="accordion-header">
-                         <div class="job-info">
-                             <span class="job-title">${vaga.titulo}</span>
-                             <span class="job-status ${vagaStatusClass}">${vagaStatusText}</span>
-                         </div>
-                         <div class="candidate-count">
-                             <span>${totalCandidatos} Candidato${totalCandidatos !== 1 ? 's' : ''}</span>
-                             <i data-feather="chevron-down" class="chevron"></i>
-                         </div>
-                     </button>
-                     <div class="accordion-body">
-                         ${candidatosHtml}
-                     </div>
+                      <button class="accordion-header">
+                          <div class="job-info">
+                              <span class="job-title">${vaga.titulo}</span>
+                              <span class="job-status ${vagaStatusClass}">${vagaStatusText}</span>
+                          </div>
+                          <div class="candidate-count">
+                              <span>${totalCandidatos} Candidato${totalCandidatos !== 1 ? 's' : ''}</span>
+                              <i data-feather="chevron-down" class="chevron"></i>
+                          </div>
+                      </button>
+                      <div class="accordion-body">
+                          ${candidatosHtml}
+                      </div>
                  </div>
              `;
         } 
@@ -349,6 +350,7 @@ const setupCreateJobForm = () => {
                 cursosRequeridos: selectedCourses,
                 empresaId: currentUser.uid, 
                 status: 'Vaga Ativa', 
+                // CORREÇÃO AQUI: Usa 'firebase' do escopo global (se carregado via <script> tag)
                 criadaEm: firebase.firestore.FieldValue.serverTimestamp()
             };
 
@@ -469,7 +471,6 @@ const setupLogout = () => {
         });
     }
 }
-
 // =================================================================
 // INICIALIZAÇÃO PRINCIPAL
 // =================================================================
