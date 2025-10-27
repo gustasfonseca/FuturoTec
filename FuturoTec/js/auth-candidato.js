@@ -1,11 +1,5 @@
 // auth-candidato.js
 
-// =================================================================
-// CONFIGURAÇÕES NECESSÁRIAS PARA O ALERT MANAGER
-// =================================================================
-// Importa a função showAlert do módulo alert-manager.js
-import { showAlert } from './alert-manager.js';
-
 // --- CONFIGURAÇÃO DO FIREBASE ---
 const firebaseConfig = {
     apiKey: "AIzaSyA8Q9cKB4oVmFM6ilHK_70h8JDvgsOQhLY",
@@ -67,8 +61,7 @@ async function deslogarCandidato() {
         window.location.href = 'login-candidato.html';
     } catch (error) {
         console.error("Erro ao deslogar:", error);
-        // SUBSTITUIÇÃO DO ALERT
-        showAlert("Ocorreu um erro ao tentar sair da conta. Tente novamente.", 'error');
+        alert("Ocorreu um erro ao tentar sair da conta. Tente novamente.");
     }
 }
 
@@ -101,8 +94,7 @@ async function loginComGoogleCandidato() {
             ? error.message
             : `Erro ao fazer login com o Google. Tente novamente ou use e-mail/senha. Detalhe: ${error.message}`;
         
-        // SUBSTITUIÇÃO DO ALERT
-        showAlert(errorMessage, 'error');
+        alert(errorMessage);
         throw error;
     }
 }
@@ -111,15 +103,13 @@ async function recuperarSenhaCandidato() {
     const email = prompt("Por favor, digite seu e-mail de Candidato/Aluno para redefinir a senha:");
 
     if (!email) {
-        // SUBSTITUIÇÃO DO ALERT
-        showAlert("Operação cancelada ou e-mail não fornecido.", 'info');
+        alert("Operação cancelada ou e-mail não fornecido.");
         return;
     }
 
     try {
         await auth.sendPasswordResetEmail(email);
-        // SUBSTITUIÇÃO DO ALERT
-        showAlert(`E-mail de redefinição de senha enviado para ${email}. Verifique sua caixa de entrada e a pasta de Spam!`, 'success');
+        alert(`E-mail de redefinição de senha enviado para ${email}. Verifique sua caixa de entrada e a pasta de Spam!`);
     } catch (error) {
         console.error("Erro ao enviar e-mail de redefinição:", error);
         let errorMessage = "Erro ao solicitar a redefinição de senha. Verifique se o e-mail está correto e tente novamente.";
@@ -129,15 +119,13 @@ async function recuperarSenhaCandidato() {
         } else if (error.code === 'auth/invalid-email') {
              errorMessage = "O formato do e-mail é inválido.";
         }
-        // SUBSTITUIÇÃO DO ALERT
-        showAlert(`Erro: ${errorMessage}`, 'error');
+        alert(`Erro: ${errorMessage}`);
     }
 }
 
 async function excluirContaCandidato(user) {
     if (!user) {
-        // SUBSTITUIÇÃO DO ALERT
-        showAlert("Erro: Nenhum usuário logado.", 'error');
+        alert("Erro: Nenhum usuário logado.");
         return;
     }
 
@@ -149,15 +137,13 @@ async function excluirContaCandidato(user) {
 Para confirmar a exclusão, digite seu EMAIL (${userEmail}) no campo abaixo:`);
 
     if (confirmacaoEmail !== userEmail) {
-        // SUBSTITUIÇÃO DO ALERT
-        showAlert("E-mail digitado incorretamente ou operação cancelada.", 'info');
+        alert("E-mail digitado incorretamente ou operação cancelada.");
         return;
     }
 
-    const confirmacaoSenha = prompt("Por favor, digite sua SENHA para confirmar a exclusão. (REQUERIDO PELO FIREBASE):");
+    const confirmacaoSenha = prompt("Por favor, digite sua SENHA para confirmar a exclusão:");
     if (!confirmacaoSenha) {
-        // SUBSTITUIÇÃO DO ALERT
-        showAlert("Exclusão cancelada. É necessário informar a senha.", 'info');
+        alert("Exclusão cancelada. É necessário informar a senha.");
         return;
     }
 
@@ -184,8 +170,7 @@ Para confirmar a exclusão, digite seu EMAIL (${userEmail}) no campo abaixo:`);
         await user.delete();
         console.log("[Exclusão] Usuário excluído do Firebase Auth. E-mail liberado.");
 
-        // SUBSTITUIÇÃO DO ALERT
-        showAlert("Sua conta foi excluída permanentemente. Sentiremos sua falta.", 'success');
+        alert("Sua conta foi excluída permanentemente. Sentiremos sua falta.");
         window.location.href = 'login-candidato.html';
 
     } catch (error) {
@@ -198,11 +183,9 @@ Para confirmar a exclusão, digite seu EMAIL (${userEmail}) no campo abaixo:`);
         } else if (error.code === 'auth/requires-recent-login') {
             errorMessage = "Erro de Segurança: Você precisa ter feito login *recentemente*. Por favor, saia e entre novamente, e tente excluir a conta em seguida.";
         }
-        // SUBSTITUIÇÃO DO ALERT
-        showAlert(`${errorMessage} (Detalhes técnicos no console)`, 'error');
+        alert(`${errorMessage} (Detalhes técnicos no console)`);
     }
 }
-
 
 // =======================================================
 // === PONTO DE ENTRADA PRINCIPAL E LÓGICA VISUAL ===
@@ -339,8 +322,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         } catch (error) {
             console.error("Erro ao buscar cursos:", error);
-            // SUBSTITUIÇÃO DO ALERT
-            showAlert("Erro ao carregar cursos. Verifique as regras do Firestore.", 'error');
+
+            alert("Erro ao carregar cursos. Verifique as regras do Firestore.");
             const item = document.createElement('div');
             item.textContent = "Erro ao carregar cursos. Verifique as regras do Firestore.";
             sugestoesCurso.appendChild(item);
@@ -372,7 +355,7 @@ document.addEventListener('DOMContentLoaded', () => {
         formCandidato.addEventListener('submit', async (e) => {
             e.preventDefault();
 
-            // Assume que existe um campo de erro no cadastro, se não, use showAlert
+            // Assume que existe um campo de erro no cadastro, se não, use alert
             const cadastroErrorMessageDiv = document.getElementById('form-error-message') || errorMessageDiv;
             if (cadastroErrorMessageDiv) cadastroErrorMessageDiv.textContent = '';
 
@@ -389,7 +372,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!cursoId) {
                 const msg = "Por favor, selecione um curso válido da lista de sugestões.";
                 if (cadastroErrorMessageDiv) cadastroErrorMessageDiv.textContent = msg;
-                else showAlert(msg, 'info'); // Alternativa se não houver div de erro no formulário
+                else alert(msg); // Alternativa se não houver div de erro no formulário
                 return;
             }
 
@@ -397,7 +380,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (senha !== confirmarSenha) {
                 const msg = "As senhas não coincidem. Por favor, tente novamente.";
                 if (cadastroErrorMessageDiv) cadastroErrorMessageDiv.textContent = msg;
-                else showAlert(msg, 'info'); // Alternativa se não houver div de erro no formulário
+                else alert(msg); // Alternativa se não houver div de erro no formulário
                 return;
             }
 
@@ -405,7 +388,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const passwordCheck = isPasswordStrong(senha);
             if (!passwordCheck.valid) {
                 if (cadastroErrorMessageDiv) cadastroErrorMessageDiv.textContent = passwordCheck.message;
-                else showAlert(passwordCheck.message, 'info'); // Alternativa se não houver div de erro no formulário
+                else alert(passwordCheck.message); // Alternativa se não houver div de erro no formulário
                 return;
             }
 
@@ -428,8 +411,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 await auth.signOut();
 
-                // SUBSTITUIÇÃO DO ALERT
-                showAlert("Cadastro de Candidato realizado com sucesso! Por favor, faça login.", 'success');
+    
+                alert("Cadastro de Candidato realizado com sucesso! Por favor, faça login.");
                 window.location.href = 'login-candidato.html';
             } catch (error) {
                 console.error("Erro no cadastro:", error);
@@ -441,7 +424,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 const msg = `Erro ao cadastrar: ${friendlyError}`;
                 if (cadastroErrorMessageDiv) cadastroErrorMessageDiv.textContent = msg;
-                else showAlert(msg, 'error'); // Alternativa se não houver div de erro no formulário
+                else alert(msg); // Alternativa se não houver div de erro no formulário
             }
         });
     }
@@ -464,14 +447,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (userData && userData.role === 'aluno') {
                     window.location.href = 'InicialAluno.html';
                 } else {
-                    // SUBSTITUIÇÃO DO ALERT
-                    showAlert("Acesso negado. Este login é apenas para candidatos.", 'error');
+        
+                    alert("Acesso negado. Este login é apenas para candidatos.");
                     auth.signOut();
                 }
             } catch (error) {
                 console.error("Erro no login:", error);
-                // SUBSTITUIÇÃO DO ALERT
-                showAlert(`Erro ao fazer login: ${error.message}`, 'error');
+    
+                alert(`Erro ao fazer login: ${error.message}`);
             }
         });
     }
@@ -521,8 +504,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 document.getElementById('curso-aluno').value = data.cursoNome || 'Não informado';
             } catch (error) {
                 console.error("Erro ao carregar dados:", error);
-                // SUBSTITUIÇÃO DO ALERT
-                showAlert("Erro ao carregar dados do seu perfil.", 'error');
+    
+                alert("Erro ao carregar dados do seu perfil.");
             }
         };
 
@@ -536,13 +519,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
             try {
                 await db.collection('usuarios').doc(userId).set(dadosParaSalvar, { merge: true });
-                // SUBSTITUIÇÃO DO ALERT
-                showAlert("Alterações salvas com sucesso!", 'success');
+    
+                alert("Alterações salvas com sucesso!");
                 document.getElementById('user-name').textContent = dadosParaSalvar.nome;
             } catch (error) {
                 console.error("Erro ao salvar:", error);
-                // SUBSTITUIÇÃO DO ALERT
-                showAlert(`Erro ao salvar: ${error.message}`, 'error');
+    
+                alert(`Erro ao salvar: ${error.message}`);
             }
         };
 
@@ -572,8 +555,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Usuário deslogado: Redireciona
                 // Apenas se a URL não for a de login
                 if (!window.location.href.includes('login-candidato.html') && !window.location.href.includes('cadastro-candidato.html')) {
-                    // SUBSTITUIÇÃO DO ALERT
-                    showAlert("Você precisa estar logado para acessar esta página.", 'info');
+        
+                    alert("Você precisa estar logado para acessar esta página.");
                     window.location.href = 'login-candidato.html';
                 }
             }
