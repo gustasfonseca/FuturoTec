@@ -1,21 +1,107 @@
-// =================================================================
-// CORREÇÃO: Importa 'auth', 'db' e 'storage' do módulo auth-empresa.js
-// As variáveis globais NÃO são mais necessárias aqui, mas 'firebase' é
-// necessário para FieldValue e EmailAuthProvider.
-// =================================================================
-import { auth, db, storage } from './auth-empresa.js';
-// É necessário importar 'firebase' do SDK se você não o estiver
-// importando explicitamente em auth-empresa.js, mas como você o carrega no HTML
-// (conforme a prática comum para SDK v8), vamos manter o uso direto,
-// confiando que o auth-empresa.js o inicializou e o escopo funciona.
+// empresa.js - Dashboard, Vagas e Perfil (Completo)
 
-let currentUser = null; // O usuário da empresa autenticado
-let selectedCourses = []; // Variável para armazenar os cursos selecionados (USADA PARA CRIAÇÃO E EDIÇÃO)
-let availableCourses = []; // Variável para os cursos carregados do Firestore
-
-let realLogoutBtn = null; // Variável para o botão de logout dedicado (ID: 'btn-logout-empresa')
 // =================================================================
-// FUNÇÃO PARA CARREGAR OS CURSOS DO FIRESTORE
+// Importa 'auth', 'db', 'storage' e 'logoutEmpresa' do módulo auth-empresa.js
+// IMPORTANTE: 'firebase' precisa estar global (carregado via <script> tag no HTML)
+// para usar firebase.firestore.FieldValue.serverTimestamp().
+// =================================================================
+import { auth, db, storage, logoutEmpresa } from './auth-empresa.js';
+
+// =================================================================
+// 1. IMPORTAÇÃO DO MÓDULO DE ALERTA (Ajuste Inserido Aqui)
+// Agora usamos a versão estilizada do alert-manager.js
+// O alert-manager.js fornecido só lida com toasts (simples alerts),
+// então vamos manter window.confirm para a lógica de confirmação de exclusão.
+// =================================================================
+import { showAlert as showToast } from './alert-manager.js'; 
+
+// Cria uma função wrapper para gerenciar alerts e confirms, já que o alert-manager só faz toasts.
+const showAlert = (message, type = 'info', confirm = false) => { 
+    // Se for confirmação, usa a função nativa do navegador (bloqueante)
+    if (confirm) return new Promise(resolve => resolve(window.confirm(message)));
+    
+    // Caso contrário, usa o alerta estilizado (toast) importado
+    // O tipo 'warning' não está definido no seu CSS/JS, vamos mapear para 'error' ou 'info'.
+    // Mapeando 'warning' para 'error' por ser mais crítico.
+    const mappedType = (type === 'warning') ? 'error' : type;
+    showToast(message, mappedType);
+};
+
+
+let currentUser = null; 
+let selectedCourses = []; 
+let availableCourses = []; 
+
+// =================================================================
+// FUNÇÕES DE PERFIL DA EMPRESA (Adicionadas/Integradas)
+// =================================================================
+
+const carregarDadosEmpresa = async (user) => {
+    if (!document.getElementById('profile-form-empresa')) return; // Só roda na página do perfil
+    
+    try {
+        const docSnap = await db.collection('usuarios').doc(user.uid).get();
+
+        if (docSnap.exists) {
+            const data = docSnap.data();
+
+            const userNameEl = document.getElementById('user-name');
+            const userEmailEl = document.getElementById('user-email');
+            
+            if (userNameEl) userNameEl.textContent = data.nome || 'Nome não encontrado';
+            if (userEmailEl) userEmailEl.textContent = data.email || user.email;
+
+            document.getElementById('email').value = data.email || user.email;
+            document.getElementById('nome-empresa').value = data.nome || '';
+            document.getElementById('cnpj-empresa').value = data.cnpj || '';
+
+            console.log("[Perfil Empresa] Dados carregados com sucesso!");
+        } else {
+            console.error("[Perfil Empresa] Documento do usuário não encontrado!");
+        }
+    } catch (error) {
+        console.error("[Perfil Empresa] Erro ao carregar dados:", error);
+        showAlert("Erro ao carregar os dados do perfil.", 'error');
+    }
+}
+
+const salvarDadosEmpresa = async (e) => {
+    e.preventDefault();
+
+    const user = auth.currentUser;
+    if (!user) return showAlert("Usuário não autenticado.", 'error'); // Ajuste: 'warning' -> 'error' (melhor visual para falha)
+
+    const userId = user.uid;
+    const nomeEmpresa = document.getElementById('nome-empresa').value.trim();
+    const cnpj = document.getElementById('cnpj-empresa').value.trim();
+    const saveButton = document.querySelector('.save-button');
+    const originalText = saveButton ? saveButton.textContent : 'Salvar Alterações';
+
+    if (!nomeEmpresa || !cnpj) return showAlert("Preencha todos os campos obrigatórios.", 'error'); // Ajuste: 'warning' -> 'error'
+    if (saveButton) { saveButton.textContent = 'Salvando...'; saveButton.disabled = true; }
+
+    try {
+        await db.collection('usuarios').doc(userId).update({
+            nome: nomeEmpresa,
+            cnpj: cnpj,
+            // O tipo de usuário já deve estar setado para 'empresa'
+        });
+
+        const userNameEl = document.getElementById('user-name');
+        if (userNameEl) userNameEl.textContent = nomeEmpresa;
+
+        showAlert("Perfil da Empresa atualizado com sucesso!", 'success');
+    } catch (error) {
+        console.error("Erro ao salvar dados do perfil:", error);
+        showAlert("Erro ao salvar. Detalhes: " + error.message, 'error');
+    } finally {
+        if (saveButton) { saveButton.textContent = originalText; saveButton.disabled = false; }
+    }
+}
+
+
+// =================================================================
+// FUNÇÃO PARA CARREGAR OS CURSOS DO FIRESTORE (Mantida)
 // =================================================================
 const loadAvailableCourses = async () => {
     try {
@@ -26,13 +112,15 @@ const loadAvailableCourses = async () => {
     } catch (error) {
         console.error("Erro ao carregar cursos do Firestore:", error);
         availableCourses = ["Erro ao carregar (Tente recarregar)"];
-        alert("Atenção: Houve um erro ao carregar a lista de cursos. Verifique o console.");
+        showAlert("Atenção: Houve um erro ao carregar a lista de cursos. Verifique o console.", 'error');
     }
 };
+
 // =================================================================
-// FUNÇÕES DE CARREGAMENTO DE DADOS (Dashboard e Minhas Vagas)
+// FUNÇÕES DE CARREGAMENTO DE DADOS (Dashboard e Minhas Vagas) - Mantidas
 // =================================================================
 const loadDashboardData = async (user) => {
+    // ... (Seu código original loadDashboardData)
     const empresaNameEl = document.querySelector('.company-dashboard .container h2');
     const vagasCountEl = document.getElementById('vagas-publicadas-count');
     const candidaturasCountEl = document.getElementById('candidaturas-count');
@@ -47,8 +135,8 @@ const loadDashboardData = async (user) => {
                  empresaNameEl.textContent = `Bem-vindo(a), Empresa Desconhecida!`;
              }
         } catch (error) {
-            console.error("Erro ao carregar nome da empresa:", error);
-            empresaNameEl.textContent = `Bem-vindo(a), Erro ao carregar nome!`; 
+             console.error("Erro ao carregar nome da empresa:", error);
+             empresaNameEl.textContent = `Bem-vindo(a), Erro ao carregar nome!`; 
         }
     }
     let vagaIds = [];
@@ -86,6 +174,7 @@ const loadDashboardData = async (user) => {
 };
 
 const loadCompanyJobs = () => {
+    // ... (Seu código original loadCompanyJobs)
     const vagasContainer = document.getElementById('vagas-container');
     if (!vagasContainer || !currentUser) return;
     vagasContainer.innerHTML = '<p>Carregando suas vagas...</p>';
@@ -109,7 +198,7 @@ const loadCompanyJobs = () => {
                       : '<p class="job-courses">Cursos: Não especificado</p>';
                  
                  const periodoVaga = vaga.periodo || 'Não Informado';
-                 const localVaga = vaga.local || 'Não informado'; // <<< ADICIONADO
+                 const localVaga = vaga.local || 'Não informado'; 
                  
                  const vagaCard = document.createElement('div');
                  vagaCard.className = 'vaga-card';
@@ -120,15 +209,14 @@ const loadCompanyJobs = () => {
                       <p class="job-time">Carga Horária: ${vaga.cargaHoraria}</p>
                       <p class="job-periodo">Período: ${periodoVaga}</p>
                       <p class="job-location">Local: ${localVaga}</p> <div class="actions-vaga">
-                          <button class="edit-btn action-button" data-id="${vagaId}" title="Editar Vaga">
-                              <i data-feather="edit"></i> Editar
-                          </button>
-                          <button class="delete-btn action-button delete" data-id="${vagaId}" title="Excluir Vaga">
-                              <i data-feather="trash-2"></i> Excluir
-                          </button>
+                           <button class="edit-btn action-button" data-id="${vagaId}" title="Editar Vaga">
+                               <i data-feather="edit"></i> Editar
+                           </button>
+                           <button class="delete-btn action-button delete" data-id="${vagaId}" title="Excluir Vaga">
+                               <i data-feather="trash-2"></i> Excluir
+                           </button>
                       </div>
                  `;
-                 vagaCard.appendChild(document.createElement('div')); 
                  vagasContainer.appendChild(vagaCard);
              });
              if (typeof feather !== 'undefined') {
@@ -142,10 +230,8 @@ const loadCompanyJobs = () => {
       });
 };
 
-// =================================================================
-// FUNÇÃO CANDIDATURAS PARA EMPRESA (Mantida igual)
-// =================================================================
 const loadCandidaciesForCompany = async () => {
+    // ... (Seu código original loadCandidaciesForCompany)
     const container = document.getElementById('candidaturas-empresa-container');
     if (!container || !currentUser) return; 
     container.innerHTML = '<p class="info-message">Buscando suas vagas e candidatos...</p>'; 
@@ -188,8 +274,10 @@ const loadCandidaciesForCompany = async () => {
                           const alunoDoc = await db.collection('usuarios').doc(candidatura.alunoId).get();
                           if (alunoDoc.exists) {
                               aluno = { ...aluno, ...alunoDoc.data() };
-                              if (!aluno.email && auth.currentUser && auth.currentUser.uid === candidatura.alunoId) {
-                                   aluno.email = auth.currentUser.email;
+                              // Tenta buscar o email do Auth se não estiver no Firestore
+                              if (!aluno.email) {
+                                  // Nota: Só pode buscar o email do Auth para o currentUser, ou precisa de Funções Cloud
+                                  // Para simplificar, confiamos no email no Firestore
                               }
                           }
                       } catch (e) {
@@ -200,22 +288,22 @@ const loadCandidaciesForCompany = async () => {
                       const alunoLocalizacao = (aluno.cidade && aluno.estado) ? `${aluno.cidade}, ${aluno.estado}` : 'Localização não informada';
                       
                       candidatosHtml += `
-                                             <li class="candidate-card">
-                                                 <div class="candidate-details">
-                                                     <h4 class="candidate-name">${aluno.nome}</h4>
-                                                     <p class="candidate-role">**Curso/Área:** ${alunoCurso}</p>
-                                                     <p class="candidate-contact">
-                                                         <i data-feather="mail" class="icon-small"></i> **Email:** ${aluno.email}
-                                                     </p>
-                                                     <p class="candidate-contact">
-                                                         <i data-feather="phone" class="icon-small"></i> **Telefone:** ${aluno.telefone || 'N/A'}
-                                                     </p>
-                                                     <p class="candidate-location">
-                                                         <i data-feather="map-pin" class="icon-small"></i> **Local:** ${alunoLocalizacao}
-                                                     </p>
-                                                 </div>
-                                                 <button class="view-cv-btn" data-aluno-id="${candidatura.alunoId}">Ver Perfil Completo</button>
-                                             </li>
+                                                 <li class="candidate-card">
+                                                     <div class="candidate-details">
+                                                         <h4 class="candidate-name">${aluno.nome}</h4>
+                                                         <p class="candidate-role">**Curso/Área:** ${alunoCurso}</p>
+                                                         <p class="candidate-contact">
+                                                             <i data-feather="mail" class="icon-small"></i> **Email:** ${aluno.email}
+                                                         </p>
+                                                         <p class="candidate-contact">
+                                                             <i data-feather="phone" class="icon-small"></i> **Telefone:** ${aluno.telefone || 'N/A'}
+                                                         </p>
+                                                         <p class="candidate-location">
+                                                             <i data-feather="map-pin" class="icon-small"></i> **Local:** ${alunoLocalizacao}
+                                                         </p>
+                                                     </div>
+                                                     <button class="view-cv-btn" data-aluno-id="${candidatura.alunoId}">Ver Perfil Completo</button>
+                                                 </li>
                       `;
                  }
                  
@@ -322,7 +410,7 @@ const setupCourseAutocomplete = () => {
 }
 
 // =================================================================
-// LÓGICA DO FORMULÁRIO CRIAR VAGA (Adicionado campo local)
+// LÓGICA DO FORMULÁRIO CRIAR VAGA (Mantida)
 // =================================================================
 const setupCreateJobForm = () => {
     const createJobForm = document.getElementById('create-job-form');
@@ -332,13 +420,13 @@ const setupCreateJobForm = () => {
 
         createJobForm.addEventListener('submit', (e) => {
             e.preventDefault();
-            if (!currentUser) return alert("Erro: Usuário não autenticado.");
-            if (selectedCourses.length === 0) return alert("Selecione pelo menos um curso requerido.");
+            if (!currentUser) return showAlert("Erro: Usuário não autenticado.", 'error');
+            if (selectedCourses.length === 0) return showAlert("Selecione pelo menos um curso requerido.", 'error'); // Ajuste: 'warning' -> 'error'
 
             const periodoSelecionado = document.getElementById('periodo').value;
-            const localVaga = document.getElementById('local').value.trim(); // <<< ADICIONADO
+            const localVaga = document.getElementById('local').value.trim(); 
 
-            if (!periodoSelecionado) return alert("Selecione o Período de trabalho.");
+            if (!periodoSelecionado) return showAlert("Selecione o Período de trabalho.", 'error'); // Ajuste: 'warning' -> 'error'
 
             const vagaData = {
                 titulo: document.getElementById('titulo').value,
@@ -346,11 +434,10 @@ const setupCreateJobForm = () => {
                 requisitos: document.getElementById('requisitos').value,
                 cargaHoraria: document.getElementById('cargaHoraria').value,
                 periodo: periodoSelecionado,
-                local: localVaga || 'Não informado', // <<< ADICIONADO
+                local: localVaga || 'Não informado', 
                 cursosRequeridos: selectedCourses,
                 empresaId: currentUser.uid, 
                 status: 'Vaga Ativa', 
-                // CORREÇÃO AQUI: Usa 'firebase' do escopo global (se carregado via <script> tag)
                 criadaEm: firebase.firestore.FieldValue.serverTimestamp()
             };
 
@@ -361,14 +448,16 @@ const setupCreateJobForm = () => {
             db.collection('vagas').add(vagaData)
                 .then(() => {
                     console.log('Vaga criada com sucesso!');
+                    showAlert("Vaga criada com sucesso!", 'success');
                     createJobForm.reset();
                     selectedCourses = [];
                     renderSelectedCourses('cursos-selecionados');
-                    window.location.href = 'MinhasVagas.html';
+                    // Não redireciona imediatamente para dar tempo de ver o toast.
+                    // Se precisar redirecionar, insira: window.location.href = 'MinhasVagas.html';
                 })
                 .catch(error => {
                     console.error("Erro ao criar a vaga: ", error); 
-                    alert(`Erro ao criar a vaga: ${error.message}`);
+                    showAlert(`Erro ao criar a vaga: ${error.message}`, 'error');
                 })
                 .finally(() => {
                     submitButton.disabled = false;
@@ -379,7 +468,7 @@ const setupCreateJobForm = () => {
 }
 
 // =================================================================
-// LÓGICA DE EDIÇÃO/EXCLUSÃO (MINHAS VAGAS) - ADICIONADO LOCAL
+// LÓGICA DE EDIÇÃO/EXCLUSÃO (MINHAS VAGAS) - Mantida
 // =================================================================
 const setupJobActions = () => {
     const vagasContainer = document.getElementById('vagas-container');
@@ -395,10 +484,22 @@ const setupJobActions = () => {
         const vagaId = targetButton.dataset.id;
 
         if (targetButton.classList.contains('delete-btn')) {
-            if (!confirm("Tem certeza que deseja excluir esta vaga?")) return;
-            db.collection('vagas').doc(vagaId).delete()
-                 .then(() => loadCompanyJobs())
-                 .catch(error => console.error("Erro ao excluir vaga:", error));
+            // 2. USO DO SHOWALERT COM CONFIRM (Usa window.confirm, conforme a lógica acima)
+            showAlert("Tem certeza que deseja excluir esta vaga?", 'error', true) // Tipo 'error' para confirmação
+                .then(isConfirmed => {
+                    if (!isConfirmed) return;
+                    
+                    db.collection('vagas').doc(vagaId).delete()
+                         .then(() => {
+                             loadCompanyJobs();
+                             showAlert("Vaga excluída com sucesso!", 'success');
+                         })
+                         .catch(error => {
+                             console.error("Erro ao excluir vaga:", error);
+                             showAlert("Erro ao excluir vaga.", 'error');
+                         });
+                });
+            return;
         }
         
         if (targetButton.classList.contains('edit-btn') && editModal) {
@@ -415,7 +516,7 @@ const setupJobActions = () => {
                      if (editPeriodoEl) editPeriodoEl.value = vaga.periodo || '';
                      
                      const editLocalEl = document.getElementById('edit-local');
-                     if (editLocalEl) editLocalEl.value = vaga.local || ''; // <<< ADICIONADO
+                     if (editLocalEl) editLocalEl.value = vaga.local || ''; 
 
                      selectedCourses = vaga.cursosRequeridos || [];
                      renderSelectedCourses('edit-cursos-selecionados');
@@ -435,10 +536,10 @@ const setupJobActions = () => {
             e.preventDefault();
             const vagaId = document.getElementById('edit-vaga-id').value;
             const periodoSelecionado = document.getElementById('edit-periodo').value;
-            const localVagaEdit = document.getElementById('edit-local').value.trim(); // <<< ADICIONADO
+            const localVagaEdit = document.getElementById('edit-local').value.trim(); 
 
-            if (!vagaId) return alert("Vaga inválida!");
-            if (selectedCourses.length === 0) return alert("Selecione pelo menos um curso requerido.");
+            if (!vagaId) return showAlert("Vaga inválida!", 'error');
+            if (selectedCourses.length === 0) return showAlert("Selecione pelo menos um curso requerido.", 'error'); // Ajuste: 'warning' -> 'error'
 
             const updatedData = {
                 titulo: document.getElementById('edit-titulo').value,
@@ -446,7 +547,7 @@ const setupJobActions = () => {
                 requisitos: document.getElementById('edit-requisitos').value,
                 cargaHoraria: document.getElementById('edit-cargaHoraria').value,
                 periodo: periodoSelecionado,
-                local: localVagaEdit || 'Não informado', // <<< ADICIONADO
+                local: localVagaEdit || 'Não informado', 
                 cursosRequeridos: selectedCourses
             };
 
@@ -454,36 +555,62 @@ const setupJobActions = () => {
                 .then(() => {
                     editModal.style.display = 'none';
                     loadCompanyJobs();
+                    showAlert("Vaga atualizada com sucesso!", 'success');
                 })
-                .catch(error => console.error("Erro ao atualizar vaga:", error));
+                .catch(error => {
+                    console.error("Erro ao atualizar vaga:", error);
+                    showAlert("Erro ao atualizar vaga: " + error.message, 'error');
+                });
         });
     }
 }
 
 // =================================================================
-// LOGOUT E AUTENTICAÇÃO
-// =================================================================
-const setupLogout = () => {
-    realLogoutBtn = document.getElementById('btn-logout-empresa');
-    if (realLogoutBtn) {
-        realLogoutBtn.addEventListener('click', () => {
-            auth.signOut().then(() => window.location.href = 'login.html');
-        });
-    }
-}
-// =================================================================
-// INICIALIZAÇÃO PRINCIPAL
+// INICIALIZAÇÃO PRINCIPAL (Integrada)
 // =================================================================
 auth.onAuthStateChanged(user => {
-    if (!user) return window.location.href = 'login.html';
+    if (!user) return; // Redirecionamento já está no auth-empresa.js
+
     currentUser = user;
+    
+    // Configura o botão de logout para todas as páginas
+    const btnLogout = document.getElementById('btn-logout-empresa');
+    if (btnLogout) {
+        btnLogout.addEventListener('click', () => {
+            logoutEmpresa().then(() => {
+                showAlert("Saindo do sistema...", 'info');
+                // Redireciona
+                setTimeout(() => {
+                    window.location.href = "login-empresa.html";
+                }, 500); // 0.5s para o usuário ver o toast
+            }).catch(error => console.error("Erro ao sair:", error));
+        });
+    }
+
+    // Lógica do Perfil
+    if (window.location.pathname.includes('PerfilEmpresa.html')) {
+        carregarDadosEmpresa(user);
+        const profileForm = document.getElementById('profile-form-empresa');
+        if (profileForm) profileForm.addEventListener('submit', salvarDadosEmpresa);
+    }
+    
+    // Lógica Comum: Carrega cursos e configura autocomplete/criação de vaga
     loadAvailableCourses().then(() => {
         setupCourseAutocomplete();
-        loadDashboardData(user);
-        loadCompanyJobs();
-        loadCandidaciesForCompany();
         setupCreateJobForm();
-        setupJobActions();
-        setupLogout();
     });
+
+    // Lógica Específica por Página
+    if (window.location.pathname.includes('InicialEmpresa.html')) {
+        loadDashboardData(user);
+    }
+
+    if (window.location.pathname.includes('MinhasVagas.html')) {
+        loadCompanyJobs();
+        setupJobActions(); 
+    }
+    
+    if (window.location.pathname.includes('EmpresaCandidatos.html')) {
+        loadCandidaciesForCompany();
+    }
 });
