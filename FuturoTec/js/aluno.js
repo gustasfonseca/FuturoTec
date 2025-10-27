@@ -1,5 +1,7 @@
 // js/aluno.js
 
+import { showAlert } from './alert-manager.js';
+
 const auth = firebase.auth();
 const db = firebase.firestore();
 let currentCandidate = null;
@@ -62,7 +64,7 @@ const renderJobs = (vagasToRender) => {
             ? (Array.isArray(vaga.cursosRequeridos) ? vaga.cursosRequeridos.join(', ') : vaga.cursosRequeridos)
             : 'Não informado';
 
-        const localDisplay = vaga.local || 'Não informado'; // <-- CAMPO LOCAL GARANTIDO
+        const localDisplay = vaga.local || 'Não informado'; 
 
         return `
             <article class="vaga-card">
@@ -183,7 +185,8 @@ const setupCandidacyListeners = () => {
         button.addEventListener('click', async (e) => {
             e.preventDefault();
             const vagaId = e.target.dataset.vagaId;
-            if (!currentCandidate) return alert('Você precisa estar logado para se candidatar!');
+            // SUBSTITUIÇÃO DO ALERT
+            if (!currentCandidate) return showAlert('Você precisa estar logado para se candidatar!', 'info');
             await handleCandidacy(vagaId, e.target);
         });
     });
@@ -195,12 +198,14 @@ const handleCandidacy = async (vagaId, button) => {
     try {
         const vagaDoc = await db.collection('vagas').doc(vagaId).get();
         if (!vagaDoc.exists) {
-            alert('Vaga não encontrada!');
+            // SUBSTITUIÇÃO DO ALERT
+            showAlert('Vaga não encontrada!', 'error');
             return;
         }
         const vaga = vagaDoc.data();
         if (vaga.status !== 'Vaga Ativa') {
-            alert('Esta vaga não está mais ativa.');
+            // SUBSTITUIÇÃO DO ALERT
+            showAlert('Esta vaga não está mais ativa.', 'info');
             button.textContent = 'Vaga Finalizada';
             return;
         }
@@ -208,7 +213,8 @@ const handleCandidacy = async (vagaId, button) => {
             .where('alunoId', '==', currentCandidate.uid)
             .where('vagaId', '==', vagaId).get();
         if (!existing.empty) {
-            alert('Você já se candidatou para esta vaga.');
+            // SUBSTITUIÇÃO DO ALERT
+            showAlert('Você já se candidatou para esta vaga.', 'info');
             button.textContent = 'Já Candidatado';
             return;
         }
@@ -219,11 +225,14 @@ const handleCandidacy = async (vagaId, button) => {
             dataCandidatura: firebase.firestore.FieldValue.serverTimestamp(),
             status: 'Pendente'
         });
-        alert('Candidatura enviada com sucesso!');
+        
+        // SUBSTITUIÇÃO DO ALERT
+        showAlert('Candidatura enviada com sucesso!', 'success');
         button.textContent = 'Candidatura Enviada';
     } catch (e) {
         console.error(e);
-        alert('Erro ao enviar candidatura.');
+        // SUBSTITUIÇÃO DO ALERT
+        showAlert('Erro ao enviar candidatura.', 'error');
     } finally {
         button.style.pointerEvents = 'auto';
     }
