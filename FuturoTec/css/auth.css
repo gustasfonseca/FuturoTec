@@ -47,20 +47,43 @@ body {
     transition: transform 0.4s ease-out, box-shadow 0.4s ease;
 }
 
-.auth-title {
-    font-size: 2.2em;
-    font-weight: 700;
-    margin-bottom: 5px;
-    margin-top: 20px; 
+.auth-logo {
+    background-color: var(--light-color); /* #fff */
+    
+    /* Centraliza o bloco na horizontal dentro do auth-card */
+    margin: 20px auto 15px auto; 
+    
+    /* Define uma largura para o card (ajuste conforme o tamanho do seu logo) */
+    max-width: 250px; 
+    width: 100%;
+    
+    /* O padding é importante, mas o Flexbox fará a centralização */
+    padding: 20px; 
+    
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); 
+    
+    /* --- AS LINHAS MÁGICAS PARA CENTRALIZAÇÃO COMPLETA (VERTICAL E HORIZONTAL) --- */
+    display: flex; /* Habilita o Flexbox */
+    justify-content: center; /* Centraliza horizontalmente (o conteúdo/filhos) */
+    align-items: center; /* Centraliza verticalmente (o conteúdo/filhos) */
+    /* -------------------------------------------------------------------------- */
+}
+
+/* O estilo da imagem pode ser simplificado, pois o Flexbox faz a maior parte */
+.auth-title-image {
+    max-width: 100%; /* Garante que a imagem nunca ultrapasse o card */
+    height: auto;
+    /* Não precisamos mais de 'display: block' ou 'margin: 0 auto' aqui! */
 }
 
 .auth-subtitle {
+    /* Mantido. Vai ficar logo abaixo do novo card branco. */
     font-size: 1.2em;
     font-weight: 300;
-    margin-bottom: 30px;
+    margin-bottom: 30px; 
     opacity: 0.9;
 }
-
 /* --------------------
     3. Botão do Google (Mantido)
     -------------------- */
