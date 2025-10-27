@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Gestão de Alunos - Assistente Técnico</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="css/alerts.css">
 <link rel="stylesheet" href="css/assistente.css">
 <link rel="stylesheet" href="css/styles.css">
 </head>
@@ -267,12 +268,11 @@ onAuthStateChanged(auth,user=>{
         carregarAlunos();
       }else{
         alert("Acesso negado.");
-        window.location.href='InicialAluno.html';
+        window.location.href='InicialAssistente.html';
       }
-    }).catch(e=>{console.error(e); alert("Erro ao verificar permissão."); window.location.href='Login.html';});
-  }else{ alert("Faça login."); window.location.href='Login.html'; }
+    }).catch(e=>{console.error(e); alert("Erro ao verificar permissão."); window.location.href='login-assistente.html';});
+  }else{ alert("Faça login."); window.location.href='login-assistente.html'; }
 });
 </script>
-
 </body>
 </html>
