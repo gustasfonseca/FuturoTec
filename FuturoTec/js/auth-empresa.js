@@ -1,6 +1,12 @@
 // auth-empresa.js
 
-// Certifique-se de incluir a biblioteca do Firebase (firebase-app, firebase-auth, firebase-firestore, firebase-storage) no seu HTML antes deste script.
+// Certifique-se de incluir a biblioteca do Firebase (firebase-app, firebase-auth, firebase-firestore, firebase-storage) 
+// no seu HTML antes deste script, ou usar imports do SDK v9 (se for o caso).
+
+// =================================================================
+// CONFIGURAÇÕES NECESSÁRIAS PARA O ALERT MANAGER
+// =================================================================
+import { showAlert } from './alert-manager.js';
 
 // =======================================================
 // === CONFIGURAÇÃO INICIAL DO FIREBASE ===
@@ -19,12 +25,13 @@ const firebaseConfig = {
 // Inicializa o Firebase
 firebase.initializeApp(firebaseConfig);
 
-// ATENÇÃO: Variáveis globais (removido 'const' e 'let' para acessibilidade)
-auth = firebase.auth();
-db = firebase.firestore();
+// CORREÇÃO APLICADA AQUI: Usando 'export const' e 'export let'
+// para que outras partes do código (como empresa.js) possam importar estas instâncias
+export const auth = firebase.auth();
+export const db = firebase.firestore();
 
 // Inicializa o Storage (verificação para evitar erro se não for usado/importado)
-storage = null;
+export let storage = null;
 if (typeof firebase.storage === 'function') {
     storage = firebase.storage();
 }
@@ -148,7 +155,8 @@ async function loginComGoogleEmpresa() {
             error.message :
             `Erro ao fazer login com o Google. Tente novamente. Detalhe: ${error.message}`;
 
-        alert(errorMessage);
+        // SUBSTITUIÇÃO DO ALERT
+        showAlert(errorMessage, 'error');
         throw error;
     }
 }
@@ -157,17 +165,20 @@ async function loginComGoogleEmpresa() {
  * Envia um e-mail de redefinição de senha para o e-mail fornecido.
  */
 async function recuperarSenhaEmpresa() {
+    // O prompt continua sendo a melhor forma para captura de input neste contexto
     const email = prompt("Por favor, digite seu e-mail de Empresa para redefinir a senha:");
 
     if (!email) {
-        alert("Operação cancelada ou e-mail não fornecido.");
+        // SUBSTITUIÇÃO DO ALERT
+        showAlert("Operação cancelada ou e-mail não fornecido.", 'info');
         return;
     }
 
     try {
         await auth.sendPasswordResetEmail(email);
 
-        alert(`✅ E-mail de redefinição de senha enviado para ${email}. Verifique sua caixa de entrada e a pasta de Spam!`);
+        // SUBSTITUIÇÃO DO ALERT
+        showAlert(`E-mail de redefinição de senha enviado para ${email}. Verifique sua caixa de entrada e a pasta de Spam!`, 'success');
 
     } catch (error) {
         console.error("Erro ao enviar e-mail de redefinição:", error);
@@ -180,7 +191,8 @@ async function recuperarSenhaEmpresa() {
             errorMessage = "O formato do e-mail é inválido.";
         }
 
-        alert(`❌ Erro: ${errorMessage}`);
+        // SUBSTITUIÇÃO DO ALERT
+        showAlert(`Erro: ${errorMessage}`, 'error');
     }
 }
 
@@ -191,24 +203,29 @@ async function recuperarSenhaEmpresa() {
  */
 async function excluirContaEmpresa(user) {
     if (!user) {
-        alert("Erro: Nenhuma empresa logada.");
+        // SUBSTITUIÇÃO DO ALERT
+        showAlert("Erro: Nenhuma empresa logada.", 'error');
         return;
     }
 
     const userId = user.uid;
     const userEmail = user.email;
 
+    // O prompt continua sendo a melhor forma para validação de exclusão
     const confirmacaoEmail = prompt(`ATENÇÃO: A exclusão da conta da empresa é PERMANENTE. Você perderá todos os dados (perfil, vagas e candidaturas associadas).\n\nPara confirmar a exclusão, digite seu EMAIL (${userEmail}) no campo abaixo:`);
 
     if (confirmacaoEmail !== userEmail) {
-        alert("E-mail digitado incorretamente ou operação cancelada.");
+        // SUBSTITUIÇÃO DO ALERT
+        showAlert("E-mail digitado incorretamente ou operação cancelada.", 'info');
         return;
     }
 
     // A REAUTENTICAÇÃO ABAIXO É O QUE RESOLVE O PROBLEMA DE SEGURANÇA.
+    // O prompt continua sendo a melhor forma para validação de segurança
     const confirmacaoSenha = prompt("Por favor, digite sua SENHA (do site) para confirmar a exclusão. (REQUERIDO PELO FIREBASE):");
     if (!confirmacaoSenha) {
-        alert("Exclusão cancelada. É necessário informar a senha.");
+        // SUBSTITUIÇÃO DO ALERT
+        showAlert("Exclusão cancelada. É necessário informar a senha.", 'info');
         return;
     }
 
@@ -251,7 +268,8 @@ async function excluirContaEmpresa(user) {
         await user.delete();
         console.log("[Exclusão Empresa] Usuário excluído do Firebase Auth. E-mail liberado.");
 
-        alert("✅ Sua conta de empresa foi excluída permanentemente. Você será redirecionado.");
+        // SUBSTITUIÇÃO DO ALERT
+        showAlert("Sua conta de empresa foi excluída permanentemente. Você será redirecionado.", 'success');
         window.location.href = 'login-empresa.html';
 
     } catch (error) {
@@ -269,7 +287,8 @@ async function excluirContaEmpresa(user) {
             errorMessage = "Usuário não encontrado. Possível problema de autenticação.";
         }
 
-        alert(`❌ ${errorMessage} (Detalhes técnicos no console)`);
+        // SUBSTITUIÇÃO DO ALERT
+        showAlert(`${errorMessage} (Detalhes técnicos no console)`, 'error');
     }
 }
 
@@ -361,12 +380,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     nome: nomeEmpresa,
                     email: email,
                     cnpj: cnpj,
+                    // Usa a referência global do firebase para FieldValue
                     dataCriacao: firebase.firestore.FieldValue.serverTimestamp()
                 });
 
                 // 3. Desloga o usuário e redireciona (boa prática após cadastro)
                 await auth.signOut();
-                alert("✅ Cadastro de Empresa realizado com sucesso! Por favor, faça login.");
+                // SUBSTITUIÇÃO DO ALERT
+                showAlert("Cadastro de Empresa realizado com sucesso! Por favor, faça login.", 'success');
                 window.location.href = 'login-empresa.html';
 
             } catch (error) {
@@ -410,7 +431,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (userDoc.exists && userDoc.data().role === 'empresa') {
                     window.location.href = 'InicialEmpresa.html';
                 } else {
-                    alert("Acesso negado. Este login é apenas para empresas.");
+                    // SUBSTITUIÇÃO DO ALERT
+                    showAlert("Acesso negado. Este login é apenas para empresas.", 'error');
                     auth.signOut(); // Desloga o usuário com role errada
                 }
             } catch (error) {
@@ -422,7 +444,8 @@ document.addEventListener('DOMContentLoaded', () => {
                      errorMessage = "E-mail ou senha incorretos.";
                 }
 
-                alert(`❌ ${errorMessage}`);
+                // SUBSTITUIÇÃO DO ALERT
+                showAlert(`Erro: ${errorMessage}`, 'error');
                 
                 btn.textContent = originalText;
                 btn.disabled = false;
@@ -459,15 +482,20 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnDeslogar = document.getElementById("btn-deslogar");
     if (btnDeslogar) {
         btnDeslogar.addEventListener("click", function () {
-            if (confirm("Tem certeza que deseja sair da sua conta de Empresa?")) {
-                // Usa a variável global 'auth'
-                auth.signOut().then(() => {
-                    window.location.href = "login-empresa.html";
-                }).catch((error) => {
-                    console.error("Erro ao deslogar:", error);
-                    alert("Erro ao deslogar. Tente novamente.");
+            // SUBSTITUIÇÃO DO CONFIRM
+            showAlert("Tem certeza que deseja sair da sua conta de Empresa?", 'warning', true)
+                .then(confirmed => {
+                    if (confirmed) {
+                        // Usa a variável exportada 'auth'
+                        auth.signOut().then(() => {
+                            window.location.href = "login-empresa.html";
+                        }).catch((error) => {
+                            console.error("Erro ao deslogar:", error);
+                            // SUBSTITUIÇÃO DO ALERT
+                            showAlert("Erro ao deslogar. Tente novamente.", 'error');
+                        });
+                    }
                 });
-            }
         });
     }
 });
