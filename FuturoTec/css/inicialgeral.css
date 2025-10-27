@@ -37,22 +37,20 @@ main {
     /* Reduzido de 1300px para centralizar melhor em telas mais comuns */
     max-width: 1200px; 
     padding: 20px;
-    margin: 20px auto; 
+    margin: 50px auto; 
 }
 
 /* --- Logo Proeminente (MAIOR ÊNFASE) --- */
 .logo-topo {
-    padding-top: 30px;
+    padding-top: 10px;
     text-align: center;
-    margin-bottom: 30px; /* Reduzido o espaço para aproximar do título */
+    margin-bottom: 1px; /* Reduzido o espaço para aproximar do título */
 }
 
 .logo-topo img {
     /* Aumenta a logo para a máxima ênfase (ponto focal) */
-    max-height: 160px; 
+    max-height: 330px; 
     width: auto;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-    border-radius: 8px; 
 }
 
 /* --- Título Principal (REDUZIDO) --- */
@@ -62,7 +60,7 @@ main {
     font-size: clamp(2em, 4vw, 3em); 
     font-weight: 700;
     color: var(--foreground);
-    margin-bottom: 40px; /* Reduzido o espaço para aproximar o card */
+    margin-bottom: 10px; /* Reduzido o espaço para aproximar o card */
 }
 
 .top-title .highlight {
