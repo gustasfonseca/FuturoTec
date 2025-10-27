@@ -23,7 +23,9 @@ const firebaseConfig = {
 };
 
 // Inicializa o Firebase
-firebase.initializeApp(firebaseConfig);
+if (typeof firebase !== 'undefined' && !firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+}
 
 // CORREÇÃO APLICADA AQUI: Usando 'export const' e 'export let'
 // para que outras partes do código (como empresa.js) possam importar estas instâncias
@@ -196,11 +198,6 @@ async function recuperarSenhaEmpresa() {
     }
 }
 
-/**
- * Exclui a conta de empresa, todas as vagas e candidaturas relacionadas.
- * Inclui a reautenticação para superar o erro 'auth/requires-recent-login'.
- * @param {firebase.User} user O usuário logado atualmente.
- */
 async function excluirContaEmpresa(user) {
     if (!user) {
         // SUBSTITUIÇÃO DO ALERT
@@ -478,24 +475,109 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
     
-    // 6. LÓGICA DE DESLOGAR (Se existir um botão com este ID)
+    // 6. CONEXÃO DO BOTÃO DE EXCLUIR CONTA
+    const btnExcluirConta = document.getElementById('btn-excluir-conta-empresa');
+    if (btnExcluirConta) {
+        btnExcluirConta.addEventListener('click', () => {
+            if (auth.currentUser) {
+                // O excluirContaEmpresa usa prompt, o que é aceitável para segurança.
+                excluirContaEmpresa(auth.currentUser);
+            } else {
+                showAlert("Você precisa estar logado para excluir a conta.", 'warning');
+            }
+        });
+    }
+    
+    // 7. LÓGICA DE DESLOGAR (Se existir um botão com este ID)
     const btnDeslogar = document.getElementById("btn-deslogar");
     if (btnDeslogar) {
         btnDeslogar.addEventListener("click", function () {
             // SUBSTITUIÇÃO DO CONFIRM
-            showAlert("Tem certeza que deseja sair da sua conta de Empresa?", 'warning', true)
+            showAlert("Tem certeza que deseja sair da sua conta de Empresa?", 'warning', true) // 'true' para confirmar
                 .then(confirmed => {
                     if (confirmed) {
-                        // Usa a variável exportada 'auth'
-                        auth.signOut().then(() => {
-                            window.location.href = "login-empresa.html";
-                        }).catch((error) => {
-                            console.error("Erro ao deslogar:", error);
-                            // SUBSTITUIÇÃO DO ALERT
-                            showAlert("Erro ao deslogar. Tente novamente.", 'error');
+                        logoutEmpresa().catch((error) => {
+                             // Erro tratado dentro do logoutEmpresa ou propagado
+                             showAlert("Erro ao deslogar. Tente novamente.", 'error');
                         });
                     }
                 });
         });
     }
 });
+
+
+// =======================================================
+// === VERIFICAÇÃO DE ESTADO DE AUTENTICAÇÃO E REDIRECIONAMENTO (CORRIGIDO) ===
+// =======================================================
+auth.onAuthStateChanged(async (user) => {
+    // Obtém o caminho da página atual e define as flags de páginas públicas
+    const path = window.location.pathname;
+    const isLoginPage = path.endsWith('login-empresa.html');
+    const isSignupPage = path.endsWith('cadastro-empresa.html');
+    const isPublicPage = isLoginPage || isSignupPage || path.endsWith('index.html');
+
+    // Verifica se o usuário NÃO ESTÁ logado
+    if (!user) {
+        // Redireciona APENAS se a página atual não for pública (login, cadastro, index)
+        if (!isPublicPage) {
+            console.log("Usuário deslogado. Redirecionando para login-empresa.html...");
+            // Oculta tudo para evitar piscar de conteúdo
+            document.body.style.display = 'none';
+            window.location.href = 'login-empresa.html';
+        } else {
+             // Se estiver em uma página pública (login/cadastro/index) e deslogado, exibe
+             document.body.style.display = ''; 
+        }
+    } else {
+        // Usuário logado: Garante que é uma empresa
+        const userDoc = await db.collection('usuarios').doc(user.uid).get();
+        const role = userDoc.exists ? userDoc.data().role : null;
+
+        if (role !== 'empresa') {
+            await auth.signOut();
+            console.error("Tentativa de acesso não autorizado! Redirecionando...");
+            
+            // SUBSTITUIÇÃO DO ALERT
+            showAlert("Acesso não autorizado. Sua conta não é do tipo Empresa.", 'error');
+            
+            // Exibe a página de login/cadastro
+            if (isPublicPage) {
+                document.body.style.display = '';
+            }
+            window.location.href = 'login-empresa.html';
+        } else if (!userDoc.exists) {
+            // Conta não encontrada no Firestore, força logout
+            await auth.signOut();
+            window.location.href = 'login-empresa.html';
+        } else {
+            // Usuário logado e é uma empresa:
+
+            if (isLoginPage || isSignupPage) {
+                // SE ESTIVER LOGADO E NAS PÁGINAS DE LOGIN/CADASTRO: REDIRECIONA PARA INICIAL
+                console.log("Usuário logado tentando acessar login/cadastro. Redirecionando para InicialEmpresa.html...");
+                document.body.style.display = 'none'; // Esconde antes de redirecionar
+                window.location.href = 'InicialEmpresa.html';
+            }
+            
+            // SE ESTIVER EM QUALQUER OUTRA PÁGINA (PERFIL, INICIAL, VAGAS): EXIBE
+            // ISSO RESOLVE O LOOP. Se estiver no perfil, ele exibe.
+            document.body.style.display = ''; 
+        }
+    }
+});
+
+// =================================================================
+// FUNÇÃO DE LOGOUT EXPORTADA (Para uso no PerfilEmpresa) 
+// =================================================================
+export async function logoutEmpresa() {
+    try {
+        await auth.signOut();
+        // Não é necessário redirecionar aqui, pois o onAuthStateChanged fará isso
+    } catch (error) {
+        console.error("Erro ao deslogar:", error);
+        // Usa o showAlert importado
+        showAlert("Erro ao deslogar. Tente novamente.", 'error'); 
+        throw error; // Propaga o erro
+    }
+}
