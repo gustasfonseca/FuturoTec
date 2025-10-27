@@ -1,12 +1,9 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Login - FuturoTEC</title>
-    <meta name="description" content="Plataforma que conecta estudantes da ETEC com empresas parceiras." />
-    <meta name="author" content="FuturoTEC" />
+    <title>Login Empresa - FuturoTEC</title>
     <link rel="stylesheet" href="css/alerts.css">
     <link rel="stylesheet" href="css/styles.css">
     <link rel="stylesheet" href="css/auth.css">
@@ -14,40 +11,45 @@
 
 <body>
     <div class="app">
+        
         <main class="auth-section">
             <div class="auth-card">
+                
                 <a href="index.html" class="back-link">
                     <i data-feather="arrow-left" class="back-icon"></i>
                     Voltar
                 </a>
+
                 <div class="auth-logo">
                     <img src="img/FuturoTecIndexLogo.png" alt="Logotipo FuturoTEC" class="auth-title-image">                    
-                </div>
-                <h2 class="auth-subtitle">Login do Assistente Técnico</h2>
+                </div> 
+                <h2 class="auth-subtitle">Login da Empresa</h2>
 
-                <button id="btn-google-login-assistente" class="google-btn google-login-button">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/4/4a/Logo_2013_Google.png"
-                        alt="Google Logo" style="width: 20px; vertical-align: middle; margin-right: 10px;">
+                <button id="btn-google-login-empresa" class="google-btn google-login-button">
+                    <img src="https://img.icons8.com/color/48/000000/google-logo.png"
+                        alt="Google Logo" class="google-logo-icon">
                     Entrar com o Google
                 </button>
 
-                <hr style="border-top: 1px solid #eee; margin: 20px 0;">
-
-                <form id="form-login-assistente" class="auth-form">
+                <div class="divider">ou</div>
+                
+                <form id="form-login-empresa" class="auth-form">
                     <div class="form-group">
-                        <label for="email-login-assistente">Email:</label>
-                        <input type="email" id="email-login-assistente" name="email" placeholder="Email:" required>
+                        <label for="email-login-empresa">Email:</label>
+                        <input type="email" id="email-login-empresa" name="email" placeholder="Email:" required>
                     </div>
                     <div class="form-group password-group">
-                        <label for="senha-login-assistente">Senha:</label>
-                        <input type="password" id="senha-login-assistente" name="senha" placeholder="Senha:" required>
-                        <span class="password-toggle" data-target="senha-login-assistente"><i
-                                data-feather="eye"></i></span>
+                        <label for="senha-login-empresa">Senha:</label>
+                        <input type="password" id="senha-login-empresa" name="senha" placeholder="Senha:" required>
+                        <span class="password-toggle" data-target="senha-login-empresa">
+                            <i data-feather="eye"></i>
+                        </span>
                     </div>
-                    <p class="forgot-password"><a href="#" id="btn-esqueci-senha-assistente">Esqueceu sua senha?</a></p>
+                    
+                    <p class="forgot-password"><a href="#" id="btn-esqueci-senha-empresa">Esqueceu sua senha?</a></p>
                     
                     <button type="submit" class="submit-btn">Entrar</button>
-                    <p class="login-link">Não tem uma conta? <a href="cadastro-assistente.html">Cadastre-se</a></p>
+                    <p class="login-link">Não tem uma conta? <a href="cadastro-empresa.html">Cadastre-se</a></p>
                 </form>
             </div>
         </main>
@@ -56,7 +58,7 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
     <script type="module" src="js/alert-manager.js"></script>
-    <script type="module" src="js/auth-assistente.js"></script>
+    <script type="module" src="js/auth-empresa.js"></script>
     <script src="https://unpkg.com/feather-icons"></script>
     <script> feather.replace(); </script>
 </body>
