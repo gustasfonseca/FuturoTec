@@ -1,5 +1,11 @@
 // auth-assistente.js
 
+// =================================================================
+// CONFIGURAÇÕES NECESSÁRIAS PARA O ALERT MANAGER
+// =================================================================
+// Importa a função showAlert do módulo alert-manager.js
+import { showAlert } from './alert-manager.js';
+
 // CONFIGURAÇÃO DO FIREBASE
 const firebaseConfig = {
     apiKey: "AIzaSyA8Q9cKB4oVmFM6ilHK_70h8JDvgsOQhLY",
@@ -90,19 +96,19 @@ function updatePasswordValidationUI(password) {
 // =======================================================
 async function excluirContaAssistente(user) {
     if (!user) {
-        alert("Erro: Nenhum assistente logado.");
+        showAlert("Erro: Nenhum assistente logado.", 'error');
         return;
     }
     const userId = user.uid;
     const userEmail = user.email;
     const confirmacaoEmail = prompt(`ATENÇÃO: A exclusão da conta do assistente técnico é PERMANENTE.\n\nPara confirmar a exclusão, digite seu EMAIL (${userEmail}) no campo abaixo:`);
     if (confirmacaoEmail !== userEmail) {
-        alert("E-mail digitado incorretamente ou operação cancelada.");
+        showAlert("E-mail digitado incorretamente ou operação cancelada.", 'info');
         return;
     }
     const confirmacaoSenha = prompt("Por favor, digite sua SENHA (do site) para confirmar a exclusão. (REQUERIDO PELO FIREBASE):");
     if (!confirmacaoSenha) {
-        alert("Exclusão cancelada. É necessário informar a senha.");
+        showAlert("Exclusão cancelada. É necessário informar a senha.", 'info');
         return;
     }
     try {
@@ -114,7 +120,9 @@ async function excluirContaAssistente(user) {
         console.log("[Exclusão Assistente] Perfil do assistente excluído.");
         await user.delete();
         console.log("[Exclusão Assistente] Usuário excluído do Firebase Auth. E-mail liberado.");
-        alert("✅ Sua conta de assistente técnico foi excluída permanentemente. Você será redirecionado.");
+        
+        showAlert("Sua conta de assistente técnico foi excluída permanentemente. Você será redirecionado.", 'success');
+        
         window.location.href = 'login-assistente.html';
     } catch (error) {
         console.error("Erro ao excluir a conta do assistente técnico:", error);
@@ -128,7 +136,7 @@ async function excluirContaAssistente(user) {
         } else if (error.code === 'permission-denied') {
             errorMessage = "Erro de Permissão: Verifique as regras de segurança do Firestore (Coleção 'usuarios').";
         }
-        alert(`❌ ${errorMessage} (Detalhes técnicos no console)`);
+        showAlert(errorMessage, 'error');
     }
 }
 
@@ -160,7 +168,9 @@ async function loginComGoogleAssistente() {
             error.message.includes("Acesso negado") ?
             error.message :
             `Erro ao fazer login com o Google. Tente novamente. Detalhe: ${error.message}`;
-        alert(errorMessage);
+        
+        // SUBSTITUIÇÃO DO ALERT
+        showAlert(errorMessage, 'error');
         throw error;
     }
 }
@@ -171,12 +181,13 @@ async function loginComGoogleAssistente() {
 async function recuperarSenhaAssistente() {
     const email = prompt("Por favor, digite seu e-mail de Assistente Técnico para redefinir a senha:");
     if (!email) {
-        alert("Operação cancelada ou e-mail não fornecido.");
+        showAlert("Operação cancelada ou e-mail não fornecido.", 'info');
         return;
     }
     try {
         await auth.sendPasswordResetEmail(email);
-        alert(`✅ E-mail de redefinição de senha enviado para ${email}. Verifique sua caixa de entrada e a pasta de Spam!`);
+        // SUBSTITUIÇÃO DO ALERT
+        showAlert(`E-mail de redefinição de senha enviado para ${email}. Verifique sua caixa de entrada e a pasta de Spam!`, 'success');
     } catch (error) {
         console.error("Erro ao enviar e-mail de redefinição:", error);
         let errorMessage = "Erro ao solicitar a redefinição de senha. Verifique se o e-mail está correto e tente novamente.";
@@ -185,7 +196,8 @@ async function recuperarSenhaAssistente() {
         } else if (error.code === 'auth/invalid-email') {
             errorMessage = "O formato do e-mail é inválido.";
         }
-        alert(`❌ Erro: ${errorMessage}`);
+        // SUBSTITUIÇÃO DO ALERT
+        showAlert(errorMessage, 'error');
     }
 }
 
@@ -200,7 +212,8 @@ async function fetchAllEtecs() {
         console.log("Dados de todas as Etecs carregados.");
     } catch (error) {
         console.error("Erro ao carregar dados das Etecs:", error);
-        alert("Erro ao carregar lista de ETECs. Verifique as Regras do Firestore.");
+        // SUBSTITUIÇÃO DO ALERT
+        showAlert("Erro ao carregar lista de ETECs. Verifique as Regras do Firestore.", 'error');
     }
 }
 
@@ -232,11 +245,13 @@ async function preencherDadosDoPerfil() {
                         });
                     }
                 } else {
-                    alert("Erro: não foi possível encontrar seus dados.");
+                    // SUBSTITUIÇÃO DO ALERT
+                    showAlert("Erro: não foi possível encontrar seus dados.", 'error');
                 }
             } catch (error) {
                 console.error("Erro ao buscar dados do perfil:", error);
-                alert("Ocorreu um erro ao carregar seu perfil.");
+                // SUBSTITUIÇÃO DO ALERT
+                showAlert("Ocorreu um erro ao carregar seu perfil.", 'error');
             }
         } else {
             console.log("Nenhum usuário logado. Redirecionando para a página de login.");
@@ -262,22 +277,27 @@ document.addEventListener('DOMContentLoaded', async () => {
             try {
                 const user = auth.currentUser;
                 if (!user) {
-                    alert('Sua sessão expirou. Faça login novamente.');
+                    // SUBSTITUIÇÃO DO ALERT
+                    showAlert('Sua sessão expirou. Faça login novamente.', 'info');
                     return window.location.href = 'login-assistente.html';
                 }
                 const novoNome = document.getElementById('nome-completo').value;
                 if (!novoNome.trim()) {
-                    return alert('O nome completo não pode ficar em branco.');
+                    // SUBSTITUIÇÃO DO ALERT
+                    showAlert('O nome completo não pode ficar em branco.', 'info');
+                    return;
                 }
                 const userDocRef = db.collection('usuarios').doc(user.uid);
                 await userDocRef.update({
                     nome: novoNome
                 });
                 document.getElementById('user-name').textContent = novoNome;
-                alert('Dados atualizados com sucesso!');
+                // SUBSTITUIÇÃO DO ALERT
+                showAlert('Dados atualizados com sucesso!', 'success');
             } catch (error) {
                 console.error("Erro ao atualizar os dados do perfil:", error);
-                alert("Não foi possível atualizar seus dados. Tente novamente.");
+                // SUBSTITUIÇÃO DO ALERT
+                showAlert("Não foi possível atualizar seus dados. Tente novamente.", 'error');
             } finally {
                 botaoSalvar.disabled = false;
                 botaoSalvar.textContent = 'Salvar Alterações';
@@ -362,18 +382,21 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             // VALIDAÇÕES
             if (senha !== confirmarSenha) {
-                errorMessageDiv.textContent = "As senhas não coincidem.";
+                // SUBSTITUIÇÃO DO ALERT
+                showAlert("As senhas não coincidem.", 'info');
                 return;
             }
             if (!etecId) {
-                errorMessageDiv.textContent = "Selecione a ETEC na lista de sugestões.";
+                // SUBSTITUIÇÃO DO ALERT
+                showAlert("Selecione a ETEC na lista de sugestões.", 'info');
                 return;
             }
 
             // === NOVA VALIDAÇÃO DE SENHA FORTE ===
             const passwordCheck = isPasswordStrong(senha);
             if (!passwordCheck.valid) {
-                errorMessageDiv.textContent = passwordCheck.message;
+                // SUBSTITUIÇÃO DO ALERT
+                showAlert(passwordCheck.message, 'info');
                 return; // Para a execução se a senha for fraca
             }
             // === FIM DA VALIDAÇÃO ===
@@ -392,12 +415,14 @@ document.addEventListener('DOMContentLoaded', async () => {
                 });
 
                 await auth.signOut();
-                alert("Cadastro realizado com sucesso! Por favor, faça login.");
+                // SUBSTITUIÇÃO DO ALERT
+                showAlert("Cadastro realizado com sucesso! Por favor, faça login.", 'success');
                 window.location.href = 'login-assistente.html';
 
             } catch (error) {
                 console.error("Erro no cadastro:", error);
-                errorMessageDiv.textContent = `Erro ao cadastrar: ${error.message}`;
+                // SUBSTITUIÇÃO DO ALERT
+                showAlert(`Erro ao cadastrar: ${error.message}`, 'error');
             }
         });
     }
@@ -415,12 +440,14 @@ document.addEventListener('DOMContentLoaded', async () => {
                 if (userDoc.exists && userDoc.data().role === 'assistente_tecnico') {
                     window.location.href = 'InicialAssistente.html';
                 } else {
-                    alert("Acesso negado. Este login é apenas para assistentes.");
+                    // SUBSTITUIÇÃO DO ALERT
+                    showAlert("Acesso negado. Este login é apenas para assistentes.", 'error');
                     auth.signOut();
                 }
             } catch (error) {
                 console.error("Erro no login:", error);
-                alert(`Erro ao fazer login: ${error.message}`);
+                // SUBSTITUIÇÃO DO ALERT
+                showAlert(`Erro ao fazer login: ${error.message}`, 'error');
             }
         });
     }
@@ -436,7 +463,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     window.location.href = 'InicialAssistente.html';
                 }
             } catch (error) {
-                // Erro já tratado na função
+                // Erro já tratado na função loginComGoogleAssistente()
             }
         });
     }
@@ -473,12 +500,14 @@ document.addEventListener("DOMContentLoaded", function () {
     const btnDeslogar = document.getElementById("btn-deslogar");
     if (btnDeslogar) {
         btnDeslogar.addEventListener("click", function () {
-            if (confirm("Tem certeza que deseja sair da sua conta?")) {
+            // SUBSTITUIÇÃO DO CONFIRM POR UM ALERT MAIS SIMPLES (melhor usar uma modal customizada para confirm)
+            if (window.confirm("Tem certeza que deseja sair da sua conta?")) { 
                 firebase.auth().signOut().then(() => {
                     window.location.href = "login-assistente.html";
                 }).catch((error) => {
                     console.error("Erro ao deslogar:", error);
-                    alert("Erro ao deslogar. Tente novamente.");
+                    // SUBSTITUIÇÃO DO ALERT
+                    showAlert("Erro ao deslogar. Tente novamente.", 'error');
                 });
             }
         });
