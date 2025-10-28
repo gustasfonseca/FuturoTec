@@ -1,0 +1,101 @@
+/* --- 1. Afastar o slider de cursos do footer --- */
+
+/* Aplica um espaçamento maior na seção de cursos (acima e abaixo) */
+.courses-section {
+    padding-top: 60px; /* Mantém o espaçamento superior */
+    padding-bottom: 100px; /* Aumenta o espaçamento inferior para afastar do footer */
+    /* Garante que o container use o padding corretamente */
+    width: 100%;
+    max-width: 1200px; /* Valor de exemplo, use o max-width que já usa */
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* --- 2. Arredondar as bordas do <div class="hero-image"> --- */
+
+.hero-image {
+    /* Opcional: Garante que o div tenha a forma desejada se precisar de um fundo */
+    /* background-color: #eee; */
+    /* Se a imagem for o único conteúdo, aplicamos na imagem também */
+}
+
+.hero-image img {
+    /* Arredonda as bordas da imagem */
+    border-radius: 20px; /* Valor que você pode ajustar (ex: 10px, 50px para círculo, etc.) */
+    display: block;
+    width: 100%;
+    height: auto;
+    /* Adiciona uma sombra suave para dar profundidade */
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    /* Transição suave para um hover interativo */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.hero-image img:hover {
+    /* Efeito de zoom sutil ao passar o mouse */
+    transform: scale(1.03);
+    /* Sombra mais intensa */
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+}
+
+/* --- 3. h1 maior, bonito e interativo --- */
+
+.hero-title {
+    /* Tornando o título maior */
+    font-size: 3.5rem; /* Ajuste para o tamanho ideal em desktop */
+    line-height: 1.2;
+    font-family: 'Montserrat', sans-serif; /* Usando a fonte que você já tem */
+    color: #1a202c; /* Cor principal, ajuste se tiver um esquema de cores */
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.05); /* Sombra sutil */
+    
+    /* Efeito de gradiente na cor do texto para beleza */
+    background: -webkit-linear-gradient(45deg,  #2c6e7e, #54a0b3); /* Exemplo de gradiente azul */
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    
+    /* Adicionando um toque de interatividade com animação (animação de fundo) */
+    position: relative;
+    overflow: hidden; /* Garante que o pseudo-elemento não vaze */
+}
+
+/* Animação de brilho/destaque sutil */
+.hero-title::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    /* Gradiente transparente a opaco para simular um "brilho" */
+    background: linear-gradient(120deg, rgba(255, 255, 255, 0) 30%, rgba(255, 255, 255, 0.5) 50%, rgba(255, 255, 255, 0) 70%);
+    opacity: 0;
+    transform: translateX(-100%);
+    pointer-events: none; /* Não interfere no clique */
+    transition: opacity 0.3s ease;
+}
+
+.hero-title:hover::after {
+    /* Aumenta o brilho (opcional, pode ser só a opacidade) */
+    opacity: 1;
+    /* A animação real para um efeito mais "passado" */
+    animation: shine 1.5s ease-in-out forwards;
+}
+
+@keyframes shine {
+    0% {
+        transform: translateX(-100%);
+    }
+    100% {
+        transform: translateX(100%);
+    }
+}
+
+/* Ajustes para telas menores (Responsividade) */
+@media (max-width: 768px) {
+    .hero-title {
+        font-size: 2.5rem; /* Reduz o tamanho em mobile */
+    }
+    .courses-section {
+        padding-bottom: 60px;
+    }
+}
