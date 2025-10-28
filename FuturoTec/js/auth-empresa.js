@@ -273,6 +273,109 @@ async function excluirContaEmpresa(user) {
     }
 }
 
+// =======================================================
+// === FUNÇÕES DE PERFIL DA EMPRESA ===
+// =======================================================
+
+/**
+ * Carrega os dados do perfil da empresa logada
+ */
+async function carregarPerfilEmpresa() {
+    try {
+        const user = auth.currentUser;
+        
+        if (!user) {
+            console.error("Usuário não autenticado");
+            window.location.href = 'login-empresa.html';
+            return;
+        }
+
+        console.log("Carregando perfil para usuário:", user.uid);
+
+        // Buscar dados da empresa no Firestore
+        const empresaDoc = await db.collection('usuarios').doc(user.uid).get();
+        
+        if (empresaDoc.exists) {
+            const empresaData = empresaDoc.data();
+            console.log("Dados da empresa encontrados:", empresaData);
+            
+            // Preencher os campos do formulário
+            document.getElementById('user-name').textContent = empresaData.nome || 'Nome não cadastrado';
+            document.getElementById('user-email').textContent = user.email;
+            document.getElementById('email').value = user.email;
+            document.getElementById('nome-empresa').value = empresaData.nome || '';
+            document.getElementById('cnpj-empresa').value = empresaData.cnpj || '';
+            
+        } else {
+            console.error("Documento da empresa não encontrado");
+            document.getElementById('user-name').textContent = 'Empresa não cadastrada';
+            document.getElementById('user-email').textContent = user.email;
+            document.getElementById('email').value = user.email;
+        }
+
+    } catch (error) {
+        console.error("Erro ao carregar perfil da empresa:", error);
+        alert("Erro ao carregar dados do perfil. Tente novamente.");
+    }
+}
+
+/**
+ * Salva/atualiza os dados do perfil da empresa
+ */
+async function salvarPerfilEmpresa(event) {
+    event.preventDefault();
+    
+    try {
+        const user = auth.currentUser;
+        if (!user) return;
+
+        const nomeEmpresa = document.getElementById('nome-empresa').value;
+        const cnpjEmpresa = document.getElementById('cnpj-empresa').value;
+
+        // Validações básicas
+        if (!nomeEmpresa.trim()) {
+            alert('Por favor, preencha o nome da empresa.');
+            return;
+        }
+
+        if (!cnpjEmpresa.trim()) {
+            alert('Por favor, preencha o CNPJ.');
+            return;
+        }
+
+        console.log("Salvando dados da empresa...");
+
+        // Atualizar dados no Firestore
+        await db.collection('usuarios').doc(user.uid).set({
+            nome: nomeEmpresa,
+            cnpj: cnpjEmpresa,
+            email: user.email,
+            role: 'empresa',
+            atualizadoEm: firebase.firestore.FieldValue.serverTimestamp()
+        }, { merge: true });
+
+        // Atualizar o nome exibido
+        document.getElementById('user-name').textContent = nomeEmpresa;
+
+        alert('Dados salvos com sucesso!');
+        
+    } catch (error) {
+        console.error("Erro ao salvar perfil da empresa:", error);
+        alert("Erro ao salvar dados. Tente novamente.");
+    }
+}
+
+/**
+ * Logout da empresa
+ */
+async function logoutEmpresa() {
+    try {
+        await auth.signOut();
+        window.location.href = 'login-empresa.html';
+    } catch (error) {
+        console.error("Erro ao fazer logout:", error);
+    }
+}
 
 // =======================================================
 // === LÓGICA DE DOM PRINCIPAL ===
@@ -467,6 +570,45 @@ document.addEventListener('DOMContentLoaded', () => {
                     console.error("Erro ao deslogar:", error);
                     alert("Erro ao deslogar. Tente novamente.");
                 });
+            }
+        });
+    }
+
+    // 7. LÓGICA DO PERFIL DA EMPRESA (PerfilEmpresa.html)
+    const profileFormEmpresa = document.getElementById('profile-form-empresa');
+    const btnLogoutEmpresa = document.getElementById('btn-logout-empresa');
+    const btnExcluirContaEmpresa = document.getElementById('btn-excluir-conta-empresa');
+
+    // Se estiver na página de perfil, carregar dados
+    if (profileFormEmpresa) {
+        console.log("Página de perfil detectada, carregando dados...");
+        
+        // Carregar dados do perfil quando usuário estiver autenticado
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                console.log("Usuário autenticado, carregando perfil...");
+                carregarPerfilEmpresa();
+            } else {
+                console.log("Usuário não autenticado, redirecionando...");
+                window.location.href = 'login-empresa.html';
+            }
+        });
+
+        // Event listener para salvar perfil
+        profileFormEmpresa.addEventListener('submit', salvarPerfilEmpresa);
+    }
+
+    // Event listener para logout
+    if (btnLogoutEmpresa) {
+        btnLogoutEmpresa.addEventListener('click', logoutEmpresa);
+    }
+
+    // Event listener para excluir conta
+    if (btnExcluirContaEmpresa) {
+        btnExcluirContaEmpresa.addEventListener('click', function() {
+            const user = auth.currentUser;
+            if (user) {
+                excluirContaEmpresa(user);
             }
         });
     }
