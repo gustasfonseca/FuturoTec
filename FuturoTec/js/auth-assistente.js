@@ -4,7 +4,6 @@
 // CONFIGURAÇÕES NECESSÁRIAS PARA O ALERT MANAGER
 // =================================================================
 // Importa a função showAlert do módulo alert-manager.js
-import { showAlert } from './alert-manager.js';
 
 // CONFIGURAÇÃO DO FIREBASE
 const firebaseConfig = {
@@ -513,3 +512,4 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 });
+
