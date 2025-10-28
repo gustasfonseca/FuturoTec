@@ -1,0 +1,126 @@
+/* --- Estilos estruturais para MinhasVagas.html (Com Novo Container Único) --- */
+
+/* 1. Novo Estilo para o Container Principal ÚNICO (Substitui .container) */
+.vagas-main-content {
+    /* Replicando as regras do .container global para centralizar e limitar a largura */
+    max-width: 1280px !important;
+    margin: 0 auto !important;
+}
+
+/* 2. Corrige o esticamento e o espaçamento do MAIN */
+main.my-jobs-section {
+    /* Adiciona padding superior/inferior (40px) e lateral (20px) no MAIN. */
+    padding: 40px 20px !important; 
+    
+    /* Garante altura mínima */
+    min-height: calc(80vh - 150px) !important; 
+    
+    /* Outros estilos sem !important */
+    animation: fadeIn 0.5s ease-out; 
+    background-color: var(--background);
+}
+
+
+/* --- 3. Estilo do Grid de Vagas (Garante o alinhamento central e responsividade) --- */
+/* Usa o ID do contêiner para aumentar a especificidade */
+#vagas-container.vagas-grid {
+    display: grid !important;
+    /* Define colunas que se ajustam automaticamente, com tamanho mínimo de 280px */
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)) !important; 
+    gap: 20px !important; 
+    padding: 20px 0 !important;
+    justify-content: center !important; 
+}
+
+
+/* --- 4. Estilo do Card de Vaga (Quadrado e Menor) --- */
+/* Forçando a prioridade no tamanho do card */
+#vagas-container .vaga-card {
+    max-width: 280px !important;
+    min-height: 280px !important;
+    height: auto !important;
+    overflow: hidden !important;
+    box-sizing: border-box !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+}
+
+/* Limita a altura da descrição para caber no novo card (max. 4 linhas) */
+#vagas-container .vaga-card p {
+    max-height: 80px !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    display: -webkit-box !important;
+    -webkit-line-clamp: 4 !important;
+    -webkit-box-orient: vertical !important;
+}
+
+
+/* --- 5. Estilos dos Botões Específicos do Card --- */
+
+.vaga-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.vaga-actions .edit-btn {
+    background-color: #008080;
+    color: #fff;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: background-color 0.2s;
+}
+
+.vaga-actions .edit-btn:hover {
+    background-color: #006666;
+}
+
+.vaga-actions .finish-btn {
+    background-color: #ff9900;
+    color: #fff;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: background-color 0.2s;
+}
+
+.vaga-actions .finish-btn:hover {
+    background-color: #cc7a00;
+}
+
+.vaga-actions .delete-btn {
+    background-color: #ff4d4d;
+    color: #fff;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: background-color 0.2s;
+}
+
+.vaga-actions .delete-btn:hover {
+    background-color: #cc0000;
+}
+
+/* Estilo para vagas finalizadas */
+.vaga-card.finalizada {
+    opacity: 0.6;
+    border-left: 5px solid #ff9900;
+}
