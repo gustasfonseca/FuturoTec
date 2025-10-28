@@ -5,54 +5,67 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Gestão de Vagas - Assistente Técnico</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<!-- Verifique se esses caminhos de CSS estão corretos -->
 <link rel="stylesheet" href="css/assistente.css">
 <link rel="stylesheet" href="css/styles.css">
+<style>
+  /* Estilos básicos para o modal e para botões desabilitados */
+  .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.5); justify-content: center; align-items: center; }
+  .modal-content { background-color: #fefefe; margin: auto; padding: 20px; border: 1px solid #888; width: 90%; max-width: 500px; border-radius: 8px; display: flex; flex-direction: column; gap: 10px; }
+  .modal-content input, .modal-content textarea { width: 100%; padding: 8px; box-sizing: border-box; }
+  .cancel-btn { background-color: #ccc; }
+  .action-buttons button { cursor: pointer; margin-right: 5px; }
+  .action-buttons button:disabled { cursor: not-allowed; opacity: 0.5; }
+</style>
 </head>
 <body>
 <div class="app">
  <header class="header">
-            <div class="container">
-                <div class="nav-wrapper">
-                    <div class="logo">
-                        <img src="img/FuturoTecInicial.jpeg" alt="FuturoTEC Logo">
-                    </div>
-                    <nav class="nav-desktop">
-                        <a href="InicialAssistente.html" class="nav-link">Início</a>        
-                          <a href="editar-vagas-excluir.html" class="nav-link">Gestão das Vagas</a>
-                        <a href="gestao-alunos.html" class="nav-link">Gestão dos Alunos</a>
-                    </nav>
-                    <a href="PerfilAssistente.html" class="login-btn">Meu Perfil</a>
-                </div>
+    <div class="container">
+        <div class="nav-wrapper">
+            <div class="logo">
+                <img src="img/FuturoTecInicial.jpeg" alt="FuturoTEC Logo">
             </div>
-        </header>
+            <nav class="nav-desktop">
+                <a href="InicialAssistente.html" class="nav-link">Início</a>        
+                <a href="editar-vagas-excluir.html" class="nav-link">Gestão das Vagas</a>
+                <a href="gestao-alunos.html" class="nav-link">Gestão dos Alunos</a>
+            </nav>
+            <a href="PerfilAssistente.html" class="login-btn">Meu Perfil</a>
+        </div>
+    </div>
+</header>
 
 <main class="main-content">
-  <div class="page-header">
-    <h1>Gestão de Vagas</h1>
-    <p>Veja, edite ou exclua as vagas publicadas. Digite no campo abaixo para filtrar.</p>
-  </div>
+  <div class="page-header">
+    <h1>Gestão de Vagas</h1>
+    <p>Veja, edite ou exclua as vagas publicadas. Digite no campo abaixo para filtrar.</p>
+    <!-- Mensagem de Status da Autenticação -->
+    <p id="authStatus" style="color: red; font-weight: bold;"></p>
+  </div>
 
   <div class="search-container">
       <input type="text" id="searchBar" placeholder="Pesquisar por título ou local..." list="jobSuggestions">
       <datalist id="jobSuggestions"></datalist>
   </div>
-    <div class="table-card">
-    <h3>Vagas Publicadas</h3>
-    <table id="jobsTable">
-      <thead>
-        <tr>
-          <th>Título</th>
-          <th>Local</th>
-          <th>Curso Exigido</th>
-          <th>Data</th>
-          <th>Descrição</th>
-          <th>Carga Horária</th>
-          <th>Ações</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-  </div>
+    <div class="table-card">
+    <h3>Vagas Publicadas</h3>
+    <table id="jobsTable">
+      <thead>
+        <tr>
+          <th>Título</th>
+          <th>Local</th>
+          <th>Curso Exigido</th>
+          <th>Data</th>
+          <th>Descrição</th>
+          <th>Carga Horária</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <!-- Mensagem inicial de carregamento -->
+      <tbody><tr><td colspan="7" style="text-align:center;">Aguardando autenticação...</td></tr></tbody>
+    </table>
+  </div>
 </main>
 </div>
     <footer class="footer">
@@ -64,7 +77,6 @@
             <p class="copyright">© 2025 FuturoTEC. Todos os direitos reservados.</p>
             <p class="authors">Desenvolvido por: Nátaly Lima, Gustavo Fonseca, Eduarda Marques, Amanda Silva, Gabrielly Mendes, Uillian Oliveira e Felipe Cardoso.</p>
         </div>
-
         <div class="footer-links">
             <h4>Links Úteis</h4>
             <ul>
@@ -74,14 +86,12 @@
                 <li><a href="#">Contato</a></li>
             </ul>
         </div>
-
-
       <div class="container">
-                <div class="nav-wrapper">
-                    <div class="logo">
-                        <img src="img/FuturoTecInicial.jpeg" alt="FuturoTEC Logo" />
-                    </div>
-                    <br></div>
+            <div class="nav-wrapper">
+                <div class="logo">
+                    <img src="img/FuturoTecInicial.jpeg" alt="FuturoTEC Logo" />
+                </div>
+                <br></div>
             <h4>Conecte-se</h4>
             <div class="social-icons">
                 <a href="#"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6H6a2 2 0 0 0-2 2z"></path><path d="M14 2v6h6"></path><path d="M8 12h8"></path><path d="M8 16h8"></path></svg></a>
@@ -91,83 +101,92 @@
         </div>
     </div>
     </footer>
+    
+<!-- Modal para Edição -->
 <div class="modal" id="modal">
-  <div class="modal-content">
-    <input type="text" id="tituloInput" placeholder="Título da Vaga">
-    <input type="text" id="localInput" placeholder="Local">
-    <input type="text" id="cursoInput" placeholder="Curso Exigido">
-    <input type="date" id="dataInput" placeholder="Data de Publicação">
-    <textarea id="descricaoInput" rows="4" placeholder="Descrição da vaga"></textarea>
-    <input type="text" id="cargaInput" placeholder="Carga Horária">
-    <button type="button" id="saveBtn">Salvar</button>
-    <button type="button" id="cancelBtn" class="cancel-btn">Cancelar</button>
-  </div>
+  <div class="modal-content">
+    <input type="text" id="tituloInput" placeholder="Título da Vaga">
+    <input type="text" id="localInput" placeholder="Local">
+    <input type="text" id="cursoInput" placeholder="Curso Exigido (separado por vírgula)">
+    <input type="date" id="dataInput" placeholder="Data de Publicação">
+    <textarea id="descricaoInput" rows="4" placeholder="Descrição da vaga"></textarea>
+    <input type="text" id="cargaInput" placeholder="Carga Horária">
+    <button type="button" id="saveBtn">Salvar</button>
+    <button type="button" id="cancelBtn" class="cancel-btn">Cancelar</button>
+  </div>
 </div>
 
+<!-- ====================================================== -->
+<!-- SCRIPT CORRIGIDO COM AUTENTICAÇÃO -->
+<!-- ====================================================== -->
 <script type="module">
+// Importações do Firebase (Firestore e Auth)
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
-import { getFirestore, collection, getDocs, updateDoc, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
+import { getFirestore, collection, getDocs, updateDoc, deleteDoc, doc, setLogLevel } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
+// ### MUDANÇA PRINCIPAL: Importações de Autenticação ###
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
 
+// Configuração do Firebase
 const firebaseConfig = {
-  apiKey: "AIzaSyA8Q9cKB4oVmFM6ilHK_70h8JDvgsOQhLY",
-  authDomain: "futurotec-e3a69.firebaseapp.com",
-  projectId: "futurotec-e3a69",
-  storageBucket: "futurotec-e3a69.appspot.com",
-  messagingSenderId: "234233783827",
-  appId: "1:234233783827:web:bf9376dee78d8924ef01e6"
+  apiKey: "AIzaSyA8Q9cKB4oVmFM6ilHK_70h8JDvgsOQhLY",
+  authDomain: "futurotec-e3a69.firebaseapp.com",
+  projectId: "futurotec-e3a69",
+  storageBucket: "futurotec-e3a69.appspot.com",
+  messagingSenderId: "234233783827",
+  appId: "1:234233783827:web:bf9376dee78d8924ef01e6"
 };
 
+// Inicializa Firebase
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+// ### MUDANÇA PRINCIPAL: Inicializa Autenticação ###
+const auth = getAuth(app); 
 const vagasRef = collection(db, "vagas");
 
+// Ativa logs detalhados do Firestore (para depuração)
+setLogLevel('debug');
+
+// Elementos do DOM
 const tableBody = document.querySelector("#jobsTable tbody");
 const modal = document.getElementById("modal");
 const inputs = {
-  titulo: document.getElementById("tituloInput"),
-  local: document.getElementById("localInput"),
-  curso: document.getElementById("cursoInput"),
-  data: document.getElementById("dataInput"),
-  descricao: document.getElementById("descricaoInput"),
-  carga: document.getElementById("cargaInput")
+  titulo: document.getElementById("tituloInput"),
+  local: document.getElementById("localInput"),
+  curso: document.getElementById("cursoInput"),
+  data: document.getElementById("dataInput"),
+  descricao: document.getElementById("descricaoInput"),
+  carga: document.getElementById("cargaInput")
 };
 const saveBtn = document.getElementById("saveBtn");
 const cancelBtn = document.getElementById("cancelBtn");
-
-// NOVOS ELEMENTOS E VARIÁVEIS
 const searchBar = document.getElementById("searchBar");
 const jobSuggestions = document.getElementById("jobSuggestions");
-let allJobs = []; // Array para armazenar todas as vagas carregadas
-let editId = null;
+const authStatus = document.getElementById("authStatus"); // Mensagem de status
 
-// Função para formatar a data
+let allJobs = []; 
+let editId = null;
+let currentUser = null; // ### MUDANÇA PRINCIPAL: Para guardar o usuário logado
+
+// --- FUNÇÕES DA PÁGINA ---
+
 function formatDate(timestamp) {
     if (!timestamp) return "Não informado";
-    const date = timestamp.seconds 
-        ? new Date(timestamp.seconds * 1000) 
-        : new Date(timestamp);
-    // Verifica se a data é válida antes de formatar
-    return isNaN(date) ? "Não informado" : date.toLocaleDateString();
+    const date = timestamp.seconds ? new Date(timestamp.seconds * 1000) : new Date(timestamp);
+    return isNaN(date.getTime()) ? "Data inválida" : date.toLocaleDateString('pt-BR');
 }
 
-// Função para preencher a tabela com uma lista específica de vagas
 function renderizarVagas(vagas) {
     tableBody.innerHTML = "";
     if (vagas.length === 0) {
-        const row = tableBody.insertRow();
-        const cell = row.insertCell();
-        cell.colSpan = 7;
-        cell.style.textAlign = "center";
-        cell.textContent = "Nenhuma vaga encontrada.";
+        tableBody.innerHTML = '<tr><td colspan="7" style="text-align:center;">Nenhuma vaga encontrada.</td></tr>';
         return;
     }
-
     vagas.forEach(v => {
         const localVaga = v.local || "Não informado";
-        // Assume que cursosRequeridos é um array de strings, se for outro tipo, ajuste aqui.
         const cursosStr = Array.isArray(v.cursosRequeridos) ? v.cursosRequeridos.join(", ") : v.cursosRequeridos || "Não informado";
         const dataPub = formatDate(v.criadaEm);
         const carga = v.cargaHoraria || "Não informado";
+        const descricaoCurta = v.descricao ? (v.descricao.length > 50 ? v.descricao.substring(0, 50) + "..." : v.descricao) : '';
 
         const row = document.createElement("tr");
         row.dataset.id = v.id;
@@ -176,68 +195,57 @@ function renderizarVagas(vagas) {
             <td>${localVaga}</td>
             <td>${cursosStr}</td>
             <td>${dataPub}</td>
-            <td>${v.descricao || ''}</td>
+            <td title="${v.descricao || ''}">${descricaoCurta}</td>
             <td>${carga}</td>
             <td class="action-buttons">
-                <button class="edit-btn" title="Editar"><i class="fa-solid fa-pencil"></i></button>
-                <button class="delete-btn" title="Excluir"><i class="fa-solid fa-trash-can"></i></button>
+                <!-- MUDANÇA: Desabilita os botões se o usuário não estiver logado -->
+                <button class="edit-btn" title="Editar" ${!currentUser ? 'disabled' : ''}><i class="fa-solid fa-pencil"></i></button>
+                <button class="delete-btn" title="Excluir" ${!currentUser ? 'disabled' : ''}><i class="fa-solid fa-trash-can"></i></button>
             </td>
         `;
         tableBody.appendChild(row);
     });
 }
 
-// Carrega vagas do Firebase e armazena
 async function carregarVagas() {
     tableBody.innerHTML = '<tr><td colspan="7" style="text-align:center;">Carregando vagas...</td></tr>';
     try {
         const snapshot = await getDocs(vagasRef);
-        // Mapeia os documentos para um array de objetos, incluindo o ID
-        allJobs = snapshot.docs.map(docSnap => ({
-            id: docSnap.id,
-            ...docSnap.data()
-        }));
-
+        allJobs = snapshot.docs.map(docSnap => ({ id: docSnap.id, ...docSnap.data() }));
         if (allJobs.length === 0) {
             tableBody.innerHTML = '<tr><td colspan="7" style="text-align:center;">Nenhuma vaga publicada ainda.</td></tr>';
-            return;
+        } else {
+            renderizarVagas(allJobs); 
+            atualizarSugestoes(allJobs);
         }
-
-        renderizarVagas(allJobs); // Renderiza a lista completa
-        atualizarSugestoes(allJobs); // Atualiza as sugestões de pesquisa
     } catch (error) {
         console.error("Erro ao carregar vagas:", error);
-        tableBody.innerHTML = '<tr><td colspan="7" style="text-align:center; color:red;">Erro ao carregar vagas.</td></tr>';
+        // Se o erro for de permissão (lendo), mostre aqui
+        if (error.code === 'permission-denied') {
+            tableBody.innerHTML = '<tr><td colspan="7" style="text-align:center; color:red;">Erro de permissão ao ler vagas.</td></tr>';
+        } else {
+            tableBody.innerHTML = '<tr><td colspan="7" style="text-align:center; color:red;">Erro ao carregar vagas. Verifique o console.</td></tr>';
+        }
     }
 }
 
-// Filtra a lista de vagas com base no termo de pesquisa
 function filtrarVagas() {
     const termo = searchBar.value.toLowerCase().trim();
-
-    if (termo === "") {
-        renderizarVagas(allJobs); // Mostra todas se o campo estiver vazio
-        return;
-    }
-
+    if (termo === "") { renderizarVagas(allJobs); return; }
     const filteredJobs = allJobs.filter(vaga =>
         (vaga.titulo && vaga.titulo.toLowerCase().includes(termo)) ||
         (vaga.local && vaga.local.toLowerCase().includes(termo))
     );
-
-    renderizarVagas(filteredJobs); // Renderiza a lista filtrada
+    renderizarVagas(filteredJobs);
 }
 
-// Adiciona opções de sugestão (datalist)
 function atualizarSugestoes(vagas) {
     jobSuggestions.innerHTML = '';
-    const sugestoes = new Set(); // Usa Set para garantir unicidade
-
+    const sugestoes = new Set();
     vagas.forEach(vaga => {
         if (vaga.titulo) sugestoes.add(vaga.titulo);
         if (vaga.local) sugestoes.add(vaga.local);
     });
-
     sugestoes.forEach(sugestao => {
         const option = document.createElement('option');
         option.value = sugestao;
@@ -245,101 +253,114 @@ function atualizarSugestoes(vagas) {
     });
 }
 
-// Evento de digitação na barra de pesquisa
+// --- EVENT LISTENERS (Sem mudanças, exceto pela remoção de alert/confirm) ---
+
 searchBar.addEventListener("input", filtrarVagas);
-
-
-// Modal e ações
 cancelBtn.addEventListener("click", () => modal.style.display = "none");
 modal.addEventListener("click", e => { if(e.target === modal) modal.style.display = "none"; });
 
 tableBody.addEventListener("click", e => {
-  const btn = e.target.closest(".edit-btn, .delete-btn");
-  if(!btn) return;
-  const row = btn.closest("tr");
-  const id = row.dataset.id;
-  // Encontra os dados da vaga no array allJobs
+  const btn = e.target.closest(".edit-btn, .delete-btn");
+  if(!btn || btn.disabled) return; // Não faz nada se o botão estiver desabilitado
+  
+  const row = btn.closest("tr");
+  const id = row.dataset.id;
   const vagaData = allJobs.find(v => v.id === id);
   if (!vagaData) return;
 
-  if(btn.classList.contains("edit-btn")){
-    inputs.titulo.value = vagaData.titulo || '';
-    inputs.local.value = vagaData.local || '';
-    // Lida com cursos que podem ser array ou string
-    const cursosStr = Array.isArray(vagaData.cursosRequeridos) 
-        ? vagaData.cursosRequeridos.join(", ") 
-        : vagaData.cursosRequeridos || '';
-    inputs.curso.value = cursosStr;
-
-    // Converte timestamp/data para o formato YYYY-MM-DD para o input 'date'
+  if(btn.classList.contains("edit-btn")){
+    // Preenche o modal com os dados da vaga
+    inputs.titulo.value = vagaData.titulo || '';
+    inputs.local.value = vagaData.local || '';
+    const cursosStr = Array.isArray(vagaData.cursosRequeridos) ? vagaData.cursosRequeridos.join(", ") : vagaData.cursosRequeridos || '';
+    inputs.curso.value = cursosStr;
     let dataISO = '';
     if (vagaData.criadaEm) {
-        let dateObj;
-        if (vagaData.criadaEm.seconds) {
-            dateObj = new Date(vagaData.criadaEm.seconds * 1000);
-        } else if (vagaData.criadaEm instanceof Date) {
-            dateObj = vagaData.criadaEm;
-        } else {
-            // Tenta criar data a partir de string
-            dateObj = new Date(vagaData.criadaEm);
-        }
-
-        if (!isNaN(dateObj)) {
-             // Formato YYYY-MM-DD
-            dataISO = dateObj.toISOString().split('T')[0]; 
-        }
+        let dateObj = vagaData.criadaEm.seconds ? new Date(vagaData.criadaEm.seconds * 1000) : new Date(vagaData.criadaEm);
+        if (!isNaN(dateObj.getTime())) { dataISO = dateObj.toISOString().split('T')[0]; }
     }
+    inputs.data.value = dataISO;
+    inputs.descricao.value = vagaData.descricao || '';
+    inputs.carga.value = vagaData.cargaHoraria || '';
+    editId = id;
+    modal.style.display = "flex";
+  }
 
-    inputs.data.value = dataISO;
-    inputs.descricao.value = vagaData.descricao || '';
-    inputs.carga.value = vagaData.cargaHoraria || '';
-    editId = id;
-    modal.style.display = "flex";
-  }
-
-  if(btn.classList.contains("delete-btn")){
-    if(confirm("Deseja realmente excluir esta vaga?")){
-      deleteDoc(doc(db,"vagas",id))
-        .then(() => {
-            carregarVagas();
-            searchBar.value = ''; // Limpa a pesquisa após a exclusão
-        })
-        .catch(error => {
-            console.error("Erro ao excluir vaga:", error);
-            alert("Erro ao excluir vaga.");
-        });
-    }
-  }
+  if(btn.classList.contains("delete-btn")){
+    console.log("Solicitando exclusão da vaga... (Função 'confirm' removida)");
+    // Idealmente, você substituiria isso por um modal de confirmação
+    deleteDoc(doc(db,"vagas",id))
+      .then(() => { 
+          console.log("Vaga excluída com sucesso.");
+          carregarVagas(); 
+          searchBar.value = ''; 
+      })
+      .catch(error => { console.error("Erro ao excluir vaga:", error); });
+  }
 });
 
+// CORREÇÃO (Erro 400): Validação de data
 saveBtn.addEventListener("click", async () => {
-  if (!editId) return;
-
-  const dataAtualizada = {
-    titulo: inputs.titulo.value.trim(),
-    local: inputs.local.value.trim(),
-    // Converte a string de cursos de volta para um array
-    cursosRequeridos: inputs.curso.value.split(",").map(c => c.trim()).filter(c => c.length > 0), 
-    criadaEm: new Date(inputs.data.value),
-    descricao: inputs.descricao.value.trim(),
-    cargaHoraria: inputs.carga.value.trim()
-  };
-
-  try {
-    await updateDoc(doc(db, "vagas", editId), dataAtualizada);
-    modal.style.display = "none";
-    editId = null;
-    // Recarrega os dados e limpa a pesquisa
-    carregarVagas();
-    searchBar.value = '';
-  } catch (error) {
-    console.error("Erro ao salvar vaga:", error);
-    alert("Erro ao salvar vaga. Veja o console.");
-  }
+  if (!editId) return;
+  try {
+    const dataString = inputs.data.value;
+    const dataAtualizada = {
+      titulo: inputs.titulo.value.trim(),
+      local: inputs.local.value.trim(),
+      cursosRequeridos: inputs.curso.value.split(",").map(c => c.trim()).filter(c => c.length > 0),
+      descricao: inputs.descricao.value.trim(),
+      cargaHoraria: inputs.carga.value.trim()
+    };
+    // Validação da data para evitar o 'Bad Request'
+    if (dataString) {
+      const dateObj = new Date(dataString + 'T00:00:00');
+      if (!isNaN(dateObj.getTime())) {
+        dataAtualizada.criadaEm = dateObj;
+      } else {
+        console.warn("Data inválida ou vazia, não será atualizada.");
+      }
+    } 
+    
+    await updateDoc(doc(db, "vagas", editId), dataAtualizada);
+    console.log("Vaga atualizada com sucesso!");
+    modal.style.display = "none";
+    editId = null;
+    carregarVagas();
+    searchBar.value = '';
+  } catch (error) {
+    console.error("Erro ao salvar vaga:", error);
+  }
 });
 
-carregarVagas();
+
+// ### MUDANÇA PRINCIPAL: PONTO DE ENTRADA ###
+// O código agora espera o Firebase verificar o status de login
+// antes de tentar carregar qualquer dado.
+console.log("Aguardando status de autenticação...");
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    // --- Usuário está logado ---
+    console.log("Usuário autenticado:", user.uid);
+    currentUser = user;
+    authStatus.textContent = ""; // Limpa a mensagem de erro
+    
+    // Agora que sabemos que o usuário está logado, carregamos as vagas
+    carregarVagas();
+    
+  } else {
+    // --- Usuário NÃO está logado ---
+    console.warn("Nenhum usuário autenticado.");
+    currentUser = null;
+    authStatus.textContent = "Você não está logado. Faça login para poder editar ou excluir vagas.";
+    
+    // Tenta carregar as vagas (para visualização)
+    // Isso funcionará se suas regras de 'read' para vagas forem públicas
+    carregarVagas();
+  }
+});
+
 </script>
 
 </body>
 </html>
+
