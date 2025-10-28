@@ -422,6 +422,7 @@ const setupCreateJobForm = () => {
                 requisitos: document.getElementById('requisitos').value,
                 cargaHoraria: document.getElementById('cargaHoraria').value,
                 cursosRequeridos: selectedCourses, // <<=== ARRAY DE CURSOS
+                 local: document.getElementById('local').value,
                 empresaId: currentUser.uid, 
                 status: 'Vaga Ativa', 
                 criadaEm: firebase.firestore.FieldValue.serverTimestamp()
