@@ -1,3 +1,5 @@
+// js/empresa.js
+
 const auth = firebase.auth();
 const db = firebase.firestore();
 let currentUser = null; // O usuário da empresa autenticado
@@ -78,6 +80,7 @@ const loadDashboardData = async (user) => {
 
             let totalCandidaturas = 0;
             
+            // Loop de N+1 queries (aceito para um número limitado de vagas)
             for (const vagaId of vagaIds) {
                  const candidaturasSnapshot = await db.collection('candidaturas')
                       .where('vagaId', '==', vagaId)
@@ -123,18 +126,18 @@ const loadCompanyJobs = () => {
                  const vagaCard = document.createElement('div');
                  vagaCard.className = 'vaga-card';
                  vagaCard.innerHTML = `
-                     <h3 class="job-title">${vaga.titulo}</h3>
-                     <p class="job-description">${vaga.descricao.substring(0, 150)}...</p> 
-                     ${cursos}
-                     <p class="job-time">Carga Horária: ${vaga.cargaHoraria}</p>
-                     <div class="actions-vaga">
-                         <button class="edit-btn action-button" data-id="${vagaId}" title="Editar Vaga">
-                             <i data-feather="edit"></i> Editar
-                         </button>
-                         <button class="delete-btn action-button delete" data-id="${vagaId}" title="Excluir Vaga">
-                             <i data-feather="trash-2"></i> Excluir
-                         </button>
-                     </div>
+                      <h3 class="job-title">${vaga.titulo}</h3>
+                      <p class="job-description">${vaga.descricao.substring(0, 150)}...</p> 
+                      ${cursos}
+                      <p class="job-time">Carga Horária: ${vaga.cargaHoraria}</p>
+                      <div class="actions-vaga">
+                          <button class="edit-btn action-button" data-id="${vagaId}" title="Editar Vaga">
+                              <i data-feather="edit"></i> Editar
+                          </button>
+                          <button class="delete-btn action-button delete" data-id="${vagaId}" title="Excluir Vaga">
+                              <i data-feather="trash-2"></i> Excluir
+                          </button>
+                      </div>
                  `;
                  vagaCard.appendChild(document.createElement('div')); 
                  vagasContainer.appendChild(vagaCard);
@@ -167,7 +170,6 @@ const loadCandidaciesForCompany = async () => {
         console.log(`[CandidaturasEmpresa] Buscando vagas para o UID: ${currentUser.uid}`); 
         const vagasSnapshot = await db.collection('vagas')
              .where('empresaId', '==', currentUser.uid)
-             .orderBy('criadaEm', 'desc')
              .get();
 
         if (vagasSnapshot.empty) {
@@ -206,50 +208,50 @@ const loadCandidaciesForCompany = async () => {
                  
                  // 4. Iterar sobre cada CANDIDATURA para buscar os dados do ALUNO
                  for (const candDoc of candidaturasSnapshot.docs) {
-                     const candidatura = candDoc.data();
-                     
-                     let aluno = { nome: 'Aluno Não Encontrado', email: 'N/A', telefone: 'N/A', cidade: 'N/A', estado: 'N/A', curso: 'N/A', area: 'N/A' };
+                      const candidatura = candDoc.data();
+                      
+                      let aluno = { nome: 'Aluno Não Encontrado', email: 'N/A', telefone: 'N/A', cidade: 'N/A', estado: 'N/A', curso: 'N/A', area: 'N/A' };
 
-                     try {
-                         if (!candidatura.alunoId) {
-                             console.warn(`Candidatura ${candDoc.id} não tem alunoId.`);
-                             continue;
-                         }
-                         
-                         const alunoDoc = await db.collection('usuarios').doc(candidatura.alunoId).get();
-                         if (alunoDoc.exists) {
-                             aluno = { ...aluno, ...alunoDoc.data() }; 
-                             if (aluno.email === 'N/A' && auth.currentUser) {
-                                 aluno.email = auth.currentUser.email;
-                             }
-                         } else {
-                              console.warn(`[CandidaturasEmpresa] Perfil do aluno ${candidatura.alunoId} não encontrado.`);
-                         }
-                     } catch (e) {
-                          console.error("Erro ao buscar perfil do aluno:", candidatura.alunoId, e);
-                     }
-                     
-                     const alunoCurso = aluno.curso || aluno.area || 'Informação de perfil indisponível'; 
-                     const alunoLocalizacao = (aluno.cidade && aluno.estado) ? `${aluno.cidade}, ${aluno.estado}` : 'Localização não informada';
-                     
-                     candidatosHtml += `
+                      try {
+                          if (!candidatura.alunoId) {
+                              console.warn(`Candidatura ${candDoc.id} não tem alunoId.`);
+                              continue;
+                          }
+                          
+                          const alunoDoc = await db.collection('usuarios').doc(candidatura.alunoId).get();
+                          if (alunoDoc.exists) {
+                              aluno = { ...aluno, ...alunoDoc.data() }; 
+                              if (aluno.email === 'N/A' && auth.currentUser) {
+                                  aluno.email = auth.currentUser.email;
+                              }
+                          } else {
+                               console.warn(`[CandidaturasEmpresa] Perfil do aluno ${candidatura.alunoId} não encontrado.`);
+                          }
+                      } catch (e) {
+                           console.error("Erro ao buscar perfil do aluno:", candidatura.alunoId, e);
+                      }
+                      
+                      const alunoCurso = aluno.curso || aluno.area || 'Informação de perfil indisponível'; 
+                      const alunoLocalizacao = (aluno.cidade && aluno.estado) ? `${aluno.cidade}, ${aluno.estado}` : 'Localização não informada';
+                      
+                      candidatosHtml += `
                            <li class="candidate-card">
-                               <div class="candidate-details">
-                                   <h4 class="candidate-name">${aluno.nome}</h4>
-                                   <p class="candidate-role">**Curso/Área:** ${alunoCurso}</p>
-                                   <p class="candidate-contact">
-                                        <i data-feather="mail" class="icon-small"></i> **Email:** ${aluno.email}
-                                   </p>
-                                   <p class="candidate-contact">
-                                        <i data-feather="phone" class="icon-small"></i> **Telefone:** ${aluno.telefone}
-                                   </p>
-                                   <p class="candidate-location">
-                                        <i data-feather="map-pin" class="icon-small"></i> **Local:** ${alunoLocalizacao}
-                                   </p>
-                               </div>
-                               <button class="view-cv-btn" data-aluno-id="${candidatura.alunoId}">Ver Perfil Completo</button>
+                                <div class="candidate-details">
+                                    <h4 class="candidate-name">${aluno.nome}</h4>
+                                    <p class="candidate-role">**Curso/Área:** ${alunoCurso}</p>
+                                    <p class="candidate-contact">
+                                         <i data-feather="mail" class="icon-small"></i> **Email:** ${aluno.email}
+                                    </p>
+                                    <p class="candidate-contact">
+                                         <i data-feather="phone" class="icon-small"></i> **Telefone:** ${aluno.telefone}
+                                    </p>
+                                    <p class="candidate-location">
+                                         <i data-feather="map-pin" class="icon-small"></i> **Local:** ${alunoLocalizacao}
+                                    </p>
+                                </div>
+                                <button class="view-cv-btn" data-aluno-id="${candidatura.alunoId}">Ver Perfil Completo</button>
                            </li>
-                     `;
+                      `;
                  }
                  
                  candidatosHtml = `<ul class="candidate-list">${candidatosHtml}</ul>`;
@@ -421,11 +423,13 @@ const setupCreateJobForm = () => {
                 descricao: document.getElementById('descricao').value,
                 requisitos: document.getElementById('requisitos').value,
                 cargaHoraria: document.getElementById('cargaHoraria').value,
-                cursosRequeridos: selectedCourses, // <<=== ARRAY DE CURSOS
+                cursosRequeridos: selectedCourses,
                  local: document.getElementById('local').value,
                 empresaId: currentUser.uid, 
                 status: 'Vaga Ativa', 
-                criadaEm: firebase.firestore.FieldValue.serverTimestamp()
+                criadaEm: firebase.firestore.FieldValue.serverTimestamp(),
+                // 🚨 CORREÇÃO DE CONSISTÊNCIA: Adicionando o campo 'ultimaAtualizacao' desde a criação
+                ultimaAtualizacao: firebase.firestore.FieldValue.serverTimestamp()
             };
 
             const submitButton = createJobForm.querySelector('button[type="submit"]');
@@ -497,20 +501,12 @@ const setupJobActions = () => {
                      document.getElementById('edit-descricao').value = vaga.descricao;
                      document.getElementById('edit-requisitos').value = vaga.requisitos;
                      document.getElementById('edit-cargaHoraria').value = vaga.cargaHoraria;
-                     
-                     // **CORREÇÃO 1: PRÉ-PREENCHIMENTO DOS CURSOS**
-                     // 1. Limpa o estado global
+                     // Pré-preenchimento dos cursos
                      selectedCourses = [];
-                     
-                     // 2. Popula com os cursos da vaga, se existirem
                      if (vaga.cursosRequeridos && Array.isArray(vaga.cursosRequeridos)) {
-                         // Importante: Cria uma cópia para o array global ser manipulado pelo modal
-                         selectedCourses = [...vaga.cursosRequeridos]; 
+                          selectedCourses = [...vaga.cursosRequeridos]; 
                      }
-                     
-                     // 3. Renderiza as tags no modal
                      renderSelectedCourses(); 
-                     
                      editModal.style.display = 'flex';
                  } else {
                      console.error('Vaga não encontrada!');
@@ -536,8 +532,9 @@ const setupJobActions = () => {
                  descricao: document.getElementById('edit-descricao').value,
                  requisitos: document.getElementById('edit-requisitos').value,
                  cargaHoraria: document.getElementById('edit-cargaHoraria').value,
-                 cursosRequeridos: selectedCourses, // **CORREÇÃO 2: SALVA OS CURSOS EDITADOS**
-                 ultimaAtualizacao: firebase.firestore.FieldValue.serverTimestamp()
+                 cursosRequeridos: selectedCourses, 
+                 // 🚨 CORREÇÃO DE CONSISTÊNCIA: Usando serverTimestamp para registro de atualização
+                 ultimaAtualizacao: firebase.firestore.FieldValue.serverTimestamp() 
             };
 
             const submitButton = editForm.querySelector('button[type="submit"]');
@@ -587,7 +584,7 @@ auth.onAuthStateChanged(async (user) => {
 
         const currentPath = window.location.pathname;
         
-        // **CORREÇÃO 3: CARREGA OS CURSOS E CONFIGURA O AUTOCOMPLETE NAS PÁGINAS NECESSÁRIAS**
+        // CARREGA OS CURSOS E CONFIGURA O AUTOCOMPLETE NAS PÁGINAS NECESSÁRIAS
         if (currentPath.includes('CriarVagaEmpresa.html') || currentPath.includes('MinhasVagas.html')) {
              await loadAvailableCourses(); 
              setupCourseAutocomplete(); 
