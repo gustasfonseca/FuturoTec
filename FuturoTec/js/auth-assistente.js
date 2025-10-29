@@ -1,4 +1,4 @@
-// auth-assistente.js - VERSÃO CORRIGIDA SEM showAlert
+// auth-assistente.js - VERSÃO CORRIGIDA
 
 // CONFIGURAÇÃO DO FIREBASE
 const firebaseConfig = {
@@ -140,6 +140,8 @@ async function loginComGoogleAssistente() {
         const userRef = db.collection('usuarios').doc(user.uid);
         const userSnap = await userRef.get();
         const userData = userSnap.data();
+        
+        // CORREÇÃO: usar userSnap.exists (propriedade) em vez de userSnap.exists()
         if (!userSnap.exists) {
             await auth.signOut();
             throw new Error("Conta não encontrada. Por favor, cadastre-se usando o formulário de e-mail/senha primeiro.");
@@ -229,7 +231,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.log("Login bem-sucedido, verificando role...");
                 const userDoc = await db.collection('usuarios').doc(user.uid).get();
                 
-                if (userDoc.exists() && userDoc.data().role === 'assistente_tecnico') {
+                // CORREÇÃO: usar userDoc.exists (propriedade) em vez de userDoc.exists()
+                if (userDoc.exists && userDoc.data().role === 'assistente_tecnico') {
                     alert('Login realizado com sucesso!');
                     window.location.href = 'InicialAssistente.html';
                 } else {
@@ -283,20 +286,29 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Mostrar/esconder senha
+    // Mostrar/esconder senha - COM CORREÇÃO PARA EVITAR ERRO
     document.querySelectorAll('.password-toggle').forEach(toggle => {
         toggle.addEventListener('click', () => {
             const targetId = toggle.getAttribute('data-target');
             const passwordInput = document.getElementById(targetId);
-            if (!passwordInput) return;
+            
+            // CORREÇÃO: Verificar se o elemento existe antes de manipular
+            if (!passwordInput) {
+                console.warn(`Elemento com ID ${targetId} não encontrado`);
+                return;
+            }
             
             const icon = toggle.querySelector('i');
             if (passwordInput.type === 'password') {
                 passwordInput.type = 'text';
-                icon.setAttribute('data-feather', 'eye-off');
+                if (icon) {
+                    icon.setAttribute('data-feather', 'eye-off');
+                }
             } else {
                 passwordInput.type = 'password';
-                icon.setAttribute('data-feather', 'eye');
+                if (icon) {
+                    icon.setAttribute('data-feather', 'eye');
+                }
             }
             if (typeof feather !== 'undefined') {
                 feather.replace();
