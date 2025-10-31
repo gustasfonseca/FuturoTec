@@ -36,7 +36,7 @@ main.my-jobs-section {
 /* --- 4. Estilo do Card de Vaga (Quadrado e Menor) --- */
 /* Forçando a prioridade no tamanho do card */
 #vagas-container .vaga-card {
-    max-width: 280px !important;
+    max-width: 680px !important;
     min-height: 280px !important;
     height: auto !important;
     overflow: hidden !important;
