@@ -1980,3 +1980,210 @@ main {
         gap: 15px;
     }
 }
+/* ===== ESTILOS PARA A PÁGINA DE VAGAS DO ALUNO ===== */
+
+.content-container-colored {
+    background: linear-gradient(135deg, #1B7F86, #499C94);
+    min-height: 100vh;
+    padding: 40px 20px;
+}
+
+.page-header-colored {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.page-header-colored h2 {
+    color: white;
+    font-size: 2.5em;
+    margin-bottom: 10px;
+    font-weight: 700;
+}
+
+.page-header-colored p {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 1.2em;
+}
+
+/* Filtros e Pesquisa */
+.filters-and-search {
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    margin-bottom: 30px;
+}
+
+.filters-and-search > div {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+}
+
+.filters-and-search label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #333;
+}
+
+.filters-and-search select,
+.filters-and-search input {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 1em;
+    transition: border-color 0.3s ease;
+}
+
+.filters-and-search select:focus,
+.filters-and-search input:focus {
+    outline: none;
+    border-color: #1B7F86;
+}
+
+#aplicarFiltros {
+    background: #1B7F86;
+    color: white;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 8px;
+    font-size: 1em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#aplicarFiltros:hover {
+    background: #16666b;
+}
+
+/* Lista de Vagas */
+.vagas-list {
+    display: grid;
+    gap: 25px;
+}
+
+.vaga-card {
+    background: white;
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 20px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.vaga-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.vaga-info {
+    flex: 1;
+}
+
+.vaga-info h3 {
+    color: #333;
+    font-size: 1.4em;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.empresa {
+    color: #1B7F86;
+    font-weight: 600;
+    font-size: 1.1em;
+    margin-bottom: 10px;
+}
+
+.detalhes {
+    color: #666;
+    margin-bottom: 8px;
+    line-height: 1.5;
+}
+
+.detalhes strong {
+    color: #333;
+}
+
+.vaga-action {
+    flex-shrink: 0;
+}
+
+.btn-candidatar {
+    background: #28a745;
+    color: white;
+    padding: 12px 25px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: background-color 0.3s ease;
+    display: inline-block;
+}
+
+.btn-candidatar:hover {
+    background: #218838;
+}
+
+.btn-candidatar.disabled {
+    background: #6c757d;
+    cursor: not-allowed;
+}
+
+/* Badge PCD */
+.pcd-badge {
+    background: #2c5530;
+    color: white;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.8em;
+    font-weight: 600;
+    margin-left: 10px;
+}
+
+/* Status Tags */
+.status-tag.active {
+    color: #28a745;
+    border: 1px solid #28a745;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 0.8em;
+    font-weight: 600;
+}
+
+.status-tag.inactive {
+    color: #dc3545;
+    border: 1px solid #dc3545;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 0.8em;
+    font-weight: 600;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .vaga-card {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .vaga-info h3 {
+        justify-content: center;
+    }
+    
+    .filters-and-search > div {
+        flex-direction: column;
+    }
+    
+    .filters-and-search > div > div {
+        min-width: 100%;
+    }
+}
