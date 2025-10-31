@@ -118,18 +118,23 @@ const loadCompanyJobs = () => {
              snapshot.forEach(doc => {
                  const vaga = doc.data();
                  const vagaId = doc.id;
+                 
                  // Exibe os cursos requeridos
                  const cursos = (vaga.cursosRequeridos && vaga.cursosRequeridos.length > 0) 
                      ? `<p class="job-courses">Cursos: ${vaga.cursosRequeridos.join(', ')}</p>` 
                      : '<p class="job-courses">Cursos: Não especificado</p>';
                  
+                 // Adiciona badge PCD se a vaga for para PCD
+                 const pcdBadge = vaga.pcd ? '<span class="pcd-badge">Vaga PCD</span>' : '';
+                 
                  const vagaCard = document.createElement('div');
                  vagaCard.className = 'vaga-card';
                  vagaCard.innerHTML = `
-                      <h3 class="job-title">${vaga.titulo}</h3>
+                      <h3 class="job-title">${vaga.titulo} ${pcdBadge}</h3>
                       <p class="job-description">${vaga.descricao.substring(0, 150)}...</p> 
                       ${cursos}
                       <p class="job-time">Carga Horária: ${vaga.cargaHoraria}</p>
+                      <p class="job-periodo">Período: ${vaga.periodo || 'Não especificado'}</p>
                       <div class="actions-vaga">
                           <button class="edit-btn action-button" data-id="${vagaId}" title="Editar Vaga">
                               <i data-feather="edit"></i> Editar
@@ -434,17 +439,21 @@ const setupCreateJobForm = () => {
                  return;
             }
 
+            // Captura o valor do checkbox PCD
+            const vagaPCD = document.getElementById('vaga-pcd').checked;
+
             const vagaData = {
                 titulo: document.getElementById('titulo').value,
                 descricao: document.getElementById('descricao').value,
                 requisitos: document.getElementById('requisitos').value,
                 cargaHoraria: document.getElementById('cargaHoraria').value,
                 cursosRequeridos: selectedCourses,
-                 local: document.getElementById('local').value,
+                local: document.getElementById('local').value,
+                periodo: document.getElementById('periodo').value,
+                pcd: vagaPCD, // NOVO CAMPO: Indica se a vaga é para PCD
                 empresaId: currentUser.uid, 
                 status: 'Vaga Ativa', 
                 criadaEm: firebase.firestore.FieldValue.serverTimestamp(),
-                // 🚨 CORREÇÃO DE CONSISTÊNCIA: Adicionando o campo 'ultimaAtualizacao' desde a criação
                 ultimaAtualizacao: firebase.firestore.FieldValue.serverTimestamp()
             };
 
@@ -517,6 +526,13 @@ const setupJobActions = () => {
                      document.getElementById('edit-descricao').value = vaga.descricao;
                      document.getElementById('edit-requisitos').value = vaga.requisitos;
                      document.getElementById('edit-cargaHoraria').value = vaga.cargaHoraria;
+                     
+                     // Pré-preenchimento do checkbox PCD (se existir no modal)
+                     const pcdCheckbox = document.getElementById('edit-vaga-pcd');
+                     if (pcdCheckbox) {
+                         pcdCheckbox.checked = vaga.pcd || false;
+                     }
+                     
                      // Pré-preenchimento dos cursos
                      selectedCourses = [];
                      if (vaga.cursosRequeridos && Array.isArray(vaga.cursosRequeridos)) {
@@ -548,8 +564,11 @@ const setupJobActions = () => {
                  descricao: document.getElementById('edit-descricao').value,
                  requisitos: document.getElementById('edit-requisitos').value,
                  cargaHoraria: document.getElementById('edit-cargaHoraria').value,
-                 cursosRequeridos: selectedCourses, 
-                 // 🚨 CORREÇÃO DE CONSISTÊNCIA: Usando serverTimestamp para registro de atualização
+                 cursosRequeridos: selectedCourses,
+                 // Inclui o campo PCD apenas se o checkbox existir no modal
+                 ...(document.getElementById('edit-vaga-pcd') && { 
+                     pcd: document.getElementById('edit-vaga-pcd').checked 
+                 }),
                  ultimaAtualizacao: firebase.firestore.FieldValue.serverTimestamp() 
             };
 
