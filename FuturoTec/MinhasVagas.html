@@ -72,6 +72,16 @@
                         <label for="edit-cargaHoraria">Carga Horária</label>
                         <input type="text" id="edit-cargaHoraria" name="cargaHoraria" required>
                     </div>
+                    
+                    <!-- NOVO CAMPO: Vaga para PCD no modal de edição -->
+                    <div class="form-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="edit-vaga-pcd" name="edit-vaga-pcd">
+                            <span class="checkmark"></span>
+                            Esta vaga é destinada a Pessoas com Deficiência (PCD)
+                        </label>
+                    </div>
+                    
                     <div class="modal-actions">
                         <button type="submit" class="submit-btn">Salvar Alterações</button>
                         <button type="button" id="cancel-edit-btn" class="cancel-btn">Cancelar</button>
@@ -198,28 +208,30 @@
                         vaga.id = doc.id;
                         const isFinalizada = vaga.status === 'finalizada';
 
+                        // Adiciona badge PCD se a vaga for para PCD
+                        const pcdBadge = vaga.pcd ? '<span class="pcd-badge">Vaga PCD</span>' : '';
 
                         const div = document.createElement('div');
                         div.className = `vaga-card ${isFinalizada ? 'finalizada' : ''}`;
 
                         div.innerHTML = `
-                    <h3>${vaga.titulo} ${isFinalizada ? '(ENCERRADA)' : ''}</h3>
-                    <p>${vaga.descricao}</p>
-                    <div class="vaga-actions">
-                        <button class="edit-btn" onclick='abrirModalEdicao(${JSON.stringify(vaga)})' ${isFinalizada ? 'disabled' : ''}>
-                            <i data-feather="edit"></i> Editar
-                        </button>
-                        
-                        ${!isFinalizada ? `
-                            <button class="finish-btn" onclick='finalizarVaga("${vaga.id}")'>
-                                <i data-feather="check-square"></i> Finalizar Vaga
-                            </button>
-                        ` : ''}
-                        <button class="delete-btn" onclick='excluirVaga("${vaga.id}")'>
-                            <i data-feather="trash-2"></i> Excluir
-                        </button>
-                    </div>
-                `;
+                            <h3>${vaga.titulo} ${pcdBadge} ${isFinalizada ? '(ENCERRADA)' : ''}</h3>
+                            <p>${vaga.descricao}</p>
+                            <div class="vaga-actions">
+                                <button class="edit-btn" onclick='abrirModalEdicao(${JSON.stringify(vaga).replace(/'/g, "\\'")})' ${isFinalizada ? 'disabled' : ''}>
+                                    <i data-feather="edit"></i> Editar
+                                </button>
+                                
+                                ${!isFinalizada ? `
+                                    <button class="finish-btn" onclick='finalizarVaga("${vaga.id}")'>
+                                        <i data-feather="check-square"></i> Finalizar Vaga
+                                    </button>
+                                ` : ''}
+                                <button class="delete-btn" onclick='excluirVaga("${vaga.id}")'>
+                                    <i data-feather="trash-2"></i> Excluir
+                                </button>
+                            </div>
+                        `;
 
                         vagasContainer.appendChild(div);
                     });
@@ -269,6 +281,12 @@
             editForm['descricao'].value = vaga.descricao;
             editForm['requisitos'].value = vaga.requisitos;
             editForm['cargaHoraria'].value = vaga.cargaHoraria || '';
+            
+            // NOVO: Pré-preenche o checkbox PCD
+            const pcdCheckbox = document.getElementById('edit-vaga-pcd');
+            if (pcdCheckbox) {
+                pcdCheckbox.checked = vaga.pcd || false;
+            }
         }
 
         document.getElementById('cancel-edit-btn').addEventListener('click', () => {
@@ -278,19 +296,26 @@
         editForm.addEventListener('submit', e => {
             e.preventDefault();
             const vagaId = editForm['vagaId'].value;
-            db.collection('vagas').doc(vagaId).update({
+            
+            // NOVO: Inclui o campo PCD na atualização
+            const updateData = {
                 titulo: editForm['titulo'].value,
                 descricao: editForm['descricao'].value,
                 requisitos: editForm['requisitos'].value,
-                cargaHoraria: editForm['cargaHoraria'].value
-            }).then(() => {
-                alert("Vaga atualizada com sucesso!");
-                editModal.style.display = 'none';
-                window.location.reload();
-            }).catch(err => {
-                console.error(err);
-                alert("Erro ao atualizar vaga.");
-            });
+                cargaHoraria: editForm['cargaHoraria'].value,
+                pcd: document.getElementById('edit-vaga-pcd').checked
+            };
+            
+            db.collection('vagas').doc(vagaId).update(updateData)
+                .then(() => {
+                    alert("Vaga atualizada com sucesso!");
+                    editModal.style.display = 'none';
+                    window.location.reload();
+                })
+                .catch(err => {
+                    console.error(err);
+                    alert("Erro ao atualizar vaga.");
+                });
         });
     </script>
 </body>
