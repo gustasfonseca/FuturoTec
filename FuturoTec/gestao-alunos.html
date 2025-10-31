@@ -1,322 +1,512 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Gestão de Alunos - Assistente Técnico</title>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-<!-- Verifique se os caminhos de CSS estão corretos -->
-<link rel="stylesheet" href="css/alerts.css">
-<link rel="stylesheet" href="css/assistente.css">
-<link rel="stylesheet" href="css/styles.css">
-<style>
-  /* Estilos básicos para o modal */
-  .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.5); justify-content: center; align-items: center; }
-  .modal-content { background-color: #fefefe; margin: auto; padding: 20px; border: 1px solid #888; width: 90%; max-width: 500px; border-radius: 8px; display: flex; flex-direction: column; gap: 10px; }
-  .modal-content input { width: 100%; padding: 8px; box-sizing: border-box; }
-  .cancel-btn { background-color: #ccc; }
-  .action-buttons button { cursor: pointer; margin-right: 5px; }
-  .action-buttons button:disabled { cursor: not-allowed; opacity: 0.5; }
 
-  /* === ESTILOS ATUALIZADOS PARA O SELETOR DE CURSOS (COM TAG) === */
-  .curso-search-wrapper {
-    position: relative;
-    width: 100%;
-  }
-  #cursoInput { /* O input agora é o campo de busca */
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gestão de Alunos - Assistente Técnico</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <!-- Verifique se os caminhos de CSS estão corretos -->
+  <link rel="stylesheet" href="css/alerts.css">
+  <link rel="stylesheet" href="css/assistente.css">
+  <link rel="stylesheet" href="css/styles.css">
+  <style>
+    /* Estilos básicos para o modal */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0, 0, 0, 0.5);
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-content {
+      background-color: #fefefe;
+      margin: auto;
+      padding: 20px;
+      border: 1px solid #888;
+      width: 90%;
+      max-width: 500px;
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .modal-content input {
+      width: 100%;
+      padding: 8px;
+      box-sizing: border-box;
+    }
+
+    .cancel-btn {
+      background-color: #ccc;
+    }
+
+    .action-buttons button {
+      cursor: pointer;
+      margin-right: 5px;
+    }
+
+    .action-buttons button:disabled {
+      cursor: not-allowed;
+      opacity: 0.5;
+    }
+
+    /* === ESTILOS ATUALIZADOS PARA O SELETOR DE CURSOS (COM TAG) === */
+    .curso-search-wrapper {
+      position: relative;
+      width: 100%;
+    }
+
+    #cursoInput {
+      /* O input agora é o campo de busca */
       border: 1px solid #ccc;
       border-radius: 8px;
-  }
-  /* A lista de sugestões que aparece abaixo da busca */
-  .sugestoes-dropdown {
-    display: none; /* Escondido por padrão */
-    position: absolute;
-    top: 100%; /* Aparece logo abaixo do input */
-    left: 0;
-    right: 0;
-    background-color: white;
-    border: 1px solid #d1d5db; /* Borda cinza */
-    border-top: none;
-    border-radius: 0 0 8px 8px;
-    z-index: 1010; /* Acima do conteúdo do modal */
-    max-height: 150px;
-    overflow-y: auto;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-  }
-  /* Um item individual na lista de sugestões */
-  .sugestao-item {
-    padding: 12px;
-    cursor: pointer;
-  }
-  .sugestao-item:hover {
-    background-color: #f3f4f6; /* Cor de fundo suave ao passar o mouse */
-  }
+    }
 
-  /* === NOVOS ESTILOS PARA A TAG SELECIONADA === */
-  /* O container que segura a tag (se houver) */
-  .curso-selecionado-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    padding: 8px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    min-height: 40px; /* Altura mínima para parecer um campo */
-    background-color: #fff;
-  }
-  
-  /* Se o container de tag estiver vazio, ele não aparece */
-  .curso-selecionado-container:empty {
-     display: none; 
-  }
-  /* Se o container de tag NÃO estiver vazio, esconde a busca */
-  /* LINHA REMOVIDA: .curso-selecionado-container:not(:empty) + .curso-search-wrapper { display: none; } */
+    /* A lista de sugestões que aparece abaixo da busca */
+    .sugestoes-dropdown {
+      display: none;
+      /* Escondido por padrão */
+      position: absolute;
+      top: 100%;
+      /* Aparece logo abaixo do input */
+      left: 0;
+      right: 0;
+      background-color: white;
+      border: 1px solid #d1d5db;
+      /* Borda cinza */
+      border-top: none;
+      border-radius: 0 0 8px 8px;
+      z-index: 1010;
+      /* Acima do conteúdo do modal */
+      max-height: 150px;
+      overflow-y: auto;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
 
-  /* A tag individual */
-  .curso-tag {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    background-color: #0d9488; /* Tom de verde-azulado (Tailwind Teal 600) */
-    color: white;
-    padding: 5px 12px;
-    border-radius: 20px; /* Arredondado */
-    font-size: 14px;
-    font-weight: 500;
-  }
-  /* O botão 'X' para remover a tag */
-  .remove-tag-btn {
-    background: none;
-    border: none;
-    color: white;
-    font-size: 18px;
-    font-weight: bold;
-    cursor: pointer;
-    padding: 0;
-    line-height: 1;
-  }
-  .remove-tag-btn:hover { opacity: 0.8; }
-  /* === FIM DOS NOVOS ESTILOS === */
-</style>
+    /* Um item individual na lista de sugestões */
+    .sugestao-item {
+      padding: 12px;
+      cursor: pointer;
+    }
+
+    .sugestao-item:hover {
+      background-color: #f3f4f6;
+      /* Cor de fundo suave ao passar o mouse */
+    }
+
+    /* === NOVOS ESTILOS PARA A TAG SELECIONADA === */
+    /* O container que segura a tag (se houver) */
+    .curso-selecionado-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      min-height: 40px;
+      /* Altura mínima para parecer um campo */
+      background-color: #fff;
+    }
+
+    /* Se o container de tag estiver vazio, ele não aparece */
+    .curso-selecionado-container:empty {
+      display: none;
+    }
+
+    /* A tag individual */
+    .curso-tag {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background-color: #0d9488;
+      /* Tom de verde-azulado (Tailwind Teal 600) */
+      color: white;
+      padding: 5px 12px;
+      border-radius: 20px;
+      /* Arredondado */
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    /* O botão 'X' para remover a tag */
+    .remove-tag-btn {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+      padding: 0;
+      line-height: 1;
+    }
+
+    .remove-tag-btn:hover {
+      opacity: 0.8;
+    }
+
+    /* Estilos para as mensagens de alerta */
+    .alert {
+      padding: 12px 20px;
+      border-radius: 8px;
+      margin: 15px 0;
+      font-weight: 500;
+      display: flex;
+      justify-content: between;
+      align-items: center;
+    }
+
+    .alert-success {
+      background-color: #d1fae5;
+      color: #065f46;
+      border: 1px solid #a7f3d0;
+    }
+
+    .alert-warning {
+      background-color: #fef3c7;
+      color: #92400e;
+      border: 1px solid #fcd34d;
+    }
+
+    .alert-danger {
+      background-color: #fee2e2;
+      color: #991b1b;
+      border: 1px solid #fca5a5;
+    }
+
+    .alert-info {
+      background-color: #dbeafe;
+      color: #1e40af;
+      border: 1px solid #93c5fd;
+    }
+
+    .close-alert {
+      background: none;
+      border: none;
+      font-size: 18px;
+      cursor: pointer;
+      margin-left: auto;
+    }
+
+    /* Modal de confirmação de exclusão */
+    .confirm-modal {
+      display: none;
+      position: fixed;
+      z-index: 1100;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      justify-content: center;
+      align-items: center;
+    }
+
+    .confirm-content {
+      background-color: white;
+      padding: 25px;
+      border-radius: 8px;
+      max-width: 400px;
+      width: 90%;
+      text-align: center;
+    }
+
+    .confirm-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .confirm-btn {
+      padding: 8px 20px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 500;
+    }
+
+    .confirm-yes {
+      background-color: #dc2626;
+      color: white;
+    }
+
+    .confirm-no {
+      background-color: #6b7280;
+      color: white;
+    }
+  </style>
 </head>
 
 <body>
 
-<!-- ===== Header ===== -->
- <header class="header">
+  <!-- ===== Header ===== -->
+  <header class="header">
     <div class="container">
-        <div class="nav-wrapper">
-            <div class="logo">
-                <img src="img/FuturoTecInicial.jpeg" alt="FuturoTEC Logo">
-            </div>
-            <nav class="nav-desktop">
-                <a href="InicialAssistente.html" class="nav-link">Início</a>        
-                <a href="editar-vagas-excluir.html" class="nav-link">Gestão das Vagas</a>
-                <a href="gestao-alunos.html" class="nav-link">Gestão dos Alunos</a>
-            </nav>
-            <a href="PerfilAssistente.html" class="login-btn">Meu Perfil</a>
+      <div class="nav-wrapper">
+        <div class="logo">
+          <img src="img/FuturoTecInicial.jpeg" alt="FuturoTEC Logo">
         </div>
-    </div>
-</header>
-
-<!-- ===== Main ===== -->
-<main class="main-content">
-  <div class="page-header">
-    <h1>Alunos que Criaram Conta</h1>
-    <p>Veja os alunos cadastrados na plataforma. Digite no campo abaixo para filtrar.</p>
-    <p id="authStatus" style="color: red; font-weight: bold;"></p>
-  </div>
-
-  <div class="search-container">
-    <input type="text" id="searchBar" placeholder="Pesquisar aluno por nome ou email..." list="studentSuggestions">
-    <datalist id="studentSuggestions"></datalist>
-  </div>
-
-  <div class="table-card">
-    <table id="studentsTable">
-      <thead>
-        <tr>
-          <th>Nome</th>
-          <th>Email</th>
-          <th>Telefone</th>
-          <th>Idade</th>
-          <th>Curso</th>
-          <th>Ações</th>
-        </tr>
-      </thead>
-      <tbody><!-- Conteúdo será preenchido pelo JS --></tbody>
-    </table>
-  </div>
-</main>
-
-<!-- ===== Footer ===== -->
-<footer class="footer">
-    <!-- ... (Conteúdo do footer omitido por brevidade) ... -->
-</footer>
-
-<!-- ===== Modal (Editar Aluno) - HTML ATUALIZADO ===== -->
-<div class="modal" id="modal">
-  <div class="modal-content">
-    <label>Nome:</label>
-    <input type="text" id="nomeInput" placeholder="Nome">
-    <label>Email:</label>
-    <input type="email" id="emailInput" placeholder="Email">
-    <label>Telefone:</label>
-    <input type="text" id="telefoneInput" placeholder="Telefone">
-    <label>Data de Nascimento:</label>
-    <input type="date" id="idadeInput" placeholder="Data de Nascimento">
-
-    <!-- NOVO COMPONENTE DE BUSCA DE CURSO (COM TAG) -->
-    <label for="cursoInput">Curso:</label>
-    <!-- 1. Container para a tag selecionada -->
-    <div id="curso-selecionado-container" class="curso-selecionado-container">
-      <!-- A tag 'Ciências da natureza [X]' aparecerá aqui -->
-    </div>
-    <!-- 2. Wrapper da busca (só aparece se não houver tag) -->
-    <div class="curso-search-wrapper">
-      <input type="text" id="cursoInput" placeholder="Busque e selecione o curso (Ex: Técnico em Informática)">
-      <div id="cursoSugestoes" class="sugestoes-dropdown">
-        <!-- As sugestões de curso aparecerão aqui -->
+        <nav class="nav-desktop">
+          <a href="InicialAssistente.html" class="nav-link">Início</a>
+          <a href="editar-vagas-excluir.html" class="nav-link">Gestão das Vagas</a>
+          <a href="gestao-alunos.html" class="nav-link">Gestão dos Alunos</a>
+        </nav>
+        <a href="PerfilAssistente.html" class="login-btn">Meu Perfil</a>
       </div>
     </div>
-    <!-- FIM DO NOVO COMPONENTE -->
+  </header>
 
-    <button type="button" id="saveBtn">Atualizar</button>
-    <button type="button" id="cancelBtn" class="cancel-btn">Cancelar</button>
+  <!-- ===== Main ===== -->
+  <main class="main-content">
+    <div class="page-header">
+      <h1>Alunos que Criaram Conta</h1>
+      <p>Veja os alunos cadastrados na plataforma. Digite no campo abaixo para filtrar.</p>
+      <!-- Container para mensagens de alerta -->
+      <div id="alertContainer"></div>
+      <p id="authStatus" style="color: red; font-weight: bold;"></p>
+    </div>
+
+    <div class="search-container">
+      <input type="text" id="searchBar" placeholder="Pesquisar aluno por nome ou email..." list="studentSuggestions">
+      <datalist id="studentSuggestions"></datalist>
+    </div>
+
+    <div class="table-card">
+      <table id="studentsTable">
+        <thead>
+          <tr>
+            <th>Nome</th>
+            <th>Email</th>
+            <th>Telefone</th>
+            <th>Idade</th>
+            <th>Curso</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody><!-- Conteúdo será preenchido pelo JS --></tbody>
+      </table>
+    </div>
+  </main>
+
+  <!-- ===== Footer ===== -->
+  <footer class="footer">
+    <!-- ... (Conteúdo do footer omitido por brevidade) ... -->
+  </footer>
+
+  <!-- ===== Modal (Editar Aluno) - HTML ATUALIZADO ===== -->
+  <div class="modal" id="modal">
+    <div class="modal-content">
+      <label>Nome:</label>
+      <input type="text" id="nomeInput" placeholder="Nome">
+      <label>Email:</label>
+      <input type="email" id="emailInput" placeholder="Email">
+      <label>Telefone:</label>
+      <input type="text" id="telefoneInput" placeholder="Telefone">
+      <label>Data de Nascimento:</label>
+      <input type="date" id="idadeInput" placeholder="Data de Nascimento">
+
+      <!-- NOVO COMPONENTE DE BUSCA DE CURSO (COM TAG) -->
+      <label for="cursoInput">Curso:</label>
+      <!-- 1. Container para a tag selecionada -->
+      <div id="curso-selecionado-container" class="curso-selecionado-container">
+        <!-- A tag 'Ciências da natureza [X]' aparecerá aqui -->
+      </div>
+      <!-- 2. Wrapper da busca (só aparece se não houver tag) -->
+      <div class="curso-search-wrapper">
+        <input type="text" id="cursoInput" placeholder="Busque e selecione o curso (Ex: Técnico em Informática)">
+        <div id="cursoSugestoes" class="sugestoes-dropdown">
+          <!-- As sugestões de curso aparecerão aqui -->
+        </div>
+      </div>
+      <!-- FIM DO NOVO COMPONENTE -->
+
+      <button type="button" id="saveBtn">Atualizar</button>
+      <button type="button" id="cancelBtn" class="cancel-btn">Cancelar</button>
+    </div>
   </div>
-</div>
 
-<!-- ===== Firebase Script (ATUALIZADO) ===== -->
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
-import { getFirestore, collection, getDocs, updateDoc, deleteDoc, doc, getDoc, query, where } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
+  <!-- ===== Modal de Confirmação de Exclusão ===== -->
+  <div class="confirm-modal" id="confirmModal">
+    <div class="confirm-content">
+      <h3>Confirmar Exclusão</h3>
+      <p id="confirmMessage">Tem certeza que deseja excluir este aluno? Esta ação não pode ser desfeita.</p>
+      <div class="confirm-buttons">
+        <button class="confirm-btn confirm-yes" id="confirmYes">Sim, Excluir</button>
+        <button class="confirm-btn confirm-no" id="confirmNo">Cancelar</button>
+      </div>
+    </div>
+  </div>
 
-const firebaseConfig = {
-  apiKey: "AIzaSyA8Q9cKB4oVmFM6ilHK_70h8JDvgsOQhLY",
-  authDomain: "futurotec-e3a69.firebaseapp.com",
-  projectId: "futurotec-e3a69",
-  storageBucket: "futurotec-e3a69.appspot.com",
-  messagingSenderId: "234233783827",
-  appId: "1:234233783827:web:bf9376dee78d8924ef01e6"
-};
+  <!-- ===== Firebase Script (ATUALIZADO) ===== -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
+    import { getFirestore, collection, getDocs, updateDoc, deleteDoc, doc, getDoc, query, where } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
 
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-const auth = getAuth(app);
+    const firebaseConfig = {
+      apiKey: "AIzaSyA8Q9cKB4oVmFM6ilHK_70h8JDvgsOQhLY",
+      authDomain: "futurotec-e3a69.firebaseapp.com",
+      projectId: "futurotec-e3a69",
+      storageBucket: "futurotec-e3a69.appspot.com",
+      messagingSenderId: "234233783827",
+      appId: "1:234233783827:web:bf9376dee78d8924ef01e6"
+    };
 
-// REFERÊNCIAS
-const alunosRef = collection(db, "usuarios");
-const cursosRef = collection(db, "cursos"); 
-const tableBody = document.querySelector("#studentsTable tbody");
-const modal = document.getElementById("modal");
-const nomeInput = document.getElementById("nomeInput");
-const emailInput = document.getElementById("emailInput");
-const telefoneInput = document.getElementById("telefoneInput");
-const idadeInput = document.getElementById("idadeInput");
-const cursoInput = document.getElementById("cursoInput"); 
-const saveBtn = document.getElementById("saveBtn");
-const cancelBtn = document.getElementById("cancelBtn");
-const searchBar = document.getElementById("searchBar");
-const studentSuggestions = document.getElementById("studentSuggestions");
-const authStatus = document.getElementById("authStatus"); 
-const cursoSugestoes = document.getElementById("cursoSugestoes"); 
-// NOVO: Referência ao container da tag
-const cursoSelecionadoContainer = document.getElementById("curso-selecionado-container");
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
 
-// VARIÁVEIS GLOBAIS
-let allStudents = [];
-let allCursos = []; 
-let editId = null;
-let userIsAssistente = false;
-let selectedCursoNome = null; // NOVO: Guarda o nome do curso selecionado
+    // REFERÊNCIAS
+    const alunosRef = collection(db, "usuarios");
+    const cursosRef = collection(db, "cursos");
+    const tableBody = document.querySelector("#studentsTable tbody");
+    const modal = document.getElementById("modal");
+    const nomeInput = document.getElementById("nomeInput");
+    const emailInput = document.getElementById("emailInput");
+    const telefoneInput = document.getElementById("telefoneInput");
+    const idadeInput = document.getElementById("idadeInput");
+    const cursoInput = document.getElementById("cursoInput");
+    const saveBtn = document.getElementById("saveBtn");
+    const cancelBtn = document.getElementById("cancelBtn");
+    const searchBar = document.getElementById("searchBar");
+    const studentSuggestions = document.getElementById("studentSuggestions");
+    const authStatus = document.getElementById("authStatus");
+    const cursoSugestoes = document.getElementById("cursoSugestoes");
+    const alertContainer = document.getElementById("alertContainer");
+    const confirmModal = document.getElementById("confirmModal");
+    const confirmYes = document.getElementById("confirmYes");
+    const confirmNo = document.getElementById("confirmNo");
+    const confirmMessage = document.getElementById("confirmMessage");
 
-// --- FUNÇÕES DE CÁLCULO E FORMATO ---
-function calcularIdade(dataNascimento){
-  // ... (código sem alteração)
-  if(!dataNascimento) return "";
-  try {
-    const dataNasc = dataNascimento.seconds ? new Date(dataNascimento.seconds * 1000) : new Date(dataNascimento);
-    if (isNaN(dataNasc.getTime())) return ""; 
-    const hoje = new Date();
-    let idade = hoje.getFullYear() - dataNasc.getFullYear();
-    const m = hoje.getMonth() - dataNasc.getMonth();
-    if(m < 0 || (m === 0 && hoje.getDate() < dataNasc.getDate())) { idade--; }
-    return idade >= 0 ? idade : "";
-  } catch (e) { return ""; }
-}
+    // NOVO: Referência ao container da tag
+    const cursoSelecionadoContainer = document.getElementById("curso-selecionado-container");
 
-function formatarDataParaInput(data) {
-  // ... (código sem alteração)
-  if (!data) return "";
-  try {
-    const dateObj = data.seconds ? new Date(data.seconds * 1000) : new Date(data);
-    if (isNaN(dateObj.getTime())) return "";
-    return dateObj.toISOString().split('T')[0];
-  } catch (e) { return ""; }
-}
+    // VARIÁVEIS GLOBAIS
+    let allStudents = [];
+    let allCursos = [];
+    let editId = null;
+    let userIsAssistente = false;
+    let selectedCursoNome = null; // NOVO: Guarda o nome do curso selecionado
+    let alunoParaExcluir = null; // NOVO: Guarda o aluno que será excluído
 
-// --- NOVAS FUNÇÕES PARA BUSCA DE CURSO (COM TAG) ---
-async function loadCursos() {
-  // ... (código sem alteração)
-  try {
-    const snapshot = await getDocs(cursosRef);
-    allCursos = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    console.log("Cursos carregados:", allCursos);
-  } catch (error) {
-    console.error("Erro ao carregar cursos:", error);
-  }
-}
+    // --- FUNÇÕES DE CÁLCULO E FORMATO ---
+    function calcularIdade(dataNascimento) {
+      if (!dataNascimento) return "";
+      try {
+        const dataNasc = dataNascimento.seconds ? new Date(dataNascimento.seconds * 1000) : new Date(dataNascimento);
+        if (isNaN(dataNasc.getTime())) return "";
+        const hoje = new Date();
+        let idade = hoje.getFullYear() - dataNasc.getFullYear();
+        const m = hoje.getMonth() - dataNasc.getMonth();
+        if (m < 0 || (m === 0 && hoje.getDate() < dataNasc.getDate())) { idade--; }
+        return idade >= 0 ? idade : "";
+      } catch (e) { return ""; }
+    }
 
-function renderizarSugestoesCursos(filtro = '') {
-  // ... (código sem alteração)
-  cursoSugestoes.innerHTML = "";
-  const filtroLowerCase = filtro.toLowerCase();
-  if (filtro.length === 0) {
-    cursoSugestoes.style.display = "none";
-    return;
-  }
-  const cursosFiltrados = allCursos.filter(curso => 
-    curso.nome && curso.nome.toLowerCase().includes(filtroLowerCase)
-  );
-  if (cursosFiltrados.length > 0) {
-    cursosFiltrados.forEach(curso => {
-      const item = document.createElement("div");
-      item.className = "sugestao-item";
-      item.textContent = curso.nome;
-      item.dataset.nome = curso.nome; 
-      cursoSugestoes.appendChild(item);
-    });
-    cursoSugestoes.style.display = "block"; 
-  } else {
-    cursoSugestoes.style.display = "none"; 
-  }
-}
+    function formatarDataParaInput(data) {
+      if (!data) return "";
+      try {
+        const dateObj = data.seconds ? new Date(data.seconds * 1000) : new Date(data);
+        if (isNaN(dateObj.getTime())) return "";
+        return dateObj.toISOString().split('T')[0];
+      } catch (e) { return ""; }
+    }
 
-// NOVO: Renderiza a tag do curso selecionado
-function renderizarCursoTag() {
-  cursoSelecionadoContainer.innerHTML = ""; // Limpa
-  
-  if (selectedCursoNome) {
-    const tag = document.createElement("div");
-    tag.className = "curso-tag";
-    tag.innerHTML = `
+    // --- NOVAS FUNÇÕES PARA MENSAGENS DE ALERTA ---
+    function mostrarAlerta(mensagem, tipo = 'info') {
+      const alertDiv = document.createElement('div');
+      alertDiv.className = `alert alert-${tipo}`;
+      alertDiv.innerHTML = `
+    <span>${mensagem}</span>
+    <button class="close-alert">&times;</button>
+  `;
+
+      alertContainer.appendChild(alertDiv);
+
+      // Fechar alerta ao clicar no X
+      const closeBtn = alertDiv.querySelector('.close-alert');
+      closeBtn.addEventListener('click', () => {
+        alertDiv.remove();
+      });
+
+      // Auto-remover após 5 segundos
+      setTimeout(() => {
+        if (alertDiv.parentNode) {
+          alertDiv.remove();
+        }
+      }, 5000);
+    }
+
+    // --- NOVAS FUNÇÕES PARA BUSCA DE CURSO (COM TAG) ---
+    async function loadCursos() {
+      try {
+        const snapshot = await getDocs(cursosRef);
+        allCursos = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        console.log("Cursos carregados:", allCursos);
+      } catch (error) {
+        console.error("Erro ao carregar cursos:", error);
+      }
+    }
+
+    function renderizarSugestoesCursos(filtro = '') {
+      cursoSugestoes.innerHTML = "";
+      const filtroLowerCase = filtro.toLowerCase();
+      if (filtro.length === 0) {
+        cursoSugestoes.style.display = "none";
+        return;
+      }
+      const cursosFiltrados = allCursos.filter(curso =>
+        curso.nome && curso.nome.toLowerCase().includes(filtroLowerCase)
+      );
+      if (cursosFiltrados.length > 0) {
+        cursosFiltrados.forEach(curso => {
+          const item = document.createElement("div");
+          item.className = "sugestao-item";
+          item.textContent = curso.nome;
+          item.dataset.nome = curso.nome;
+          cursoSugestoes.appendChild(item);
+        });
+        cursoSugestoes.style.display = "block";
+      } else {
+        cursoSugestoes.style.display = "none";
+      }
+    }
+
+    // NOVO: Renderiza a tag do curso selecionado
+    function renderizarCursoTag() {
+      cursoSelecionadoContainer.innerHTML = ""; // Limpa
+
+      if (selectedCursoNome) {
+        const tag = document.createElement("div");
+        tag.className = "curso-tag";
+        tag.innerHTML = `
       <span>${selectedCursoNome}</span>
       <button class="remove-tag-btn" data-nome="${selectedCursoNome}">&times;</button>
     `;
-    cursoSelecionadoContainer.appendChild(tag);
-  }
-}
+        cursoSelecionadoContainer.appendChild(tag);
+      }
+    }
 
-// --- FUNÇÕES DE RENDERIZAÇÃO E FILTRO (ALUNOS) ---
-function renderizarAlunos(alunos){
-  // ... (código sem alteração)
-  tableBody.innerHTML = "";
-  if(alunos.length === 0){ /* ... */ }
-  alunos.forEach(aluno=>{
-    const row = tableBody.insertRow();
-    row.dataset.id = aluno.id;
-    row.innerHTML = `
+    // --- FUNÇÕES DE RENDERIZAÇÃO E FILTRO (ALUNOS) ---
+    function renderizarAlunos(alunos) {
+      tableBody.innerHTML = "";
+      if (alunos.length === 0) {
+        tableBody.innerHTML = '<tr><td colspan="6" style="text-align:center;">Nenhum aluno encontrado.</td></tr>';
+        return;
+      }
+      alunos.forEach(aluno => {
+        const row = tableBody.insertRow();
+        row.dataset.id = aluno.id;
+        row.innerHTML = `
       <td>${aluno.nome || ''}</td>
       <td>${aluno.email || ''}</td>
       <td>${aluno.telefone || ''}</td>
@@ -331,174 +521,211 @@ function renderizarAlunos(alunos){
         </button>
       </td>
     `;
-  });
-}
+      });
+    }
 
-async function carregarAlunos(){
-  // ... (código sem alteração)
-  tableBody.innerHTML = '<tr><td colspan="6" style="text-align:center;">Carregando alunos...</td></tr>';
-  try{
-    const q = query(alunosRef, where("role", "==", "aluno"));
-    const snapshot = await getDocs(q);
-    allStudents = snapshot.docs.map(docSnap => ({id: docSnap.id, ...docSnap.data()}));
-    renderizarAlunos(allStudents);
-    atualizarSugestoes(allStudents);
-  } catch(e) { /* ... */ }
-}
-
-function filtrarAlunos(){
-  // ... (código sem alteração)
-  const termo = searchBar.value.toLowerCase().trim();
-  if(!termo){ renderizarAlunos(allStudents); return; }
-  const filtered = allStudents.filter(a => (a.nome && a.nome.toLowerCase().includes(termo)) || (a.email && a.email.toLowerCase().includes(termo)));
-  renderizarAlunos(filtered);
-}
-
-function atualizarSugestoes(alunos){
-  // ... (código sem alteração)
-  studentSuggestions.innerHTML='';
-  const nomes = new Set();
-  alunos.forEach(a => { if(a.nome) nomes.add(a.nome); });
-  nomes.forEach(nome => { /* ... */ });
-}
-
-// --- EVENT LISTENERS (ATUALIZADOS) ---
-
-searchBar.addEventListener("input", filtrarAlunos);
-
-// Event listener para o input de busca de curso
-cursoInput.addEventListener("input", () => {
-  renderizarSugestoesCursos(cursoInput.value);
-});
-
-// ATUALIZADO: Event listener para o clique na sugestão de curso
-cursoSugestoes.addEventListener("click", (e) => {
-  if (e.target.classList.contains("sugestao-item")) {
-    selectedCursoNome = e.target.dataset.nome; // 1. Seta a variável global
-    renderizarCursoTag(); // 2. Renderiza a tag
-    cursoInput.value = ""; // 3. Limpa a busca
-    cursoSugestoes.style.display = "none"; // 4. Esconde o dropdown
-  }
-});
-
-// NOVO: Event listener para remover a tag do curso
-cursoSelecionadoContainer.addEventListener("click", (e) => {
-  if (e.target.classList.contains("remove-tag-btn")) {
-    selectedCursoNome = null; // 1. Limpa a variável
-    renderizarCursoTag(); // 2. Re-renderiza (vai ficar vazio)
-  }
-});
-
-// ATUALIZADO: Lógica de clique no botão "Editar"
-tableBody.addEventListener("click", e => {
-  const btn = e.target.closest(".edit-btn, .delete-btn");
-  if(!btn || btn.disabled) return; 
-  if(!userIsAssistente){ return; }
-  const row = btn.closest("tr");
-  const id = row.dataset.id;
-  const aluno = allStudents.find(a => a.id === id);
-  if (!aluno) return;
-
-  if(btn.classList.contains("edit-btn")){
-    nomeInput.value = aluno.nome || '';
-    emailInput.value = aluno.email || '';
-    telefoneInput.value = aluno.telefone || '';
-    idadeInput.value = formatarDataParaInput(aluno.dataNascimento);
-    
-    // ATUALIZADO: Popula a tag do curso
-    selectedCursoNome = aluno.cursoNome || null;
-    renderizarCursoTag();
-    cursoInput.value = ''; // Limpa a busca
-    
-    editId = id;
-    modal.style.display = "flex";
-  }
-
-  if(btn.classList.contains("delete-btn")){
-    console.log("Solicitando exclusão de aluno... (confirm() removido)");
-    deleteDoc(doc(db, "usuarios", id))
-      .then(() => { carregarAlunos(); searchBar.value = ''; })
-      .catch(e => { console.error("Erro ao excluir aluno:", e); });
-  }
-});
-
-// ATUALIZADO: Lógica de clique no botão "Salvar"
-saveBtn.addEventListener("click", async () => {
-  if(!editId || !userIsAssistente) return;
-  const dataNascimentoValor = idadeInput.value.trim();
-  
-  const dadosAtualizados = {
-    nome: nomeInput.value.trim(),
-    email: emailInput.value.trim(),
-    telefone: telefoneInput.value.trim(),
-    cursoNome: selectedCursoNome || null // ATUALIZADO: Usa a variável global
-  };
-  
-  if (dataNascimentoValor) {
-    dadosAtualizados.dataNascimento = new Date(dataNascimentoValor + 'T00:00:00');
-  } else {
-    dadosAtualizados.dataNascimento = null; // Garante que o campo seja limpo se vazio
-  }
-  
-  try{
-    await updateDoc(doc(db, "usuarios", editId), dadosAtualizados);
-    modal.style.display = "none";
-    editId = null;
-    carregarAlunos();
-    searchBar.value = '';
-  } catch(e) { 
-    console.error("Erro ao atualizar aluno:", e); 
-    authStatus.textContent = "Erro ao atualizar aluno. Verifique o console.";
-  }
-});
-
-// ATUALIZADO: Event listeners do modal agora fecham o dropdown de sugestões
-cancelBtn.addEventListener("click", () => { 
-  modal.style.display = "none"; 
-  cursoSugestoes.style.display = "none";
-});
-modal.addEventListener("click", e => { 
-  if(e.target === modal) { 
-    modal.style.display = "none"; 
-    cursoSugestoes.style.display = "none";
-  } 
-});
-// NOVO: Fecha o dropdown se clicar fora
-document.addEventListener("click", (e) => {
-  if (!cursoInput.contains(e.target) && !cursoSugestoes.contains(e.target)) {
-    cursoSugestoes.style.display = "none";
-  }
-});
-
-// PONTO DE ENTRADA (ATUALIZADO)
-// ... (código sem alteração)
-onAuthStateChanged(auth, user => {
-  if(user){
-    getDoc(doc(db, "usuarios", user.uid)).then(docSnap => {
-      if(docSnap.exists() && docSnap.data().role === 'assistente_tecnico'){
-        userIsAssistente = true;
-        authStatus.textContent = "";
-        loadCursos(); // <-- CARREGA OS CURSOS
-        carregarAlunos();
-      } else {
-        userIsAssistente = false;
-        authStatus.textContent = "Acesso negado. Você não é um assistente técnico.";
-        loadCursos(); // <-- CARREGA OS CURSOS (para visualização se houver)
-        carregarAlunos(); 
+    async function carregarAlunos() {
+      tableBody.innerHTML = '<tr><td colspan="6" style="text-align:center;">Carregando alunos...</td></tr>';
+      try {
+        const q = query(alunosRef, where("role", "==", "aluno"));
+        const snapshot = await getDocs(q);
+        allStudents = snapshot.docs.map(docSnap => ({ id: docSnap.id, ...docSnap.data() }));
+        renderizarAlunos(allStudents);
+        atualizarSugestoes(allStudents);
+      } catch (e) {
+        console.error("Erro ao carregar alunos:", e);
+        tableBody.innerHTML = '<tr><td colspan="6" style="text-align:center; color: red;">Erro ao carregar alunos.</td></tr>';
       }
-    }).catch(e => {
-      console.error("Erro ao verificar permissão:", e); 
-      authStatus.textContent = "Erro ao verificar permissão.";
+    }
+
+    function filtrarAlunos() {
+      const termo = searchBar.value.toLowerCase().trim();
+      if (!termo) { renderizarAlunos(allStudents); return; }
+      const filtered = allStudents.filter(a => (a.nome && a.nome.toLowerCase().includes(termo)) || (a.email && a.email.toLowerCase().includes(termo)));
+      renderizarAlunos(filtered);
+    }
+
+    function atualizarSugestoes(alunos) {
+      studentSuggestions.innerHTML = '';
+      const nomes = new Set();
+      alunos.forEach(a => { if (a.nome) nomes.add(a.nome); });
+      nomes.forEach(nome => {
+        const option = document.createElement('option');
+        option.value = nome;
+        studentSuggestions.appendChild(option);
+      });
+    }
+
+    // --- EVENT LISTENERS (ATUALIZADOS) ---
+
+    searchBar.addEventListener("input", filtrarAlunos);
+
+    // Event listener para o input de busca de curso
+    cursoInput.addEventListener("input", () => {
+      renderizarSugestoesCursos(cursoInput.value);
     });
-  } else { 
-    console.log("Nenhum usuário logado.");
-    authStatus.textContent = "Faça login para gerenciar os alunos.";
-    renderizarAlunos([]); 
-  }
-});
-</script>
+
+    // ATUALIZADO: Event listener para o clique na sugestão de curso
+    cursoSugestoes.addEventListener("click", (e) => {
+      if (e.target.classList.contains("sugestao-item")) {
+        selectedCursoNome = e.target.dataset.nome; // 1. Seta a variável global
+        renderizarCursoTag(); // 2. Renderiza a tag
+        cursoInput.value = ""; // 3. Limpa a busca
+        cursoSugestoes.style.display = "none"; // 4. Esconde o dropdown
+      }
+    });
+
+    // NOVO: Event listener para remover a tag do curso
+    cursoSelecionadoContainer.addEventListener("click", (e) => {
+      if (e.target.classList.contains("remove-tag-btn")) {
+        selectedCursoNome = null; // 1. Limpa a variável
+        renderizarCursoTag(); // 2. Re-renderiza (vai ficar vazio)
+      }
+    });
+
+    // ATUALIZADO: Lógica de clique no botão "Editar"
+    tableBody.addEventListener("click", e => {
+      const btn = e.target.closest(".edit-btn, .delete-btn");
+      if (!btn || btn.disabled) return;
+      if (!userIsAssistente) { return; }
+      const row = btn.closest("tr");
+      const id = row.dataset.id;
+      const aluno = allStudents.find(a => a.id === id);
+      if (!aluno) return;
+
+      if (btn.classList.contains("edit-btn")) {
+        nomeInput.value = aluno.nome || '';
+        emailInput.value = aluno.email || '';
+        telefoneInput.value = aluno.telefone || '';
+        idadeInput.value = formatarDataParaInput(aluno.dataNascimento);
+
+        // ATUALIZADO: Popula a tag do curso
+        selectedCursoNome = aluno.cursoNome || null;
+        renderizarCursoTag();
+        cursoInput.value = ''; // Limpa a busca
+
+        editId = id;
+        modal.style.display = "flex";
+      }
+
+      if (btn.classList.contains("delete-btn")) {
+        // NOVO: Mostra modal de confirmação em vez de excluir diretamente
+        alunoParaExcluir = aluno;
+        confirmMessage.textContent = `Tem certeza que deseja excluir o aluno "${aluno.nome || 'Sem nome'}"? Esta ação não pode ser desfeita.`;
+        confirmModal.style.display = "flex";
+      }
+    });
+
+    // NOVO: Event listeners para o modal de confirmação
+    confirmYes.addEventListener("click", () => {
+      if (alunoParaExcluir) {
+        deleteDoc(doc(db, "usuarios", alunoParaExcluir.id))
+          .then(() => {
+            mostrarAlerta(`Aluno "${alunoParaExcluir.nome || 'Sem nome'}" excluído com sucesso!`, 'success');
+            carregarAlunos();
+            searchBar.value = '';
+            confirmModal.style.display = "none";
+            alunoParaExcluir = null;
+          })
+          .catch(e => {
+            console.error("Erro ao excluir aluno:", e);
+            mostrarAlerta("Erro ao excluir aluno. Tente novamente.", 'danger');
+            confirmModal.style.display = "none";
+            alunoParaExcluir = null;
+          });
+      }
+    });
+
+    confirmNo.addEventListener("click", () => {
+      confirmModal.style.display = "none";
+      alunoParaExcluir = null;
+    });
+
+    confirmModal.addEventListener("click", e => {
+      if (e.target === confirmModal) {
+        confirmModal.style.display = "none";
+        alunoParaExcluir = null;
+      }
+    });
+
+    // ATUALIZADO: Lógica de clique no botão "Salvar"
+    saveBtn.addEventListener("click", async () => {
+      if (!editId || !userIsAssistente) return;
+      const dataNascimentoValor = idadeInput.value.trim();
+
+      const dadosAtualizados = {
+        nome: nomeInput.value.trim(),
+        email: emailInput.value.trim(),
+        telefone: telefoneInput.value.trim(),
+        cursoNome: selectedCursoNome || null // ATUALIZADO: Usa a variável global
+      };
+
+      if (dataNascimentoValor) {
+        dadosAtualizados.dataNascimento = new Date(dataNascimentoValor + 'T00:00:00');
+      } else {
+        dadosAtualizados.dataNascimento = null; // Garante que o campo seja limpo se vazio
+      }
+
+      try {
+        await updateDoc(doc(db, "usuarios", editId), dadosAtualizados);
+        modal.style.display = "none";
+
+        // NOVO: Mostra mensagem de sucesso
+        mostrarAlerta("Aluno atualizado com sucesso!", 'success');
+
+        editId = null;
+        carregarAlunos();
+        searchBar.value = '';
+      } catch (e) {
+        console.error("Erro ao atualizar aluno:", e);
+        mostrarAlerta("Erro ao atualizar aluno. Verifique os dados e tente novamente.", 'danger');
+      }
+    });
+
+    // ATUALIZADO: Event listeners do modal agora fecham o dropdown de sugestões
+    cancelBtn.addEventListener("click", () => {
+      modal.style.display = "none";
+      cursoSugestoes.style.display = "none";
+    });
+    modal.addEventListener("click", e => {
+      if (e.target === modal) {
+        modal.style.display = "none";
+        cursoSugestoes.style.display = "none";
+      }
+    });
+    // NOVO: Fecha o dropdown se clicar fora
+    document.addEventListener("click", (e) => {
+      if (!cursoInput.contains(e.target) && !cursoSugestoes.contains(e.target)) {
+        cursoSugestoes.style.display = "none";
+      }
+    });
+
+    // PONTO DE ENTRADA (ATUALIZADO)
+    onAuthStateChanged(auth, user => {
+      if (user) {
+        getDoc(doc(db, "usuarios", user.uid)).then(docSnap => {
+          if (docSnap.exists() && docSnap.data().role === 'assistente_tecnico') {
+            userIsAssistente = true;
+            authStatus.textContent = "";
+            loadCursos(); // <-- CARREGA OS CURSOS
+            carregarAlunos();
+          } else {
+            userIsAssistente = false;
+            authStatus.textContent = "Acesso negado. Você não é um assistente técnico.";
+            loadCursos(); // <-- CARREGA OS CURSOS (para visualização se houver)
+            carregarAlunos();
+          }
+        }).catch(e => {
+          console.error("Erro ao verificar permissão:", e);
+          authStatus.textContent = "Erro ao verificar permissão.";
+        });
+      } else {
+        console.log("Nenhum usuário logado.");
+        authStatus.textContent = "Faça login para gerenciar os alunos.";
+        renderizarAlunos([]);
+      }
+    });
+  </script>
 </body>
+
 </html>
-
-
-
