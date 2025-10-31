@@ -153,7 +153,6 @@ const loadCompanyJobs = () => {
 };
 
 const loadCandidaciesForCompany = async () => {
-    // ... (Código para carregamento de candidaturas, sem alterações)
     const container = document.getElementById('candidaturas-empresa-container');
     
     console.log(`[CandidaturasEmpresa - DEBUG INICIAL] Container existe: ${!!container}, Usuário logado: ${!!currentUser}`);
@@ -210,7 +209,15 @@ const loadCandidaciesForCompany = async () => {
                  for (const candDoc of candidaturasSnapshot.docs) {
                       const candidatura = candDoc.data();
                       
-                      let aluno = { nome: 'Aluno Não Encontrado', email: 'N/A', telefone: 'N/A', cidade: 'N/A', estado: 'N/A', curso: 'N/A', area: 'N/A' };
+                      // OBJETO ALUNO COM TODOS OS CAMPOS POSSÍVEIS
+                      let aluno = { 
+                          nome: 'Aluno Não Encontrado', 
+                          email: 'N/A', 
+                          telefone: 'N/A', 
+                          curso: 'N/A', 
+                          cursoNome: 'N/A', // ADICIONANDO CAMPO CURSO NOME
+                          area: 'N/A' 
+                      };
 
                       try {
                           if (!candidatura.alunoId) {
@@ -220,7 +227,20 @@ const loadCandidaciesForCompany = async () => {
                           
                           const alunoDoc = await db.collection('usuarios').doc(candidatura.alunoId).get();
                           if (alunoDoc.exists) {
-                              aluno = { ...aluno, ...alunoDoc.data() }; 
+                              const alunoData = alunoDoc.data();
+                              aluno = { ...aluno, ...alunoData }; 
+                              
+                              // VERIFICAÇÃO ESPECÍFICA PARA O CURSO
+                              if (alunoData.cursoNome) {
+                                  aluno.curso = alunoData.cursoNome;
+                              } else if (alunoData.curso) {
+                                  aluno.curso = alunoData.curso;
+                              } else if (alunoData.area) {
+                                  aluno.curso = alunoData.area;
+                              } else {
+                                  aluno.curso = 'Curso não informado';
+                              }
+                              
                               if (aluno.email === 'N/A' && auth.currentUser) {
                                   aluno.email = auth.currentUser.email;
                               }
@@ -231,22 +251,19 @@ const loadCandidaciesForCompany = async () => {
                            console.error("Erro ao buscar perfil do aluno:", candidatura.alunoId, e);
                       }
                       
-                      const alunoCurso = aluno.curso || aluno.area || 'Informação de perfil indisponível'; 
-                      const alunoLocalizacao = (aluno.cidade && aluno.estado) ? `${aluno.cidade}, ${aluno.estado}` : 'Localização não informada';
+                      // EXIBINDO O CURSO CORRETAMENTE (LOCAL FOI REMOVIDO)
+                      const alunoCurso = aluno.curso || 'Curso não informado';
                       
                       candidatosHtml += `
                            <li class="candidate-card">
                                 <div class="candidate-details">
                                     <h4 class="candidate-name">${aluno.nome}</h4>
-                                    <p class="candidate-role">**Curso/Área:** ${alunoCurso}</p>
+                                    <p class="candidate-role"><strong>Curso:</strong> ${alunoCurso}</p>
                                     <p class="candidate-contact">
-                                         <i data-feather="mail" class="icon-small"></i> **Email:** ${aluno.email}
+                                         <i data-feather="mail" class="icon-small"></i> <strong>Email:</strong> ${aluno.email}
                                     </p>
                                     <p class="candidate-contact">
-                                         <i data-feather="phone" class="icon-small"></i> **Telefone:** ${aluno.telefone}
-                                    </p>
-                                    <p class="candidate-location">
-                                         <i data-feather="map-pin" class="icon-small"></i> **Local:** ${alunoLocalizacao}
+                                         <i data-feather="phone" class="icon-small"></i> <strong>Telefone:</strong> ${aluno.telefone}
                                     </p>
                                 </div>
                                 <button class="view-cv-btn" data-aluno-id="${candidatura.alunoId}">Ver Perfil Completo</button>
@@ -285,7 +302,6 @@ const loadCandidaciesForCompany = async () => {
         if (typeof feather !== 'undefined') {
              feather.replace(); 
         }
-
 
     } catch (error) {
         console.error("ERRO FATAL AO CARREGAR CANDIDATURAS PARA EMPRESA:", error);
