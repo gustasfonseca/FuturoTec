@@ -327,4 +327,44 @@
     .candidatura-status {
         border-width: 2px;
     }
+
 }
+/* No seu arquivo css/candidaturas.css */
+
+.candidatura-card {
+    /* Adiciona display flex para alinhar o conteúdo e o botão */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px; /* Espaçamento entre as informações e o botão */
+}
+
+.candidatura-info {
+    /* Faz com que a parte de informações ocupe o espaço disponível */
+    flex-grow: 1;
+}
+
+.candidatura-actions .delete-btn {
+    background-color: transparent;
+    border: none;
+    color: #e74c3c; /* Um tom de vermelho para indicar exclusão */
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.candidatura-actions .delete-btn:hover {
+    background-color: #fbecec; /* Um fundo vermelho bem claro no hover */
+    color: #c0392b; /* Vermelho mais escuro no hover */
+}
+
+.candidatura-actions .delete-btn svg {
+    width: 20px;
+    height: 20px;
+}
+
+/* Você pode adicionar ou ajustar outros estilos que já tenha neste arquivo */
