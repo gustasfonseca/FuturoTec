@@ -124,8 +124,9 @@ main.my-jobs-section {
     opacity: 0.6;
     border-left: 5px solid #ff9900;
 }
+
 /* ===================================================================== */
-/* NOVOS ESTILOS PARA O MODAL DE EDIÇÃO E O AUTOCOMPLETE DE CURSOS       */
+/* ESTILOS ATUALIZADOS PARA O MODAL E O AUTOCOMPLETE DE CURSOS           */
 /* ===================================================================== */
 
 /* --- 1. Estilos do Modal (Overlay e Conteúdo) --- */
@@ -162,69 +163,95 @@ main.my-jobs-section {
     margin-top: 20px;
 }
 
-/* --- 2. Estilos do Sistema de Autocomplete de Cursos --- */
+/* --- 2. ESTILOS OTIMIZADOS DO AUTOCOMPLETE DE CURSOS --- */
 
-/* Container que engloba o campo de busca e a lista de sugestões */
+/* Container que engloba tudo: o campo de tags e a lista de sugestões */
 .autocomplete-container {
     position: relative; /* Essencial para posicionar a lista de sugestões */
+    width: 100%;
 }
 
-/* A caixa onde as tags dos cursos selecionados aparecem */
+/* A caixa onde as tags e o input aparecem. AGORA É UM FLEX CONTAINER! */
 .selected-tags-container {
     display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    padding: 8px;
+    flex-wrap: wrap; /* Permite que as tags quebrem para a próxima linha */
+    align-items: center; /* Alinha verticalmente as tags e o input */
+    gap: 8px; /* Espaçamento entre as tags */
+    padding: 8px 10px; /* Padding interno para criar o espaçamento da borda */
     border: 1px solid #ccc;
     border-radius: 4px;
-    margin-bottom: 10px;
-    min-height: 40px; /* Altura mínima para parecer um campo de input */
+    min-height: 42px; /* Altura mínima para parecer um campo de input */
+    cursor: text; /* Muda o cursor para indicar que é um campo de texto */
+    transition: border-color 0.2s;
+}
+
+/* Efeito de foco quando o usuário clica no container */
+.selected-tags-container:focus-within {
+    border-color: var(--primary-color, #007BFF); /* Usa a cor primária se definida, senão um azul padrão */
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
 }
 
 /* Estilo de cada tag de curso selecionado */
 .selected-tag {
-    background-color: var(--primary-color); /* Usando sua cor primária */
+    background-color: #008080; /* Cor mais escura para melhor contraste, use var(--primary-color) se preferir */
     color: white;
-    padding: 5px 10px;
-    border-radius: 15px;
+    padding: 5px 12px;
+    border-radius: 16px; /* Mais arredondado para um visual de "pílula" */
     font-size: 14px;
     display: flex;
     align-items: center;
     gap: 8px;
+    white-space: nowrap; /* Impede que o texto da tag quebre */
 }
 
 /* O 'x' para remover a tag */
 .remove-tag {
     cursor: pointer;
     font-weight: bold;
-    font-size: 16px;
+    font-size: 18px;
     line-height: 1;
+    transition: color 0.2s;
 }
 
 .remove-tag:hover {
-    color: #fdd;
+    color: #ffdddd; /* Um vermelho bem claro no hover */
 }
 
-/* A lista de sugestões que aparece ao digitar */
+/* O CAMPO DE INPUT DENTRO DO CONTAINER - A PEÇA CHAVE! */
+.course-input {
+    flex-grow: 1; /* Faz o input ocupar todo o espaço restante na linha */
+    border: none; /* Remove a borda padrão do input */
+    outline: none; /* Remove a linha de foco padrão */
+    padding: 5px 0; /* Ajusta o padding vertical para alinhar com as tags */
+    font-size: 1em; /* Herda o tamanho da fonte do pai */
+    background-color: transparent; /* Fundo transparente */
+    min-width: 150px; /* Largura mínima para não ficar muito pequeno */
+}
+
+
+/* --- Estilos da lista de sugestões (sem grandes alterações) --- */
 .autocomplete-list {
     position: absolute;
-    top: 100%;
+    top: 100%; /* Posiciona logo abaixo do container */
     left: 0;
     right: 0;
     background: white;
     border: 1px solid #ddd;
-    border-radius: 4px;
-    max-height: 150px;
+    border-top: none; /* Remove a borda de cima para parecer contínuo */
+    border-radius: 0 0 4px 4px;
+    max-height: 180px;
     overflow-y: auto;
     z-index: 1001; /* Garante que fique sobre outros elementos */
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
 }
 
-/* Cada item na lista de sugestões */
 .autocomplete-item {
-    padding: 10px;
+    padding: 12px 15px;
     cursor: pointer;
+    transition: background-color 0.2s;
 }
 
-.autocomplete-item:hover {
+.autocomplete-item:hover,
+.autocomplete-item.active { /* Classe 'active' para seleção via teclado */
     background-color: #f0f0f0;
 }
