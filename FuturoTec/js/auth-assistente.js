@@ -1,4 +1,6 @@
+// =======================================================
 // auth-assistente.js - VERSÃO CORRIGIDA
+// =======================================================
 
 // CONFIGURAÇÃO DO FIREBASE
 const firebaseConfig = {
@@ -18,6 +20,25 @@ const db = firebase.firestore();
 
 // VARIÁVEIS GLOBAIS
 let allEtecs = [];
+let selectedEtecId = null;
+
+// =======================================================
+// === CARREGAR TODAS AS ETECs ===
+// =======================================================
+async function fetchAllEtecs() {
+    try {
+        const snapshot = await db.collection('etecs').get();
+        allEtecs = snapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data()
+        }));
+        console.log(`Dados de ${allEtecs.length} ETECs carregados.`);
+    } catch (error) {
+        console.error("Erro ao carregar ETECs:", error);
+        alert("Erro ao carregar lista de ETECs.");
+        allEtecs = [];
+    }
+}
 
 // =======================================================
 // === FUNÇÃO DE VALIDAÇÃO DE SENHA FORTE ===
@@ -29,27 +50,22 @@ function isPasswordStrong(password) {
     const hasNumbers = /\d/.test(password);
     const hasSpecialChars = /[!@#$%^&*(),.?":{}|<>]/.test(password);
 
-    if (password.length < minLength) {
+    if (password.length < minLength)
         return { valid: false, message: 'A senha deve ter no mínimo 8 caracteres.' };
-    }
-    if (!hasUpperCase) {
+    if (!hasUpperCase)
         return { valid: false, message: 'A senha deve conter pelo menos uma letra maiúscula.' };
-    }
-    if (!hasLowerCase) {
+    if (!hasLowerCase)
         return { valid: false, message: 'A senha deve conter pelo menos uma letra minúscula.' };
-    }
-    if (!hasNumbers) {
+    if (!hasNumbers)
         return { valid: false, message: 'A senha deve conter pelo menos um número.' };
-    }
-    if (!hasSpecialChars) {
+    if (!hasSpecialChars)
         return { valid: false, message: 'A senha deve conter pelo menos um caractere especial (ex: !@#$).' };
-    }
 
     return { valid: true, message: '' };
 }
 
 // =======================================================
-// === FUNÇÃO DE ATUALIZAÇÃO DA INTERFACE DE VALIDAÇÃO ===
+// === ATUALIZAÇÃO DA INTERFACE DE VALIDAÇÃO DE SENHA ===
 // =======================================================
 function updatePasswordValidationUI(password) {
     const list = document.getElementById('password-validation-list');
@@ -74,164 +90,268 @@ function updatePasswordValidationUI(password) {
             }
         }
     }
-    // Reaplicar os ícones do Feather
     if (typeof feather !== 'undefined' && feather.replace) {
         feather.replace();
     }
 }
 
 // =======================================================
-// === FUNÇÃO DE EXCLUSÃO DE CONTA (Assistente Técnico) ===
+// === FUNÇÃO DE EXCLUSÃO DE CONTA ===
 // =======================================================
 async function excluirContaAssistente(user) {
     if (!user) {
         alert("Erro: Nenhum assistente logado.");
         return;
     }
+
     const userId = user.uid;
     const userEmail = user.email;
-    const confirmacaoEmail = prompt(`ATENÇÃO: A exclusão da conta do assistente técnico é PERMANENTE.\n\nPara confirmar a exclusão, digite seu EMAIL (${userEmail}) no campo abaixo:`);
+    const confirmacaoEmail = prompt(
+        `ATENÇÃO: A exclusão da conta do assistente técnico é PERMANENTE.\n\nPara confirmar a exclusão, digite seu EMAIL (${userEmail}) no campo abaixo:`
+    );
+
     if (confirmacaoEmail !== userEmail) {
         alert("E-mail digitado incorretamente ou operação cancelada.");
         return;
     }
-    const confirmacaoSenha = prompt("Por favor, digite sua SENHA (do site) para confirmar a exclusão. (REQUERIDO PELO FIREBASE):");
+
+    const confirmacaoSenha = prompt("Por favor, digite sua SENHA para confirmar a exclusão:");
     if (!confirmacaoSenha) {
         alert("Exclusão cancelada. É necessário informar a senha.");
         return;
     }
+
     try {
         const credential = firebase.auth.EmailAuthProvider.credential(userEmail, confirmacaoSenha);
         await user.reauthenticateWithCredential(credential);
-        console.log("[Exclusão Assistente] Reautenticação bem-sucedida.");
-        console.log("[Exclusão Assistente] Excluindo perfil do assistente...");
         await db.collection('usuarios').doc(userId).delete();
-        console.log("[Exclusão Assistente] Perfil do assistente excluído.");
         await user.delete();
-        console.log("[Exclusão Assistente] Usuário excluído do Firebase Auth. E-mail liberado.");
-        
-        alert("Sua conta de assistente técnico foi excluída permanentemente. Você será redirecionado.");
+
+        alert("Sua conta foi excluída permanentemente.");
         window.location.href = 'login-assistente.html';
     } catch (error) {
-        console.error("Erro ao excluir a conta do assistente técnico:", error);
+        console.error("Erro ao excluir a conta:", error);
         let errorMessage = "Ocorreu um erro ao tentar excluir sua conta.";
-        if (error.code === 'auth/wrong-password') {
-            errorMessage = "Senha incorreta. A exclusão da conta foi cancelada.";
-        } else if (error.code === 'auth/requires-recent-login') {
-            errorMessage = "Erro de Segurança: Você precisa ter feito login *recentemente* (saia e entre novamente) e tente excluir a conta em seguida.";
-        } else if (error.code === 'auth/user-not-found') {
-            errorMessage = "Usuário não encontrado. Possível problema de autenticação.";
-        } else if (error.code === 'permission-denied') {
-            errorMessage = "Erro de Permissão: Verifique as regras de segurança do Firestore (Coleção 'usuarios').";
-        }
+        if (error.code === 'auth/wrong-password')
+            errorMessage = "Senha incorreta. Operação cancelada.";
+        else if (error.code === 'auth/requires-recent-login')
+            errorMessage = "Faça login novamente antes de excluir sua conta.";
         alert(errorMessage);
     }
 }
 
 // =======================================================
-// === FUNÇÃO DE LOGIN COM O GOOGLE ===
+// === LOGIN COM GOOGLE ===
 // =======================================================
 async function loginComGoogleAssistente() {
     const provider = new firebase.auth.GoogleAuthProvider();
     try {
         const result = await auth.signInWithPopup(provider);
         const user = result.user;
-        console.log("Login do Google bem-sucedido no Auth:", user);
         const userRef = db.collection('usuarios').doc(user.uid);
         const userSnap = await userRef.get();
-        const userData = userSnap.data();
-        
-        // CORREÇÃO: usar userSnap.exists (propriedade) em vez de userSnap.exists()
+
         if (!userSnap.exists) {
             await auth.signOut();
-            throw new Error("Conta não encontrada. Por favor, cadastre-se usando o formulário de e-mail/senha primeiro.");
-        } else if (userData.role !== 'assistente_tecnico') {
+            throw new Error("Conta não encontrada. Cadastre-se primeiro.");
+        } else if (userSnap.data().role !== 'assistente_tecnico') {
             await auth.signOut();
-            throw new Error(`Acesso negado. Esta conta está registrada como ${userData.role}. Use o login correto.`);
+            throw new Error("Acesso negado. Use o login correto.");
         }
-        console.log("Perfil de Assistente Técnico existente no Firestore. Login permitido.");
+
+        alert("Login com Google realizado!");
         return user;
     } catch (error) {
-        console.error("Erro no login com o Google:", error);
-        const errorMessage = error.message.includes("Conta não encontrada") ?
-            error.message :
-            error.message.includes("Acesso negado") ?
-            error.message :
-            `Erro ao fazer login com o Google. Tente novamente. Detalhe: ${error.message}`;
-        
-        alert(errorMessage);
+        alert(`Erro ao fazer login: ${error.message}`);
         throw error;
     }
 }
 
 // =======================================================
-// === FUNÇÃO DE RECUPERAÇÃO DE SENHA ===
+// === RECUPERAÇÃO DE SENHA ===
 // =======================================================
 async function recuperarSenhaAssistente() {
-    const email = prompt("Por favor, digite seu e-mail de Assistente Técnico para redefinir a senha:");
-    if (!email) {
-        alert("Operação cancelada ou e-mail não fornecido.");
-        return;
-    }
+    const email = prompt("Digite seu e-mail para redefinir a senha:");
+    if (!email) return;
+
     try {
         await auth.sendPasswordResetEmail(email);
-        alert(`E-mail de redefinição de senha enviado para ${email}. Verifique sua caixa de entrada e a pasta de Spam!`);
+        alert(`E-mail de redefinição enviado para ${email}.`);
     } catch (error) {
-        console.error("Erro ao enviar e-mail de redefinição:", error);
-        let errorMessage = "Erro ao solicitar a redefinição de senha. Verifique se o e-mail está correto e tente novamente.";
-        if (error.code === 'auth/user-not-found') {
-            errorMessage = "Não encontramos uma conta para este e-mail.";
-        } else if (error.code === 'auth/invalid-email') {
-            errorMessage = "O formato do e-mail é inválido.";
+        console.error("Erro:", error);
+        let msg = "Erro ao redefinir senha.";
+        if (error.code === 'auth/user-not-found')
+            msg = "E-mail não encontrado.";
+        else if (error.code === 'auth/invalid-email')
+            msg = "E-mail inválido.";
+        alert(msg);
+    }
+}
+
+// =======================================================
+// === AUTOCOMPLETE DE ETEC ===
+// =======================================================
+function setupEtecAutocomplete() {
+    // USE OS IDs CORRETOS DO SEU HTML
+    const input = document.getElementById('etec-input-field');
+    const suggestionsContainer = document.getElementById('etec-results'); // MUDEI AQUI
+    const addressInput = document.getElementById('endereco-etec');
+
+    if (!input || !suggestionsContainer || !addressInput) {
+        console.error("Elementos do autocomplete não encontrados:", {
+            input: !!input,
+            suggestionsContainer: !!suggestionsContainer,
+            addressInput: !!addressInput
+        });
+        return;
+    }
+
+    console.log("Autocomplete configurado com sucesso!");
+
+    input.addEventListener('input', () => {
+        const query = input.value.toLowerCase().trim();
+        suggestionsContainer.innerHTML = '';
+        selectedEtecId = null;
+        addressInput.value = '';
+
+        if (query.length < 3) return;
+
+        const sourceEtecs = Array.isArray(allEtecs) ? allEtecs : [];
+
+        const filtered = sourceEtecs.filter(etec =>
+            (etec.nome && etec.nome.toLowerCase().includes(query)) ||
+            (etec.codigo && etec.codigo.toLowerCase().includes(query))
+        );
+
+        if (filtered.length > 0) {
+            filtered.slice(0, 8).forEach(etec => {
+                const item = document.createElement('div');
+                item.className = 'autocomplete-item';
+                item.textContent = `${etec.nome} ${etec.codigo ? `(${etec.codigo})` : ''}`;
+                item.addEventListener('click', () => {
+                    input.value = etec.nome;
+                    suggestionsContainer.innerHTML = '';
+                    selectedEtecId = etec.id;
+                    addressInput.value = etec.endereco || 'Endereço não disponível';
+                    console.log("ETEC selecionada:", etec.nome, "ID:", etec.id);
+                });
+                suggestionsContainer.appendChild(item);
+            });
+        } else {
+            suggestionsContainer.innerHTML =
+                '<div class="autocomplete-item no-results">Nenhuma ETEC encontrada.</div>';
         }
-        alert(errorMessage);
-    }
-}
+    });
 
-// =======================================================
-// === FUNÇÕES AUXILIARES ===
-// =======================================================
-async function fetchAllEtecs() {
-    try {
-        const snapshot = await db.collection('etecs').get();
-        allEtecs = snapshot.docs.map(doc => ({
-            id: doc.id,
-            ...doc.data()
-        }));
-        console.log("Dados de todas as Etecs carregados.");
-    } catch (error) {
-        console.error("Erro ao carregar dados das Etecs:", error);
-        alert("Erro ao carregar lista de ETECs. Verifique as Regras do Firestore.");
-    }
+    document.addEventListener('click', (e) => {
+        const etecInputArea = input.parentElement;
+        if (!etecInputArea.contains(e.target)) {
+            suggestionsContainer.innerHTML = '';
+        }
+    });
 }
-
 // =======================================================
-// === LÓGICA PRINCIPAL - LOGIN DO ASSISTENTE ===
+// === LÓGICA PRINCIPAL ===
 // =======================================================
 document.addEventListener('DOMContentLoaded', () => {
+    const isCadastroPage = window.location.pathname.includes('cadastro-assistente.html');
+
+    if (isCadastroPage) {
+        fetchAllEtecs().then(setupEtecAutocomplete);
+
+        const inputSenha = document.getElementById('senha-assistente');
+        if (inputSenha) {
+            inputSenha.addEventListener('keyup', e => updatePasswordValidationUI(e.target.value));
+        }
+
+        const formCadastro = document.getElementById('form-assistente');
+if (formCadastro) {
+    formCadastro.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const errorMessageDiv = document.getElementById('form-error-message');
+        errorMessageDiv.textContent = '';
+
+        // USE APENAS OS CAMPOS QUE EXISTEM NO SEU HTML
+        const nome = document.getElementById('nome-assistente').value;
+        const senha = document.getElementById('senha-assistente').value;
+        const confirmarSenha = document.getElementById('confirmar-senha-assistente').value;
+        const nomeEtec = document.getElementById('etec-input-field').value;
+
+        // VERIFIQUE SE O CAMPO DE EMAIL EXISTE
+        const emailInput = document.getElementById('email-assistente');
+        if (!emailInput) {
+            errorMessageDiv.textContent = "Campo de email não encontrado no formulário.";
+            return;
+        }
+        const email = emailInput.value;
+
+        if (senha !== confirmarSenha) {
+            errorMessageDiv.textContent = "As senhas não coincidem.";
+            return;
+        }
+
+        const passwordCheck = isPasswordStrong(senha);
+        if (!passwordCheck.valid) {
+            errorMessageDiv.textContent = passwordCheck.message;
+            return;
+        }
+
+        if (!selectedEtecId) {
+            errorMessageDiv.textContent = "Por favor, selecione a ETEC na lista sugerida.";
+            return;
+        }
+
+        const submitBtn = formCadastro.querySelector('.submit-btn');
+        const originalText = submitBtn.textContent;
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Criando Conta...';
+
+        try {
+            const userCredential = await auth.createUserWithEmailAndPassword(email, senha);
+            await db.collection('usuarios').doc(userCredential.user.uid).set({
+                role: 'assistente_tecnico',
+                nome,
+                email,
+                etecNome: nomeEtec,
+                etecId: selectedEtecId,
+                dataCriacao: firebase.firestore.FieldValue.serverTimestamp()
+            });
+
+            await auth.signOut();
+            alert("✅ Cadastro realizado com sucesso!");
+            window.location.href = 'login-assistente.html';
+        } catch (error) {
+            console.error("Erro no cadastro:", error);
+            let msg = error.message;
+            if (error.code === 'auth/email-already-in-use') {
+                msg = "Este e-mail já está em uso.";
+            }
+            errorMessageDiv.textContent = `❌ Erro ao cadastrar: ${msg}`;
+        } finally {
+            submitBtn.textContent = originalText;
+            submitBtn.disabled = false;
+        }
+    });
+}
+    // LOGIN
     const formLoginAssistente = document.getElementById('form-login-assistente');
-    
     if (formLoginAssistente) {
         formLoginAssistente.addEventListener('submit', async (e) => {
             e.preventDefault();
-            
+
             const email = document.getElementById('email-login-assistente').value;
             const senha = document.getElementById('senha-login-assistente').value;
             const submitBtn = formLoginAssistente.querySelector('.submit-btn');
-            
-            // Estado de loading
+
             submitBtn.disabled = true;
             submitBtn.textContent = 'Entrando...';
-            
+
             try {
-                console.log("Tentando login...");
                 const userCredential = await auth.signInWithEmailAndPassword(email, senha);
                 const user = userCredential.user;
-                
-                console.log("Login bem-sucedido, verificando role...");
                 const userDoc = await db.collection('usuarios').doc(user.uid).get();
-                
-                // CORREÇÃO: usar userDoc.exists (propriedade) em vez de userDoc.exists()
+
                 if (userDoc.exists && userDoc.data().role === 'assistente_tecnico') {
                     alert('Login realizado com sucesso!');
                     window.location.href = 'InicialAssistente.html';
@@ -239,19 +359,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     await auth.signOut();
                     alert('Acesso negado. Este login é apenas para assistentes.');
                 }
-                
             } catch (error) {
                 console.error("Erro no login:", error);
-                
-                let errorMessage = "Erro ao fazer login. Verifique seus dados.";
-                if (error.code === 'auth/user-not-found') {
-                    errorMessage = "E-mail não encontrado.";
-                } else if (error.code === 'auth/wrong-password') {
-                    errorMessage = "Senha incorreta.";
-                } else if (error.code === 'auth/invalid-email') {
-                    errorMessage = "E-mail inválido.";
-                }
-                
+                let errorMessage = "Erro ao fazer login.";
+                if (error.code === 'auth/user-not-found') errorMessage = "E-mail não encontrado.";
+                else if (error.code === 'auth/wrong-password') errorMessage = "Senha incorreta.";
+                else if (error.code === 'auth/invalid-email') errorMessage = "E-mail inválido.";
                 alert(errorMessage);
             } finally {
                 submitBtn.disabled = false;
@@ -260,24 +373,19 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Botão Google
+    // LOGIN GOOGLE
     const btnGoogleLogin = document.getElementById('btn-google-login-assistente');
     if (btnGoogleLogin) {
         btnGoogleLogin.addEventListener('click', async (e) => {
             e.preventDefault();
             try {
                 const user = await loginComGoogleAssistente();
-                if (user) {
-                    alert('Login com Google realizado!');
-                    window.location.href = 'InicialAssistente.html';
-                }
-            } catch (error) {
-                // Erro já tratado na função
-            }
+                if (user) window.location.href = 'InicialAssistente.html';
+            } catch {}
         });
     }
 
-    // Esqueci senha
+    // ESQUECI SENHA
     const btnEsqueciSenha = document.getElementById('btn-esqueci-senha-assistente');
     if (btnEsqueciSenha) {
         btnEsqueciSenha.addEventListener('click', (e) => {
@@ -286,33 +394,22 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Mostrar/esconder senha - COM CORREÇÃO PARA EVITAR ERRO
+    // MOSTRAR/ESCONDER SENHA
     document.querySelectorAll('.password-toggle').forEach(toggle => {
         toggle.addEventListener('click', () => {
             const targetId = toggle.getAttribute('data-target');
             const passwordInput = document.getElementById(targetId);
-            
-            // CORREÇÃO: Verificar se o elemento existe antes de manipular
-            if (!passwordInput) {
-                console.warn(`Elemento com ID ${targetId} não encontrado`);
-                return;
-            }
-            
+            if (!passwordInput) return;
+
             const icon = toggle.querySelector('i');
             if (passwordInput.type === 'password') {
                 passwordInput.type = 'text';
-                if (icon) {
-                    icon.setAttribute('data-feather', 'eye-off');
-                }
+                if (icon) icon.setAttribute('data-feather', 'eye-off');
             } else {
                 passwordInput.type = 'password';
-                if (icon) {
-                    icon.setAttribute('data-feather', 'eye');
-                }
+                if (icon) icon.setAttribute('data-feather', 'eye');
             }
-            if (typeof feather !== 'undefined') {
-                feather.replace();
-            }
+            if (typeof feather !== 'undefined') feather.replace();
         });
     });
 });
