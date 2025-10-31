@@ -124,3 +124,107 @@ main.my-jobs-section {
     opacity: 0.6;
     border-left: 5px solid #ff9900;
 }
+/* ===================================================================== */
+/* NOVOS ESTILOS PARA O MODAL DE EDIÇÃO E O AUTOCOMPLETE DE CURSOS       */
+/* ===================================================================== */
+
+/* --- 1. Estilos do Modal (Overlay e Conteúdo) --- */
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    padding: 20px;
+}
+
+.modal-content {
+    background: #fff;
+    padding: 30px;
+    border-radius: 8px;
+    width: 100%;
+    max-width: 600px; /* Limita a largura do modal */
+    max-height: 90vh; /* Limita a altura e ativa a rolagem */
+    overflow-y: auto;   /* Adiciona barra de rolagem se o conteúdo for grande */
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+/* --- 2. Estilos do Sistema de Autocomplete de Cursos --- */
+
+/* Container que engloba o campo de busca e a lista de sugestões */
+.autocomplete-container {
+    position: relative; /* Essencial para posicionar a lista de sugestões */
+}
+
+/* A caixa onde as tags dos cursos selecionados aparecem */
+.selected-tags-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin-bottom: 10px;
+    min-height: 40px; /* Altura mínima para parecer um campo de input */
+}
+
+/* Estilo de cada tag de curso selecionado */
+.selected-tag {
+    background-color: var(--primary-color); /* Usando sua cor primária */
+    color: white;
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* O 'x' para remover a tag */
+.remove-tag {
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 16px;
+    line-height: 1;
+}
+
+.remove-tag:hover {
+    color: #fdd;
+}
+
+/* A lista de sugestões que aparece ao digitar */
+.autocomplete-list {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    max-height: 150px;
+    overflow-y: auto;
+    z-index: 1001; /* Garante que fique sobre outros elementos */
+}
+
+/* Cada item na lista de sugestões */
+.autocomplete-item {
+    padding: 10px;
+    cursor: pointer;
+}
+
+.autocomplete-item:hover {
+    background-color: #f0f0f0;
+}
