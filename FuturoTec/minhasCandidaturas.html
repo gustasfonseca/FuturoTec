@@ -27,6 +27,25 @@
     </script>
     
     <script>
+        const excluirCandidatura = async (candidaturaId) => {
+            if (!confirm('Tem certeza que deseja excluir esta candidatura? Esta ação não pode ser desfeita.')) {
+                return;
+            }
+
+            try {
+                const db = firebase.firestore();
+                await db.collection('candidaturas').doc(candidaturaId).delete();
+                alert('Candidatura excluída com sucesso!');
+                const user = firebase.auth().currentUser;
+                if (user) {
+                    carregarCandidaturas(user.uid);
+                }
+            } catch (error) {
+                console.error("Erro ao excluir candidatura: ", error);
+                alert('Ocorreu um erro ao excluir a candidatura. Tente novamente.');
+            }
+        };
+
         const carregarCandidaturas = async (alunoId) => {
             const candidaturasContainer = document.getElementById('candidaturas-container');
             if (!candidaturasContainer) {
@@ -39,11 +58,10 @@
             try {
                 const db = firebase.firestore();
                 
-                // 1. Primeiro: tentar buscar candidaturas
                 console.log("Buscando candidaturas...");
                 const candidaturasSnapshot = await db.collection('candidaturas')
-                                                    .where('alunoId', '==', alunoId)
-                                                    .get();
+                                                     .where('alunoId', '==', alunoId)
+                                                     .get();
 
                 console.log("Candidaturas encontradas:", candidaturasSnapshot.size);
                 console.log("Documentos:", candidaturasSnapshot.docs);
@@ -56,10 +74,10 @@
 
                 candidaturasContainer.innerHTML = '';
 
-                // 2. Buscar detalhes das vagas E das empresas
                 console.log("Buscando detalhes das vagas e empresas...");
                 const promessasVagas = candidaturasSnapshot.docs.map(doc => {
                     const candidaturaData = doc.data();
+                    const candidaturaId = doc.id; // Capturando o ID do documento
                     console.log("Dados da candidatura:", candidaturaData);
                     
                     if (!candidaturaData.vagaId) {
@@ -73,7 +91,6 @@
                             const vagaData = vagaDoc.data();
                             console.log("Vaga encontrada:", vagaData);
                             
-                            // AGORA BUSCA OS DADOS DA EMPRESA
                             if (vagaData.empresaId) {
                                 return db.collection('usuarios').doc(vagaData.empresaId).get().then(empresaDoc => {
                                     let nomeEmpresa = 'Empresa não informada';
@@ -87,6 +104,7 @@
                                     }
                                     
                                     return { 
+                                        id: candidaturaId, // Adicionando o ID ao objeto
                                         status: candidaturaData.status || 'Pendente', 
                                         vaga: vagaData,
                                         empresa: nomeEmpresa,
@@ -95,6 +113,7 @@
                                 }).catch(empresaError => {
                                     console.error("Erro ao buscar empresa:", empresaError);
                                     return { 
+                                        id: candidaturaId,
                                         status: candidaturaData.status || 'Pendente', 
                                         vaga: vagaData,
                                         empresa: 'Empresa não informada',
@@ -104,6 +123,7 @@
                             } else {
                                 console.warn("Vaga sem empresaId:", vagaData);
                                 return { 
+                                    id: candidaturaId,
                                     status: candidaturaData.status || 'Pendente', 
                                     vaga: vagaData,
                                     empresa: 'Empresa não informada',
@@ -123,7 +143,6 @@
                 const resultados = await Promise.all(promessasVagas);
                 console.log("Resultados processados:", resultados);
 
-                // 3. Exibir resultados
                 resultados.forEach((item, index) => {
                     console.log("Processando item", index, ":", item);
                     if (item && item.vaga) {
@@ -138,7 +157,6 @@
                         if (status === 'Aprovado') statusColorClass = 'status-approved';
                         if (status === 'Recusado') statusColorClass = 'status-rejected';
                         
-                        // Formatação de data mais robusta
                         let dataFormatada = 'Data não informada';
                         if (item.dataCandidatura) {
                             try {
@@ -155,16 +173,25 @@
                         }
                         
                         card.innerHTML = `
-                            <div class="candidatura-header">
-                                <h3 class="candidatura-titulo">${vaga.titulo || 'Título não informado'}</h3>
-                                <span class="candidatura-status ${statusColorClass}">${status}</span>
+                            <div class="candidatura-info">
+                                <div class="candidatura-header">
+                                    <h3 class="candidatura-titulo">${vaga.titulo || 'Título não informado'}</h3>
+                                    <span class="candidatura-status ${statusColorClass}">${status}</span>
+                                </div>
+                                <p class="candidatura-empresa">${nomeEmpresa}</p>
+                                <p class="candidatura-data">Candidatado em: ${dataFormatada}</p>
                             </div>
-                            <p class="candidatura-empresa">${nomeEmpresa}</p>
-                            <p class="candidatura-data">Candidatado em: ${dataFormatada}</p>
+                            <div class="candidatura-actions">
+                                <button class="delete-btn" onclick="excluirCandidatura('${item.id}')" title="Excluir candidatura">
+                                    <i data-feather="trash-2"></i>
+                                </button>
+                            </div>
                         `;
                         candidaturasContainer.appendChild(card);
                     }
                 });
+
+                feather.replace(); // Garante que os novos ícones sejam renderizados
 
                 if (candidaturasContainer.children.length === 0) {
                     candidaturasContainer.innerHTML = '<p class="info-message">Nenhuma candidatura válida encontrada.</p>';
@@ -181,7 +208,6 @@
             }
         };
 
-        // Verificação de autenticação com mais logs
         firebase.auth().onAuthStateChanged(user => {
             const candidaturasContainer = document.getElementById('candidaturas-container');
             console.log("Estado de autenticação alterado. Usuário:", user);
@@ -197,16 +223,14 @@
                         <a href="LoginAluno.html" class="login-btn-center">Fazer Login</a>
                     `;
                 }
-                window.location.href = 'LoginAluno.html';
+                // window.location.href = 'LoginAluno.html';
             }
         });
 
-        // Teste adicional: verificar se Firebase está carregado
         console.log("Firebase inicializado:", firebase.apps.length > 0);
     </script>
-</head>
+    </head>
 <body>
-    <!-- Header -->
     <header class="header">
         <div class="container">
             <div class="nav-wrapper">
@@ -215,7 +239,7 @@
                 </div>
                 <nav class="nav-desktop">
                     <a href="InicialAluno.html" class="nav-link ">Início</a>
-                    <a href="InicialAluno.html#cursos" class="nav-link">Cursos</a>       
+                    <a href="InicialAluno.html#cursos" class="nav-link">Cursos</a>      
                     <a href="VagasAluno.html" class="nav-link">Vagas</a>
                     <a href="minhasCandidaturas.html" class="nav-link">Candidaturas</a>
                 </nav>
@@ -265,6 +289,10 @@
         </footer>
         
         <script>
+            // A chamada inicial do feather.replace() pode ser mantida aqui
+            // para ícones estáticos na página, mas a chamada dentro da
+            // função carregarCandidaturas é a que vai renderizar os novos
+            // ícones de lixeira.
             feather.replace();
         </script>
     </div>
