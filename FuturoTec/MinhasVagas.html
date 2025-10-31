@@ -1,7 +1,5 @@
 <!DOCTYPE html>
-
 <html lang="pt-BR">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,8 +10,7 @@
     
     
     <script src="https://unpkg.com/feather-icons"></script>
-    </head>
-
+</head>
 <body>
     <div class="app">
         <header class="header">
@@ -36,14 +33,14 @@
         </header>
 
         <main class="my-jobs-section">
-    <div class="vagas-main-content"> 
-        <h2>Minhas Vagas Publicadas</h2>
-        <p>Gerencie as vagas que sua empresa criou.</p>
-        <div id="vagas-container" class="vagas-grid">
-            <p>Carregando vagas...</p>
-        </div>
-    </div>
-</main>
+            <div class="vagas-main-content"> 
+                <h2>Minhas Vagas Publicadas</h2>
+                <p>Gerencie as vagas que sua empresa criou.</p>
+                <div id="vagas-container" class="vagas-grid">
+                    <p>Carregando vagas...</p>
+                </div>
+            </div>
+        </main>
 
         <div id="edit-modal" class="modal-overlay" style="display: none;">
             <div class="modal-content form-card">
@@ -73,7 +70,6 @@
                         <input type="text" id="edit-cargaHoraria" name="cargaHoraria" required>
                     </div>
                     
-                    <!-- NOVO CAMPO: Vaga para PCD no modal de edição -->
                     <div class="form-group">
                         <label class="checkbox-label">
                             <input type="checkbox" id="edit-vaga-pcd" name="edit-vaga-pcd">
@@ -137,22 +133,15 @@
                 </div>
             </div>
         </footer>
-
     </div>
-
-
 
     <script>
         feather.replace();
     </script>
 
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
-
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
-
-
 
     <script>
         const firebaseConfig = {
@@ -167,61 +156,108 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
-
-
         const vagasContainer = document.getElementById('vagas-container');
-
         const editModal = document.getElementById('edit-modal');
-
         const editForm = document.getElementById('edit-job-form');
+
+        // --- LÓGICA PARA GERENCIAMENTO DE CURSOS NO MODAL ---
+        let todosOsCursos = [];
+        let cursosSelecionadosParaEdicao = [];
+        const inputCurso = document.getElementById('curso-vaga');
+        const sugestoesContainer = document.getElementById('sugestoes-curso-vaga');
+        const cursosSelecionadosContainer = document.getElementById('cursos-selecionados');
+
+        async function buscarTodosOsCursos() {
+            try {
+                const snapshot = await db.collection('cursos').get();
+                todosOsCursos = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            } catch (error) {
+                console.error("Erro ao buscar cursos:", error);
+            }
+        }
+
+        function renderizarCursosSelecionados() {
+            cursosSelecionadosContainer.innerHTML = '';
+            cursosSelecionadosParaEdicao.forEach(cursoNome => {
+                const tag = document.createElement('span');
+                tag.className = 'selected-tag';
+                tag.textContent = cursoNome;
+                const removeBtn = document.createElement('span');
+                removeBtn.textContent = 'x';
+                removeBtn.className = 'remove-tag';
+                removeBtn.onclick = () => removerCurso(cursoNome);
+                tag.appendChild(removeBtn);
+                cursosSelecionadosContainer.appendChild(tag);
+            });
+        }
+
+        function removerCurso(cursoNome) {
+            cursosSelecionadosParaEdicao = cursosSelecionadosParaEdicao.filter(c => c !== cursoNome);
+            renderizarCursosSelecionados();
+        }
+        
+        inputCurso.addEventListener('input', () => {
+            const termo = inputCurso.value.toLowerCase();
+            sugestoesContainer.innerHTML = '';
+            if (termo.length < 2) return;
+
+            const sugestoes = todosOsCursos
+                .filter(curso => curso.nome.toLowerCase().includes(termo) && !cursosSelecionadosParaEdicao.includes(curso.nome));
+
+            sugestoes.forEach(curso => {
+                const div = document.createElement('div');
+                div.textContent = curso.nome;
+                div.className = 'autocomplete-item';
+                div.onclick = () => {
+                    cursosSelecionadosParaEdicao.push(curso.nome);
+                    renderizarCursosSelecionados();
+                    inputCurso.value = '';
+                    sugestoesContainer.innerHTML = '';
+                };
+                sugestoesContainer.appendChild(div);
+            });
+        });
+        // --- FIM DA LÓGICA DE CURSOS ---
 
 
         // --- BLOCO DE AUTENTICAÇÃO ---
         firebase.auth().onAuthStateChanged(user => {
             if (user) {
+                buscarTodosOsCursos(); // Carrega os cursos para o autocomplete
                 loadCompanyJobs(user.uid);
             } else {
                 window.location.href = 'LoginEmpresa.html';
-                vagasContainer.innerHTML = '<p>Você precisa estar logado para ver suas vagas.</p>';
             }
         });
         // --- FIM BLOCO DE AUTENTICAÇÃO ---
 
 
-        // --- FUNÇÃO: Carrega as vagas filtradas e ordenadas ---
+        // --- FUNÇÃO: Carrega as vagas ---
         function loadCompanyJobs(empresaId) {
-            // Consulta Corrigida: Filtra pelo ID da empresa e ordena pela data (descendente)
             db.collection('vagas')
                 .where('empresaId', '==', empresaId)
                 .orderBy('criadaEm', 'desc')
                 .get()
                 .then(snapshot => {
                     vagasContainer.innerHTML = '';
-
                     if (snapshot.empty) {
                         vagasContainer.innerHTML = '<p>Você ainda não publicou nenhuma vaga.</p>';
                         return;
                     }
-
                     snapshot.forEach(doc => {
                         const vaga = doc.data();
                         vaga.id = doc.id;
                         const isFinalizada = vaga.status === 'finalizada';
-
-                        // Adiciona badge PCD se a vaga for para PCD
                         const pcdBadge = vaga.pcd ? '<span class="pcd-badge">Vaga PCD</span>' : '';
-
                         const div = document.createElement('div');
                         div.className = `vaga-card ${isFinalizada ? 'finalizada' : ''}`;
-
                         div.innerHTML = `
                             <h3>${vaga.titulo} ${pcdBadge} ${isFinalizada ? '(ENCERRADA)' : ''}</h3>
-                            <p>${vaga.descricao}</p>
+                            <p>${vaga.descricao.substring(0, 100)}...</p>
                             <div class="vaga-actions">
-                                <button class="edit-btn" onclick='abrirModalEdicao(${JSON.stringify(vaga).replace(/'/g, "\\'")})' ${isFinalizada ? 'disabled' : ''}>
+                                <button class="edit-btn" onclick='abrirModalEdicao(${JSON.stringify(vaga).replace(/'/g, `\\'`)} )' ${isFinalizada ? 'disabled' : ''}>
                                     <i data-feather="edit"></i> Editar
                                 </button>
-                                
                                 ${!isFinalizada ? `
                                     <button class="finish-btn" onclick='finalizarVaga("${vaga.id}")'>
                                         <i data-feather="check-square"></i> Finalizar Vaga
@@ -232,18 +268,15 @@
                                 </button>
                             </div>
                         `;
-
                         vagasContainer.appendChild(div);
                     });
-
                     feather.replace();
                 })
                 .catch(error => {
                     console.error("Erro ao carregar vagas da empresa:", error);
-                    vagasContainer.innerHTML = '<p style="color: red;">Erro ao carregar vagas. Verifique os logs do console.</p>';
+                    vagasContainer.innerHTML = '<p style="color: red;">Erro ao carregar vagas.</p>';
                 });
         }
-        // --- FIM FUNÇÃO: Carrega as vagas ---
 
 
         function excluirVaga(vagaId) {
@@ -255,12 +288,9 @@
         }
 
 
-        // --- FUNÇÃO: Finalizar Vaga ---
         function finalizarVaga(vagaId) {
             if (confirm("Deseja realmente FINALIZAR esta vaga? Ela será removida da lista de vagas abertas.")) {
-                db.collection('vagas').doc(vagaId).update({
-                        status: 'finalizada'
-                    })
+                db.collection('vagas').doc(vagaId).update({ status: 'finalizada' })
                     .then(() => {
                         alert("Vaga finalizada com sucesso!");
                         window.location.reload();
@@ -271,7 +301,6 @@
                     });
             }
         }
-        // --- FIM FUNÇÃO: Finalizar Vaga ---
 
 
         function abrirModalEdicao(vaga) {
@@ -281,12 +310,11 @@
             editForm['descricao'].value = vaga.descricao;
             editForm['requisitos'].value = vaga.requisitos;
             editForm['cargaHoraria'].value = vaga.cargaHoraria || '';
-            
-            // NOVO: Pré-preenche o checkbox PCD
-            const pcdCheckbox = document.getElementById('edit-vaga-pcd');
-            if (pcdCheckbox) {
-                pcdCheckbox.checked = vaga.pcd || false;
-            }
+            document.getElementById('edit-vaga-pcd').checked = vaga.pcd || false;
+
+            // Limpa e preenche os cursos requeridos
+            cursosSelecionadosParaEdicao = vaga.cursosRequeridos || [];
+            renderizarCursosSelecionados();
         }
 
         document.getElementById('cancel-edit-btn').addEventListener('click', () => {
@@ -297,13 +325,13 @@
             e.preventDefault();
             const vagaId = editForm['vagaId'].value;
             
-            // NOVO: Inclui o campo PCD na atualização
             const updateData = {
                 titulo: editForm['titulo'].value,
                 descricao: editForm['descricao'].value,
                 requisitos: editForm['requisitos'].value,
                 cargaHoraria: editForm['cargaHoraria'].value,
-                pcd: document.getElementById('edit-vaga-pcd').checked
+                pcd: document.getElementById('edit-vaga-pcd').checked,
+                cursosRequeridos: cursosSelecionadosParaEdicao // Salva a lista de cursos
             };
             
             db.collection('vagas').doc(vagaId).update(updateData)
@@ -318,6 +346,5 @@
                 });
         });
     </script>
-</body>
-
+    </body>
 </html>
