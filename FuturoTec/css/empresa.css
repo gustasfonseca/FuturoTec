@@ -1009,3 +1009,191 @@ body {
 .candidate-card {
     border-left: 4px solid #2c5530;
 }
+/* ===== ESTILOS PARA O CHECKBOX PCD ===== */
+
+/* Container do checkbox */
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    font-weight: 500;
+    color: var(--foreground); /* Cor do texto padrão */
+    margin: 20px 0;
+    padding: 15px;
+    border-radius: var(--radius-md);
+    transition: all 0.3s ease;
+    background-color: rgba(255, 255, 255, 0.8); /* Fundo branco semi-transparente */
+    border: 1px solid var(--border);
+}
+
+.checkbox-label:hover {
+    background-color: rgba(255, 255, 255, 0.95);
+    border-color: var(--primary);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-sm);
+}
+
+/* Esconde o checkbox nativo */
+.checkbox-label input[type="checkbox"] {
+    display: none;
+}
+
+/* Checkbox personalizado */
+.checkmark {
+    width: 22px;
+    height: 22px;
+    border: 2px solid var(--primary);
+    border-radius: var(--radius-sm);
+    margin-right: 15px;
+    position: relative;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: white;
+    flex-shrink: 0;
+}
+
+/* Checkbox quando marcado */
+.checkbox-label input[type="checkbox"]:checked + .checkmark {
+    background-color: var(--primary);
+    border-color: var(--primary);
+}
+
+/* Símbolo de check quando marcado */
+.checkbox-label input[type="checkbox"]:checked + .checkmark::after {
+    content: '✓';
+    color: white;
+    font-weight: bold;
+    font-size: 14px;
+    line-height: 1;
+}
+
+/* Efeito hover no checkbox */
+.checkbox-label:hover .checkmark {
+    border-color: var(--primary-dark);
+    box-shadow: 0 0 0 3px rgba(27, 127, 134, 0.1);
+}
+
+/* Texto do label */
+.checkbox-label-text {
+    font-size: 1em;
+    font-weight: 500;
+    color: var(--foreground);
+}
+
+/* Badge para vaga PCD */
+.pcd-badge {
+    display: inline-block;
+    background: var(--primary-gradient);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.8em;
+    font-weight: 600;
+    margin-left: 10px;
+    vertical-align: middle;
+    box-shadow: var(--shadow-sm);
+}
+
+/* ===== CORREÇÕES ESPECÍFICAS PARA O FORMULÁRIO CRIAR VAGA ===== */
+
+/* Para o formulário de criar vaga com fundo gradiente */
+.create-job-section .form-card .checkbox-label {
+    background-color: rgba(255, 255, 255, 0.9); /* Fundo mais opaco no gradiente */
+    color: var(--foreground); /* Texto escuro para contraste */
+}
+
+.create-job-section .form-card .checkbox-label-text {
+    color: var(--foreground); /* Garante texto escuro */
+}
+
+.create-job-section .form-card .checkmark {
+    border-color: var(--primary-foreground); /* Borda branca no gradiente */
+    background-color: rgba(255, 255, 255, 0.9);
+}
+
+.create-job-section .form-card .checkbox-label input[type="checkbox"]:checked + .checkmark {
+    background-color: var(--primary-foreground);
+    border-color: var(--primary-foreground);
+}
+
+.create-job-section .form-card .checkbox-label input[type="checkbox"]:checked + .checkmark::after {
+    color: var(--primary); /* Check verde no fundo branco */
+}
+
+/* ===== PARA O MODAL DE EDIÇÃO ===== */
+
+.modal-content .checkbox-label {
+    background-color: var(--card-background);
+    border: 1px solid var(--border);
+}
+
+.modal-content .checkbox-label:hover {
+    background-color: #f8f9fa;
+    border-color: var(--primary);
+}
+
+/* ===== ESTADOS DE FOCO E ACESSIBILIDADE ===== */
+
+.checkbox-label:focus-within {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+}
+
+/* Estado desabilitado */
+.checkbox-label.disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.checkbox-label.disabled:hover {
+    background-color: rgba(255, 255, 255, 0.8);
+    border-color: var(--border);
+    transform: none;
+    box-shadow: none;
+}
+
+/* ===== RESPONSIVIDADE ===== */
+
+@media (max-width: 768px) {
+    .checkbox-label {
+        padding: 12px;
+        margin: 15px 0;
+    }
+    
+    .checkmark {
+        width: 20px;
+        height: 20px;
+        margin-right: 12px;
+    }
+    
+    .checkbox-label-text {
+        font-size: 0.95em;
+    }
+    
+    .pcd-badge {
+        font-size: 0.75em;
+        padding: 4px 10px;
+    }
+}
+
+/* ===== ANIMAÇÕES ESPECÍFICAS ===== */
+
+@keyframes checkmarkPop {
+    0% {
+        transform: scale(0.8);
+        opacity: 0;
+    }
+    50% {
+        transform: scale(1.1);
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.checkbox-label input[type="checkbox"]:checked + .checkmark::after {
+    animation: checkmarkPop 0.3s ease-out;
+}
