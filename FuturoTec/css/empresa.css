@@ -996,3 +996,16 @@ body {
     color: #dc3545; /* Cor vermelha para indicar que é obrigatório */
     font-weight: normal;
 }
+.candidate-role {
+    color: #2c5530;
+    font-weight: 600;
+    margin-bottom: 8px;
+    padding: 4px 8px;
+    background-color: #f0f7f0;
+    border-radius: 4px;
+    display: inline-block;
+}
+
+.candidate-card {
+    border-left: 4px solid #2c5530;
+}
