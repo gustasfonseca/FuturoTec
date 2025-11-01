@@ -350,84 +350,89 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     // --- 2. LÓGICA DE CADASTRO COM VALIDAÇÃO (REVISADA) ---
-    const formCandidato = document.getElementById('form-candidato');
-    if (formCandidato) {
-        formCandidato.addEventListener('submit', async (e) => {
-            e.preventDefault();
+const formCandidato = document.getElementById('form-candidato');
+if (formCandidato) {
+    formCandidato.addEventListener('submit', async (e) => {
+        e.preventDefault();
 
-            // Assume que existe um campo de erro no cadastro, se não, use alert
-            const cadastroErrorMessageDiv = document.getElementById('form-error-message') || errorMessageDiv;
-            if (cadastroErrorMessageDiv) cadastroErrorMessageDiv.textContent = '';
+        const cadastroErrorMessageDiv = document.getElementById('form-error-message') || errorMessageDiv;
+        if (cadastroErrorMessageDiv) cadastroErrorMessageDiv.textContent = '';
 
-            const email = document.getElementById('email-candidato').value;
-            const senha = document.getElementById('senha-candidato').value;
-            const confirmarSenha = document.getElementById('confirmar-senha-candidato').value;
-            const nome = document.getElementById('nome-candidato').value;
-            const telefone = document.getElementById('telefone-candidato').value;
-            const dataNascimento = document.getElementById('data-nascimento-candidato').value;
-            const cursoId = document.getElementById('curso-id-candidato').value;
-            const cursoNome = document.getElementById('curso-candidato').value;
+        const email = document.getElementById('email-candidato').value;
+        const senha = document.getElementById('senha-candidato').value;
+        const confirmarSenha = document.getElementById('confirmar-senha-candidato').value;
+        const nome = document.getElementById('nome-candidato').value;
+        const telefone = document.getElementById('telefone-candidato').value;
+        const dataNascimento = document.getElementById('data-nascimento-candidato').value;
+        const cursoId = document.getElementById('curso-id-candidato').value;
+        const cursoNome = document.getElementById('curso-candidato').value;
+        
+        // NOVOS CAMPOS - Adicione estas linhas
+        const resumoHabilidades = document.getElementById('resumo-habilidades')?.value || '';
+        const experienciasProfissionais = document.getElementById('experiencias-profissionais')?.value || '';
 
-            // 1. Validação de Curso
-            if (!cursoId) {
-                const msg = "Por favor, selecione um curso válido da lista de sugestões.";
-                if (cadastroErrorMessageDiv) cadastroErrorMessageDiv.textContent = msg;
-                else alert(msg); // Alternativa se não houver div de erro no formulário
-                return;
+        // 1. Validação de Curso
+        if (!cursoId) {
+            const msg = "Por favor, selecione um curso válido da lista de sugestões.";
+            if (cadastroErrorMessageDiv) cadastroErrorMessageDiv.textContent = msg;
+            else alert(msg);
+            return;
+        }
+
+        // 2. Validação de Confirmação de Senha
+        if (senha !== confirmarSenha) {
+            const msg = "As senhas não coincidem. Por favor, tente novamente.";
+            if (cadastroErrorMessageDiv) cadastroErrorMessageDiv.textContent = msg;
+            else alert(msg);
+            return;
+        }
+
+        // 3. Validação de Força de Senha
+        const passwordCheck = isPasswordStrong(senha);
+        if (!passwordCheck.valid) {
+            if (cadastroErrorMessageDiv) cadastroErrorMessageDiv.textContent = passwordCheck.message;
+            else alert(passwordCheck.message);
+            return;
+        }
+
+        // Se todas as validações passaram, inicia o cadastro no Firebase
+        try {
+            const userCredential = await auth.createUserWithEmailAndPassword(email, senha);
+            const user = userCredential.user;
+
+            const perfilData = {
+                role: 'aluno',
+                nome: nome,
+                telefone: telefone,
+                dataNascimento: dataNascimento,
+                email: email,
+                cursoId: cursoId,
+                cursoNome: cursoNome,
+                // NOVOS CAMPOS - Adicione estas linhas
+                resumoHabilidades: resumoHabilidades,
+                experienciasProfissionais: experienciasProfissionais,
+                dataCriacao: firebase.firestore.FieldValue.serverTimestamp()
+            };
+            await db.collection('usuarios').doc(user.uid).set(perfilData);
+
+            await auth.signOut();
+
+            alert("Cadastro de Candidato realizado com sucesso! Por favor, faça login.");
+            window.location.href = 'login-candidato.html';
+        } catch (error) {
+            console.error("Erro no cadastro:", error);
+
+            let friendlyError = error.message;
+            if (error.code === 'auth/email-already-in-use') {
+                friendlyError = "Este e-mail já está em uso. Tente fazer login ou use outro e-mail.";
             }
 
-            // 2. Validação de Confirmação de Senha
-            if (senha !== confirmarSenha) {
-                const msg = "As senhas não coincidem. Por favor, tente novamente.";
-                if (cadastroErrorMessageDiv) cadastroErrorMessageDiv.textContent = msg;
-                else alert(msg); // Alternativa se não houver div de erro no formulário
-                return;
-            }
-
-            // 3. Validação de Força de Senha (Usando a função)
-            const passwordCheck = isPasswordStrong(senha);
-            if (!passwordCheck.valid) {
-                if (cadastroErrorMessageDiv) cadastroErrorMessageDiv.textContent = passwordCheck.message;
-                else alert(passwordCheck.message); // Alternativa se não houver div de erro no formulário
-                return;
-            }
-
-            // Se todas as validações passaram, inicia o cadastro no Firebase
-            try {
-                const userCredential = await auth.createUserWithEmailAndPassword(email, senha);
-                const user = userCredential.user;
-
-                const perfilData = {
-                    role: 'aluno',
-                    nome: nome,
-                    telefone: telefone,
-                    dataNascimento: dataNascimento,
-                    email: email,
-                    cursoId: cursoId,
-                    cursoNome: cursoNome,
-                    dataCriacao: firebase.firestore.FieldValue.serverTimestamp()
-                };
-                await db.collection('usuarios').doc(user.uid).set(perfilData);
-
-                await auth.signOut();
-
-    
-                alert("Cadastro de Candidato realizado com sucesso! Por favor, faça login.");
-                window.location.href = 'login-candidato.html';
-            } catch (error) {
-                console.error("Erro no cadastro:", error);
-
-                let friendlyError = error.message;
-                if (error.code === 'auth/email-already-in-use') {
-                    friendlyError = "Este e-mail já está em uso. Tente fazer login ou use outro e-mail.";
-                }
-
-                const msg = `Erro ao cadastrar: ${friendlyError}`;
-                if (cadastroErrorMessageDiv) cadastroErrorMessageDiv.textContent = msg;
-                else alert(msg); // Alternativa se não houver div de erro no formulário
-            }
-        });
-    }
+            const msg = `Erro ao cadastrar: ${friendlyError}`;
+            if (cadastroErrorMessageDiv) cadastroErrorMessageDiv.textContent = msg;
+            else alert(msg);
+        }
+    });
+}
 
     // --- 3. LÓGICA DE LOGIN (EXISTENTE) ---
     const formLoginCandidato = document.getElementById('form-login-candidato');
@@ -484,85 +489,114 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --- 4. LÓGICA DA PÁGINA DE PERFIL (CORRIGIDA) ---
-    const formPerfil = document.getElementById('profile-form');
+  // --- 4. LÓGICA DA PÁGINA DE PERFIL (ATUALIZADA) ---
+const formPerfil = document.getElementById('profile-form');
+const formPerfilProfissional = document.getElementById('profile-profissional-form');
 
-    if (formPerfil) {
-        const btnExcluirConta = document.getElementById('btn-excluir-conta');
+if (formPerfil || formPerfilProfissional) {
+    const btnExcluirConta = document.getElementById('btn-excluir-conta');
 
-        const carregarDadosDoUsuario = async (userId) => {
-            try {
-                const doc = await db.collection('usuarios').doc(userId).get();
-                if (!doc.exists) { return; }
-                const data = doc.data();
-                document.getElementById('user-name').textContent = data.nome || '';
-                document.getElementById('user-email').textContent = data.email || '';
-                document.getElementById('email').value = data.email || '';
-                document.getElementById('nome-completo').value = data.nome || '';
-                document.getElementById('celular').value = data.telefone || '';
-                document.getElementById('nascimento').value = data.dataNascimento || '';
-                document.getElementById('curso-aluno').value = data.cursoNome || 'Não informado';
-            } catch (error) {
-                console.error("Erro ao carregar dados:", error);
-    
-                alert("Erro ao carregar dados do seu perfil.");
-            }
+    const carregarDadosDoUsuario = async (userId) => {
+        try {
+            const doc = await db.collection('usuarios').doc(userId).get();
+            if (!doc.exists) { return; }
+            const data = doc.data();
+            
+            // Dados pessoais
+            document.getElementById('user-name').textContent = data.nome || '';
+            document.getElementById('user-email').textContent = data.email || '';
+            document.getElementById('email').value = data.email || '';
+            document.getElementById('nome-completo').value = data.nome || '';
+            document.getElementById('celular').value = data.telefone || '';
+            document.getElementById('nascimento').value = data.dataNascimento || '';
+            document.getElementById('curso-aluno').value = data.cursoNome || 'Não informado';
+            
+            // NOVOS CAMPOS PROFISSIONAIS
+            document.getElementById('resumo-habilidades').value = data.resumoHabilidades || '';
+            document.getElementById('experiencias-profissionais').value = data.experienciasProfissionais || '';
+            
+        } catch (error) {
+            console.error("Erro ao carregar dados:", error);
+            alert("Erro ao carregar dados do seu perfil.");
+        }
+    };
+
+    const salvarDadosPessoais = async (userId) => {
+        const dadosParaSalvar = {
+            nome: document.getElementById('nome-completo').value,
+            telefone: document.getElementById('celular').value,
+            dataNascimento: document.getElementById('nascimento').value,
+            dataAtualizacao: firebase.firestore.FieldValue.serverTimestamp()
         };
 
-        const salvarDadosDoPerfil = async (userId) => {
-            const dadosParaSalvar = {
-                nome: document.getElementById('nome-completo').value,
-                telefone: document.getElementById('celular').value,
-                dataNascimento: document.getElementById('nascimento').value,
-                dataAtualizacao: firebase.firestore.FieldValue.serverTimestamp()
-            };
+        try {
+            await db.collection('usuarios').doc(userId).set(dadosParaSalvar, { merge: true });
+            alert("Dados pessoais salvos com sucesso!");
+            document.getElementById('user-name').textContent = dadosParaSalvar.nome;
+        } catch (error) {
+            console.error("Erro ao salvar dados pessoais:", error);
+            alert(`Erro ao salvar: ${error.message}`);
+        }
+    };
 
-            try {
-                await db.collection('usuarios').doc(userId).set(dadosParaSalvar, { merge: true });
-    
-                alert("Alterações salvas com sucesso!");
-                document.getElementById('user-name').textContent = dadosParaSalvar.nome;
-            } catch (error) {
-                console.error("Erro ao salvar:", error);
-    
-                alert(`Erro ao salvar: ${error.message}`);
-            }
+    const salvarDadosProfissionais = async (userId) => {
+        const dadosParaSalvar = {
+            resumoHabilidades: document.getElementById('resumo-habilidades').value,
+            experienciasProfissionais: document.getElementById('experiencias-profissionais').value,
+            dataAtualizacao: firebase.firestore.FieldValue.serverTimestamp()
         };
 
-        // VARIÁVEL DE CONTROLE PARA EVITAR MÚLTIPLOS DISPAROS DE REDIRECIONAMENTO
-        let isAuthChecked = false;
+        try {
+            await db.collection('usuarios').doc(userId).set(dadosParaSalvar, { merge: true });
+            alert("Perfil profissional salvo com sucesso!");
+        } catch (error) {
+            console.error("Erro ao salvar perfil profissional:", error);
+            alert(`Erro ao salvar: ${error.message}`);
+        }
+    };
 
-        auth.onAuthStateChanged(user => {
-            if (isAuthChecked) return;
-            isAuthChecked = true;
+    // VARIÁVEL DE CONTROLE PARA EVITAR MÚLTIPLOS DISPAROS DE REDIRECIONAMENTO
+    let isAuthChecked = false;
 
-            if (user) {
-                // Usuário logado: Carrega dados e configura botões
-                carregarDadosDoUsuario(user.uid);
+    auth.onAuthStateChanged(user => {
+        if (isAuthChecked) return;
+        isAuthChecked = true;
 
+        if (user) {
+            // Usuário logado: Carrega dados e configura botões
+            carregarDadosDoUsuario(user.uid);
+
+            // Formulário de dados pessoais
+            if (formPerfil) {
                 formPerfil.addEventListener('submit', (e) => {
                     e.preventDefault();
-                    salvarDadosDoPerfil(user.uid);
+                    salvarDadosPessoais(user.uid);
                 });
-
-                if (btnExcluirConta) {
-                    btnExcluirConta.addEventListener('click', () => {
-                        excluirContaCandidato(user);
-                    });
-                }
-
-            } else {
-                // Usuário deslogado: Redireciona
-                // Apenas se a URL não for a de login
-                if (!window.location.href.includes('login-candidato.html') && !window.location.href.includes('cadastro-candidato.html')) {
-        
-                    alert("Você precisa estar logado para acessar esta página.");
-                    window.location.href = 'login-candidato.html';
-                }
             }
-        });
-    }
 
+            // NOVO: Formulário de perfil profissional
+            if (formPerfilProfissional) {
+                formPerfilProfissional.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    salvarDadosProfissionais(user.uid);
+                });
+            }
+
+            if (btnExcluirConta) {
+                btnExcluirConta.addEventListener('click', () => {
+                    excluirContaCandidato(user);
+                });
+            }
+
+        } else {
+            // Usuário deslogado: Redireciona
+            if (!window.location.href.includes('login-candidato.html') && !window.location.href.includes('cadastro-candidato.html')) {
+                alert("Você precisa estar logado para acessar esta página.");
+                window.location.href = 'login-candidato.html';
+            }
+        }
+    });
+}
     // --- 5. CONEXÃO DA FUNÇÃO DE LOGOUT ---
     const btnDeslogar = document.getElementById('btn-deslogar');
     if (btnDeslogar) {
