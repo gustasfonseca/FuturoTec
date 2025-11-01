@@ -738,3 +738,183 @@ form {
 .profile-form-card .form-group label {
     color: #333 !important; /* Força o texto a ficar cinza escuro */
 }
+
+/* ===== MELHORIAS PARA AS ÁREAS DE TEXTO GRANDES ===== */
+
+/* Container principal das seções */
+.profile-form-card section {
+    margin-bottom: 2.5rem;
+}
+
+/* Títulos das seções */
+.profile-form-card h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--foreground);
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid var(--primary);
+}
+
+/* Área de texto GRANDE para Habilidades */
+.skills-textarea {
+    width: 100%;
+    min-height: 200px; /* Aumentado significativamente */
+    padding: 1.5rem;
+    border: 2px solid var(--input-border);
+    border-radius: 12px;
+    font-size: 1.1rem;
+    line-height: 1.6;
+    resize: vertical;
+    transition: all 0.3s ease;
+    background: var(--card-background);
+    font-family: inherit;
+}
+
+/* Área de texto GRANDE para Experiências */
+.experience-textarea {
+    width: 100%;
+    min-height: 250px; /* Ainda maior para experiências */
+    padding: 1.5rem;
+    border: 2px solid var(--input-border);
+    border-radius: 12px;
+    font-size: 1.1rem;
+    line-height: 1.6;
+    resize: vertical;
+    transition: all 0.3s ease;
+    background: var(--card-background);
+    font-family: inherit;
+}
+
+/* Efeitos de foco */
+.skills-textarea:focus,
+.experience-textarea:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 4px hsla(174, 36%, 45%, 0.15);
+    background: white;
+}
+
+/* Placeholders estilizados */
+.skills-textarea::placeholder,
+.experience-textarea::placeholder {
+    color: var(--muted-foreground);
+    font-style: italic;
+    font-size: 1rem;
+}
+
+/* Texto de exemplo */
+.example-text {
+    display: block;
+    font-size: 0.9rem;
+    color: var(--muted-foreground);
+    margin-top: 0.5rem;
+    margin-bottom: 1rem;
+    font-style: italic;
+    padding-left: 0.5rem;
+    border-left: 3px solid var(--border);
+}
+
+/* Contador de caracteres */
+.char-counter {
+    text-align: right;
+    font-size: 0.85rem;
+    color: var(--muted-foreground);
+    margin-top: 0.75rem;
+    font-weight: 500;
+}
+
+.char-counter.warning {
+    color: #e67e22;
+    font-weight: 600;
+}
+
+.char-counter.error {
+    color: #e74c3c;
+    font-weight: 600;
+}
+
+/* Dicas de formatação */
+.formatting-tips {
+    margin-top: 1.5rem;
+    padding: 1.25rem;
+    background: linear-gradient(135deg, hsla(174, 36%, 45%, 0.05), hsla(174, 36%, 35%, 0.05));
+    border-radius: 10px;
+    border-left: 4px solid var(--primary);
+}
+
+.formatting-tips h4 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+    color: var(--foreground);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.formatting-tips h4::before {
+    content: "💡";
+    font-size: 1.1rem;
+}
+
+.formatting-tips ul {
+    font-size: 0.9rem;
+    color: var(--muted-foreground);
+    padding-left: 1.5rem;
+    margin: 0;
+}
+
+.formatting-tips li {
+    margin-bottom: 0.5rem;
+    line-height: 1.5;
+}
+
+.formatting-tips strong {
+    color: var(--foreground);
+}
+
+/* Linha divisória estilizada */
+.profile-form-card hr {
+    border: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--primary), var(--border));
+    margin: 2.5rem 0;
+    border-radius: 2px;
+}
+
+/* Responsividade para mobile */
+@media (max-width: 768px) {
+    .skills-textarea {
+        min-height: 180px;
+        padding: 1.25rem;
+        font-size: 1rem;
+    }
+    
+    .experience-textarea {
+        min-height: 220px;
+        padding: 1.25rem;
+        font-size: 1rem;
+    }
+    
+    .formatting-tips {
+        padding: 1rem;
+        margin-top: 1.25rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .skills-textarea {
+        min-height: 160px;
+        padding: 1rem;
+    }
+    
+    .experience-textarea {
+        min-height: 200px;
+        padding: 1rem;
+    }
+    
+    .profile-form-card h2 {
+        font-size: 1.35rem;
+    }
+}
