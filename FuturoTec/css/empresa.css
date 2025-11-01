@@ -1197,3 +1197,196 @@ body {
 .checkbox-label input[type="checkbox"]:checked + .checkmark::after {
     animation: checkmarkPop 0.3s ease-out;
 }
+
+/* ===== ESTILOS PARA AS NOVAS SEÇÕES DE HABILIDADES E EXPERIÊNCIAS ===== */
+
+/* Container das seções profissionais */
+.candidate-section {
+    margin: 1.5rem 0;
+    padding: 1.25rem;
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+    border-radius: 10px;
+    border-left: 4px solid #208e8e;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+}
+
+.candidate-section:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    transform: translateY(-2px);
+}
+
+/* Títulos das seções */
+.candidate-section h5 {
+    color: #208e8e;
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Ícones pequenos */
+.candidate-section .icon-small {
+    width: 16px;
+    height: 16px;
+    color: #208e8e;
+}
+
+/* Conteúdo das habilidades e experiências */
+.candidate-skills, 
+.candidate-experience {
+    color: #4a5568;
+    line-height: 1.6;
+    white-space: pre-line;
+    font-size: 0.95rem;
+    margin: 0;
+    padding: 0.5rem 0;
+}
+
+/* Estilo para quando não há informações */
+.candidate-section .no-info {
+    color: #a0aec0;
+    font-style: italic;
+    font-size: 0.9rem;
+    text-align: center;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.7);
+    border-radius: 6px;
+    border: 1px dashed #e2e8f0;
+}
+
+/* Container de informações de contato */
+.candidate-contact-info {
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 2px solid #e2e8f0;
+    background: rgba(255, 255, 255, 0.8);
+    padding: 1rem;
+    border-radius: 8px;
+}
+
+.candidate-contact {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin: 0.75rem 0;
+    color: #718096;
+    font-size: 0.9rem;
+    padding: 0.25rem 0;
+}
+
+.candidate-contact strong {
+    color: #2d3748;
+    font-weight: 600;
+}
+
+/* Melhorias no card do candidato para acomodar as novas seções */
+.candidate-card {
+    border-left: 4px solid #208e8e;
+    position: relative;
+    overflow: hidden;
+}
+
+.candidate-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: linear-gradient(90deg, #208e8e, #2c5530);
+    opacity: 0.7;
+}
+
+/* Nome do candidato */
+.candidate-name {
+    color: #2c5530;
+    margin-bottom: 0.75rem;
+    font-size: 1.4rem;
+    font-weight: 700;
+    border-bottom: 2px solid #e2e8f0;
+    padding-bottom: 0.5rem;
+}
+
+/* Curso do candidato */
+.candidate-role {
+    color: #2c5530;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    padding: 8px 12px;
+    background: linear-gradient(135deg, #f0f7f0, #e8f5e8);
+    border-radius: 6px;
+    display: inline-block;
+    border: 1px solid #c8e6c9;
+}
+
+/* Responsividade para as novas seções */
+@media (max-width: 768px) {
+    .candidate-section {
+        margin: 1rem 0;
+        padding: 1rem;
+    }
+    
+    .candidate-section h5 {
+        font-size: 0.9rem;
+    }
+    
+    .candidate-skills, 
+    .candidate-experience {
+        font-size: 0.9rem;
+    }
+    
+    .candidate-contact-info {
+        margin-top: 1rem;
+        padding-top: 1rem;
+    }
+    
+    .candidate-contact {
+        font-size: 0.85rem;
+    }
+}
+
+/* Animações suaves para as seções */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.candidate-section {
+    animation: fadeInUp 0.5s ease-out;
+}
+
+.candidate-section:nth-child(odd) {
+    animation-delay: 0.1s;
+}
+
+.candidate-section:nth-child(even) {
+    animation-delay: 0.2s;
+}
+
+/* Destaque para habilidades específicas (opcional) */
+.candidate-skills {
+    position: relative;
+}
+
+.candidate-skills::first-line {
+    font-weight: 600;
+    color: #2c5530;
+}
+
+/* Melhoria visual para experiências profissionais */
+.candidate-experience {
+    border-left: 2px solid #c8e6c9;
+    padding-left: 1rem;
+    margin-left: 0.5rem;
+}
