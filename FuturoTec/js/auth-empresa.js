@@ -582,6 +582,38 @@ document.addEventListener('DOMContentLoaded', () => {
     // Se estiver na página de perfil, carregar dados
     if (profileFormEmpresa) {
         console.log("Página de perfil detectada, carregando dados...");
+
+        // =================================================================
+// FUNÇÃO PARA CONFIGURAR OS ACCORDIONS
+// =================================================================
+function setupAccordionListeners() {
+    const accordionHeaders = document.querySelectorAll('.accordion-header');
+    
+    accordionHeaders.forEach(header => {
+        header.addEventListener('click', () => {
+            const accordionItem = header.parentElement;
+            const accordionBody = accordionItem.querySelector('.accordion-body');
+            const chevron = header.querySelector('.chevron');
+            
+            // Fecha todos os outros accordions
+            document.querySelectorAll('.accordion-body').forEach(body => {
+                if (body !== accordionBody) {
+                    body.classList.remove('active');
+                }
+            });
+            
+            document.querySelectorAll('.chevron').forEach(icon => {
+                if (icon !== chevron) {
+                    icon.classList.remove('rotated');
+                }
+            });
+            
+            // Alterna o accordion atual
+            accordionBody.classList.toggle('active');
+            chevron.classList.toggle('rotated');
+        });
+    });
+}
         
         // Carregar dados do perfil quando usuário estiver autenticado
         auth.onAuthStateChanged((user) => {
