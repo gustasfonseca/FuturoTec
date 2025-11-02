@@ -395,6 +395,21 @@ if (formCandidato) {
             return;
         }
 
+        // 4. Validação dos campos de texto (resumo e experiências)
+        if (resumoHabilidades.length > 150) {
+            const msg = "Resumo de Habilidades deve ter no máximo 150 caracteres.";
+            if (cadastroErrorMessageDiv) cadastroErrorMessageDiv.textContent = msg;
+            else alert(msg);
+            return;
+        }
+
+        if (experienciasProfissionais.length > 150) {
+            const msg = "Experiências Profissionais deve ter no máximo 150 caracteres.";
+            if (cadastroErrorMessageDiv) cadastroErrorMessageDiv.textContent = msg;
+            else alert(msg);
+            return;
+        }
+
         // Se todas as validações passaram, inicia o cadastro no Firebase
         try {
             const userCredential = await auth.createUserWithEmailAndPassword(email, senha);
@@ -409,8 +424,8 @@ if (formCandidato) {
                 cursoId: cursoId,
                 cursoNome: cursoNome,
                 // NOVOS CAMPOS - Adicione estas linhas
-                resumoHabilidades: resumoHabilidades,
-                experienciasProfissionais: experienciasProfissionais,
+                resumoHabilidades: resumoHabilidades.substring(0, 150),
+                experienciasProfissionais: experienciasProfissionais.substring(0, 150),
                 dataCriacao: firebase.firestore.FieldValue.serverTimestamp()
             };
             await db.collection('usuarios').doc(user.uid).set(perfilData);
@@ -541,8 +556,8 @@ if (formPerfil || formPerfilProfissional) {
 
     const salvarDadosProfissionais = async (userId) => {
         const dadosParaSalvar = {
-            resumoHabilidades: document.getElementById('resumo-habilidades').value,
-            experienciasProfissionais: document.getElementById('experiencias-profissionais').value,
+            resumoHabilidades: document.getElementById('resumo-habilidades').value.substring(0, 150),
+            experienciasProfissionais: document.getElementById('experiencias-profissionais').value.substring(0, 150),
             dataAtualizacao: firebase.firestore.FieldValue.serverTimestamp()
         };
 
@@ -578,6 +593,27 @@ if (formPerfil || formPerfilProfissional) {
             if (formPerfilProfissional) {
                 formPerfilProfissional.addEventListener('submit', (e) => {
                     e.preventDefault();
+                    
+                    // VALIDAÇÃO DOS CAMPOS DE TEXTO ANTES DE SALVAR
+                    const resumoHabilidades = document.getElementById('resumo-habilidades').value;
+                    const experienciasProfissionais = document.getElementById('experiencias-profissionais').value;
+                    
+                    const erros = [];
+                    
+                    if (resumoHabilidades.length > 150) {
+                        erros.push('Resumo de Habilidades deve ter no máximo 150 caracteres');
+                    }
+                    
+                    if (experienciasProfissionais.length > 150) {
+                        erros.push('Experiências Profissionais deve ter no máximo 150 caracteres');
+                    }
+                    
+                    if (erros.length > 0) {
+                        alert(erros.join(', '));
+                        return;
+                    }
+                    
+                    // Se passou na validação, salva os dados
                     salvarDadosProfissionais(user.uid);
                 });
             }
