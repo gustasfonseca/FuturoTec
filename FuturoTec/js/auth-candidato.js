@@ -1,644 +1,360 @@
 // auth-candidato.js
 
-// --- CONFIGURAÇÃO DO FIREBASE ---
+import { showAlert } from './alert-manager.js';
+
+// Configuração do Firebase
 const firebaseConfig = {
-    apiKey: "AIzaSyA8Q9cKB4oVmFM6ilHK_70h8JDvgsOQhLY",
-    authDomain: "futurotec-e3a69.firebaseapp.com",
-    projectId: "futurotec-e3a69",
-    storageBucket: "futurotec-e3a69.firebasestorage.app",
-    messagingSenderId: "234233783827",
-    appId: "1:234233783827:web:bf9376dee78d8924ef01e6",
-    measurementId: "G-C7EEMP1146"
+    apiKey: "sua-api-key",
+    authDomain: "seu-projeto.firebaseapp.com",
+    projectId: "seu-projeto",
+    storageBucket: "seu-projeto.appspot.com",
+    messagingSenderId: "seu-sender-id",
+    appId: "seu-app-id"
 };
 
-const API_BASE_URL = 'http://localhost:8080';
-
-// Inicializa o Firebase
+// Inicializar Firebase
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 
-// =======================================================
-// === VALIDAÇÃO DE FORÇA DA SENHA E LÓGICA VISUAL ===
-// =======================================================
+// Cadastro do Candidato
+document.addEventListener('DOMContentLoaded', function() {
+    const formCadastro = document.getElementById('form-candidato');
+    
+    if (formCadastro) {
+        formCadastro.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            // Coletar dados do formulário
+            const nome = document.getElementById('nome-candidato').value;
+            const telefone = document.getElementById('telefone-candidato').value;
+            const email = document.getElementById('email-candidato').value;
+            const dataNascimento = document.getElementById('data-nascimento-candidato').value;
+            const cursoId = document.getElementById('curso-id-candidato').value;
+            const cursoNome = document.getElementById('curso-candidato').value;
+            const linkedin = document.getElementById('linkedin-candidato').value; // NOVO CAMPO
+            const resumoHabilidades = document.getElementById('resumo-habilidades').value;
+            const experienciasProfissionais = document.getElementById('experiencias-profissionais').value;
+            const senha = document.getElementById('senha-candidato').value;
+            const confirmarSenha = document.getElementById('confirmar-senha-candidato').value;
 
-// Função base de validação (usada no submit e na lógica visual)
-function isPasswordStrong(password) {
-    const minLength = 8;
-    const hasUpperCase = /[A-Z]/.test(password);
-    const hasLowerCase = /[a-z]/.test(password);
-    const hasNumbers = /\d/.test(password);
-    const hasSpecialChars = /[!@#$%^&*(),.?":{}|<>]/.test(password);
-
-    if (password.length < minLength) {
-        return { valid: false, message: 'A senha deve ter no mínimo 8 caracteres.' };
-    }
-    if (!hasUpperCase) {
-        return { valid: false, message: 'A senha deve conter pelo menos uma letra maiúscula.' };
-    }
-    if (!hasLowerCase) {
-        return { valid: false, message: 'A senha deve conter pelo menos uma letra minúscula.' };
-    }
-    if (!hasNumbers) {
-        return { valid: false, message: 'A senha deve conter pelo menos um número.' };
-    }
-    if (!hasSpecialChars) {
-        return { valid: false, message: 'A senha deve conter pelo menos um caractere especial (ex: !@#$).' };
-    }
-
-    return { valid: true, message: '' };
-}
-
-
-// =======================================================
-// === FUNÇÕES DE AUTENTICAÇÃO E FIRESTORE ===
-// =======================================================
-
-async function deslogarCandidato() {
-    try {
-        await auth.signOut();
-        console.log("Usuário deslogado com sucesso.");
-        window.location.href = 'login-candidato.html';
-    } catch (error) {
-        console.error("Erro ao deslogar:", error);
-        alert("Ocorreu um erro ao tentar sair da conta. Tente novamente.");
-    }
-}
-
-async function loginComGoogleCandidato() {
-    const provider = new firebase.auth.GoogleAuthProvider();
-
-    try {
-        const result = await auth.signInWithPopup(provider);
-        const user = result.user;
-
-        const userRef = db.collection('usuarios').doc(user.uid);
-        const userSnap = await userRef.get();
-
-        if (!userSnap.exists) {
-            await auth.signOut();
-            throw new Error("Conta não encontrada. Use o cadastro por e-mail/senha ou crie uma conta primeiro.");
-
-        } else if (userSnap.data().role !== 'aluno') {
-            await auth.signOut();
-            throw new Error("Acesso negado. Este login é apenas para Candidatos/Alunos.");
-        }
-
-        return user;
-
-    } catch (error) {
-        console.error("Erro no login com o Google:", error);
-        const errorMessage = error.message.includes("Conta não encontrada")
-            ? error.message
-            : error.message.includes("Acesso negado")
-            ? error.message
-            : `Erro ao fazer login com o Google. Tente novamente ou use e-mail/senha. Detalhe: ${error.message}`;
-        
-        alert(errorMessage);
-        throw error;
-    }
-}
-
-async function recuperarSenhaCandidato() {
-    const email = prompt("Por favor, digite seu e-mail de Candidato/Aluno para redefinir a senha:");
-
-    if (!email) {
-        alert("Operação cancelada ou e-mail não fornecido.");
-        return;
-    }
-
-    try {
-        await auth.sendPasswordResetEmail(email);
-        alert(`E-mail de redefinição de senha enviado para ${email}. Verifique sua caixa de entrada e a pasta de Spam!`);
-    } catch (error) {
-        console.error("Erro ao enviar e-mail de redefinição:", error);
-        let errorMessage = "Erro ao solicitar a redefinição de senha. Verifique se o e-mail está correto e tente novamente.";
-
-        if (error.code === 'auth/user-not-found') {
-            errorMessage = "Não encontramos uma conta para este e-mail. Verifique se digitou corretamente.";
-        } else if (error.code === 'auth/invalid-email') {
-             errorMessage = "O formato do e-mail é inválido.";
-        }
-        alert(`Erro: ${errorMessage}`);
-    }
-}
-
-async function excluirContaCandidato(user) {
-    if (!user) {
-        alert("Erro: Nenhum usuário logado.");
-        return;
-    }
-
-    const userId = user.uid;
-    const userEmail = user.email;
-
-    const confirmacaoEmail = prompt(`ATENÇÃO: A exclusão da conta é PERMANENTE. Você perderá todos os dados (perfil, candidaturas).
-
-Para confirmar a exclusão, digite seu EMAIL (${userEmail}) no campo abaixo:`);
-
-    if (confirmacaoEmail !== userEmail) {
-        alert("E-mail digitado incorretamente ou operação cancelada.");
-        return;
-    }
-
-    const confirmacaoSenha = prompt("Por favor, digite sua SENHA para confirmar a exclusão:");
-    if (!confirmacaoSenha) {
-        alert("Exclusão cancelada. É necessário informar a senha.");
-        return;
-    }
-
-
-    try {
-        const credential = firebase.auth.EmailAuthProvider.credential(userEmail, confirmacaoSenha);
-        await user.reauthenticateWithCredential(credential);
-        console.log("[Exclusão] Reautenticação bem-sucedida.");
-
-        const candidaturasSnapshot = await db.collection('candidaturas')
-            .where('alunoId', '==', userId)
-            .get();
-
-        const batch = db.batch();
-        candidaturasSnapshot.docs.forEach(doc => {
-            batch.delete(doc.ref);
-        });
-        await batch.commit();
-        console.log(`[Exclusão] ${candidaturasSnapshot.size} candidaturas excluídas.`);
-
-        await db.collection('usuarios').doc(userId).delete();
-        console.log("[Exclusão] Perfil do aluno excluído.");
-
-        await user.delete();
-        console.log("[Exclusão] Usuário excluído do Firebase Auth. E-mail liberado.");
-
-        alert("Sua conta foi excluída permanentemente. Sentiremos sua falta.");
-        window.location.href = 'login-candidato.html';
-
-    } catch (error) {
-        console.error("Erro ao excluir a conta:", error);
-
-        let errorMessage = "Ocorreu um erro ao tentar excluir sua conta.";
-
-        if (error.code === 'auth/wrong-password' || error.message.includes('password')) {
-             errorMessage = "Senha incorreta. A exclusão da conta foi cancelada.";
-        } else if (error.code === 'auth/requires-recent-login') {
-            errorMessage = "Erro de Segurança: Você precisa ter feito login *recentemente*. Por favor, saia e entre novamente, e tente excluir a conta em seguida.";
-        }
-        alert(`${errorMessage} (Detalhes técnicos no console)`);
-    }
-}
-
-// =======================================================
-// === PONTO DE ENTRADA PRINCIPAL E LÓGICA VISUAL ===
-// =======================================================
-document.addEventListener('DOMContentLoaded', () => {
-
-    // --- 0. FUNCIONALIDADE MOSTRAR/ESCONDER SENHA (CORREÇÃO INCLUÍDA) ---
-    document.querySelectorAll('.password-toggle').forEach(toggle => {
-        toggle.addEventListener('click', () => {
-            const targetId = toggle.getAttribute('data-target');
-            const passwordInput = document.getElementById(targetId);
-            if (!passwordInput) return;
-
-            const icon = toggle.querySelector('i');
-
-            if (passwordInput.type === 'password') {
-                passwordInput.type = 'text';
-                icon.setAttribute('data-feather', 'eye-off');
-            } else {
-                passwordInput.type = 'password';
-                icon.setAttribute('data-feather', 'eye');
-            }
-            // Chama feather.replace() para que o ícone mude
-            if (typeof feather !== 'undefined' && feather.replace) {
-                feather.replace();
-            }
-        });
-    });
-
-
-    // --- ELEMENTOS DE VALIDAÇÃO VISUAL ---
-    const senhaInput = document.getElementById('senha-candidato');
-    const confirmarSenhaInput = document.getElementById('confirmar-senha-candidato');
-    const validationList = document.getElementById('password-validation-list');
-    const errorMessageDiv = document.getElementById('password-error-message');
-
-
-    // Função para atualizar o status visual das regras de senha
-    function updatePasswordValidation() {
-        if (!senhaInput || !validationList) return;
-
-        const password = senhaInput.value;
-
-        // Regras baseadas na função isPasswordStrong
-        const checks = [
-            { id: 'min-length', valid: password.length >= 8, icon: password.length >= 8 ? 'check' : 'x' },
-            { id: 'has-upper', valid: /[A-Z]/.test(password), icon: /[A-Z]/.test(password) ? 'check' : 'x' },
-            { id: 'has-lower', valid: /[a-z]/.test(password), icon: /[a-z]/.test(password) ? 'check' : 'x' },
-            { id: 'has-number', valid: /\d/.test(password), icon: /\d/.test(password) ? 'check' : 'x' },
-            { id: 'has-special', valid: /[!@#$%^&*(),.?":{}|<>]/.test(password), icon: /[!@#$%^&*(),.?":{}|<>]/.test(password) ? 'check' : 'x' }
-        ];
-
-        checks.forEach(check => {
-            const item = document.getElementById(check.id);
-            if (item) {
-                // 1. Atualiza a classe para o CSS (verde ou vermelho)
-                item.classList.toggle('valid', check.valid);
-                item.classList.toggle('invalid', !check.valid);
-
-                // 2. Atualiza o ícone do Feather
-                const iconElement = item.querySelector('.icon-status');
-                if (iconElement) {
-                    iconElement.setAttribute('data-feather', check.icon);
-                }
-            }
-        });
-
-        // 3. Recarrega os ícones do Feather para mostrar a mudança
-        if (typeof feather !== 'undefined' && feather.replace) {
-            feather.replace();
-        }
-
-        // Limpa a mensagem de erro principal ao começar a digitar a senha
-        if(errorMessageDiv) {
-             errorMessageDiv.textContent = '';
-        }
-    }
-
-    // Conecta a função de validação ao evento 'input'
-    if (senhaInput) {
-        senhaInput.addEventListener('input', updatePasswordValidation);
-    }
-
-    // Opcional: Limpa mensagem de erro ao digitar na confirmação
-    if (confirmarSenhaInput && errorMessageDiv) {
-        confirmarSenhaInput.addEventListener('input', () => {
-             errorMessageDiv.textContent = '';
-        });
-    }
-
-    // --- 1. LÓGICA DE AUTOCOMPLETE DO CURSO ---
-    const inputCurso = document.getElementById('curso-candidato');
-    const inputCursoId = document.getElementById('curso-id-candidato');
-    const sugestoesCurso = document.getElementById('sugestoes-curso');
-
-    const buscarCursos = async (termo) => {
-        if (!sugestoesCurso) return;
-
-        sugestoesCurso.innerHTML = '';
-        if (termo.length < 3) return;
-
-        try {
-            const snapshot = await db.collection('cursos').get();
-            const cursos = [];
-            snapshot.forEach(doc => {
-                cursos.push({ id: doc.id, nome: doc.data().nome });
-            });
-
-            const termoLowerCase = termo.toLowerCase();
-            const resultadosFiltrados = cursos.filter(curso =>
-                curso.nome.toLowerCase().includes(termoLowerCase)
-            ).slice(0, 5);
-
-            if (resultadosFiltrados.length === 0) {
-                const item = document.createElement('div');
-                item.textContent = "Nenhum curso encontrado.";
-                sugestoesCurso.appendChild(item);
+            // Validação de senha
+            if (senha !== confirmarSenha) {
+                showAlert('error', 'As senhas não coincidem!');
                 return;
             }
 
-            resultadosFiltrados.forEach(curso => {
-                const item = document.createElement('div');
-                item.classList.add('autocomplete-item');
-                item.textContent = curso.nome;
-                item.dataset.id = curso.id;
-
-                item.addEventListener('click', () => {
-                    inputCurso.value = curso.nome;
-                    inputCursoId.value = curso.id;
-                    sugestoesCurso.innerHTML = '';
-                });
-                sugestoesCurso.appendChild(item);
-            });
-
-        } catch (error) {
-            console.error("Erro ao buscar cursos:", error);
-
-            alert("Erro ao carregar cursos. Verifique as regras do Firestore.");
-            const item = document.createElement('div');
-            item.textContent = "Erro ao carregar cursos. Verifique as regras do Firestore.";
-            sugestoesCurso.appendChild(item);
-        }
-    };
-
-    let debounceTimer;
-    if (inputCurso) {
-        inputCurso.addEventListener('input', () => {
-            inputCursoId.value = '';
-
-            clearTimeout(debounceTimer);
-            debounceTimer = setTimeout(() => {
-                buscarCursos(inputCurso.value.trim());
-            }, 300);
-        });
-    }
-
-    document.addEventListener('click', (e) => {
-        if (inputCurso && sugestoesCurso && !inputCurso.contains(e.target) && !sugestoesCurso.contains(e.target)) {
-            sugestoesCurso.innerHTML = '';
-        }
-    });
-
-
-    // --- 2. LÓGICA DE CADASTRO COM VALIDAÇÃO (REVISADA) ---
-const formCandidato = document.getElementById('form-candidato');
-if (formCandidato) {
-    formCandidato.addEventListener('submit', async (e) => {
-        e.preventDefault();
-
-        const cadastroErrorMessageDiv = document.getElementById('form-error-message') || errorMessageDiv;
-        if (cadastroErrorMessageDiv) cadastroErrorMessageDiv.textContent = '';
-
-        const email = document.getElementById('email-candidato').value;
-        const senha = document.getElementById('senha-candidato').value;
-        const confirmarSenha = document.getElementById('confirmar-senha-candidato').value;
-        const nome = document.getElementById('nome-candidato').value;
-        const telefone = document.getElementById('telefone-candidato').value;
-        const dataNascimento = document.getElementById('data-nascimento-candidato').value;
-        const cursoId = document.getElementById('curso-id-candidato').value;
-        const cursoNome = document.getElementById('curso-candidato').value;
-        
-        // NOVOS CAMPOS - Adicione estas linhas
-        const resumoHabilidades = document.getElementById('resumo-habilidades')?.value || '';
-        const experienciasProfissionais = document.getElementById('experiencias-profissionais')?.value || '';
-
-        // 1. Validação de Curso
-        if (!cursoId) {
-            const msg = "Por favor, selecione um curso válido da lista de sugestões.";
-            if (cadastroErrorMessageDiv) cadastroErrorMessageDiv.textContent = msg;
-            else alert(msg);
-            return;
-        }
-
-        // 2. Validação de Confirmação de Senha
-        if (senha !== confirmarSenha) {
-            const msg = "As senhas não coincidem. Por favor, tente novamente.";
-            if (cadastroErrorMessageDiv) cadastroErrorMessageDiv.textContent = msg;
-            else alert(msg);
-            return;
-        }
-
-        // 3. Validação de Força de Senha
-        const passwordCheck = isPasswordStrong(senha);
-        if (!passwordCheck.valid) {
-            if (cadastroErrorMessageDiv) cadastroErrorMessageDiv.textContent = passwordCheck.message;
-            else alert(passwordCheck.message);
-            return;
-        }
-
-        // 4. Validação dos campos de texto (resumo e experiências)
-        if (resumoHabilidades.length > 150) {
-            const msg = "Resumo de Habilidades deve ter no máximo 150 caracteres.";
-            if (cadastroErrorMessageDiv) cadastroErrorMessageDiv.textContent = msg;
-            else alert(msg);
-            return;
-        }
-
-        if (experienciasProfissionais.length > 150) {
-            const msg = "Experiências Profissionais deve ter no máximo 150 caracteres.";
-            if (cadastroErrorMessageDiv) cadastroErrorMessageDiv.textContent = msg;
-            else alert(msg);
-            return;
-        }
-
-        // Se todas as validações passaram, inicia o cadastro no Firebase
-        try {
-            const userCredential = await auth.createUserWithEmailAndPassword(email, senha);
-            const user = userCredential.user;
-
-            const perfilData = {
-                role: 'aluno',
-                nome: nome,
-                telefone: telefone,
-                dataNascimento: dataNascimento,
-                email: email,
-                cursoId: cursoId,
-                cursoNome: cursoNome,
-                // NOVOS CAMPOS - Adicione estas linhas
-                resumoHabilidades: resumoHabilidades.substring(0, 150),
-                experienciasProfissionais: experienciasProfissionais.substring(0, 150),
-                dataCriacao: firebase.firestore.FieldValue.serverTimestamp()
-            };
-            await db.collection('usuarios').doc(user.uid).set(perfilData);
-
-            await auth.signOut();
-
-            alert("Cadastro de Candidato realizado com sucesso! Por favor, faça login.");
-            window.location.href = 'login-candidato.html';
-        } catch (error) {
-            console.error("Erro no cadastro:", error);
-
-            let friendlyError = error.message;
-            if (error.code === 'auth/email-already-in-use') {
-                friendlyError = "Este e-mail já está em uso. Tente fazer login ou use outro e-mail.";
+            // Validação de força da senha
+            if (!validarSenha(senha)) {
+                showAlert('error', 'A senha não atende aos requisitos de segurança!');
+                return;
             }
 
-            const msg = `Erro ao cadastrar: ${friendlyError}`;
-            if (cadastroErrorMessageDiv) cadastroErrorMessageDiv.textContent = msg;
-            else alert(msg);
-        }
-    });
-}
-
-    // --- 3. LÓGICA DE LOGIN (EXISTENTE) ---
-    const formLoginCandidato = document.getElementById('form-login-candidato');
-    if (formLoginCandidato) {
-        formLoginCandidato.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const email = document.getElementById('email-login-candidato').value;
-            const senha = document.getElementById('senha-login-candidato').value;
-            // Adicione aqui a manipulação de erro de login se houver um div para isso no login-candidato.html
-
             try {
-                const userCredential = await auth.signInWithEmailAndPassword(email, senha);
+                // Criar usuário no Authentication
+                const userCredential = await auth.createUserWithEmailAndPassword(email, senha);
                 const user = userCredential.user;
-                const userDoc = await db.collection('usuarios').doc(user.uid).get();
-                const userData = userDoc.data();
 
-                if (userData && userData.role === 'aluno') {
+                // Salvar dados adicionais no Firestore
+                await db.collection('candidatos').doc(user.uid).set({
+                    nome: nome,
+                    telefone: telefone,
+                    email: email,
+                    dataNascimento: dataNascimento,
+                    cursoId: cursoId,
+                    cursoNome: cursoNome,
+                    linkedin: linkedin, // SALVAR LINKEDIN
+                    resumoHabilidades: resumoHabilidades,
+                    experienciasProfissionais: experienciasProfissionais,
+                    dataCriacao: new Date(),
+                    tipo: 'candidato'
+                });
+
+                showAlert('success', 'Cadastro realizado com sucesso!');
+                
+                // Redirecionar após 2 segundos
+                setTimeout(() => {
                     window.location.href = 'InicialAluno.html';
-                } else {
-        
-                    alert("Acesso negado. Este login é apenas para candidatos.");
-                    auth.signOut();
-                }
+                }, 2000);
+
             } catch (error) {
-                console.error("Erro no login:", error);
-    
-                alert(`Erro ao fazer login: ${error.message}`);
-            }
-        });
-    }
-
-    // --- MANIPULADOR DE EVENTOS PARA O BOTÃO DO GOOGLE ---
-    const btnGoogleLogin = document.getElementById('btn-google-login');
-    if (btnGoogleLogin) {
-        btnGoogleLogin.addEventListener('click', async (e) => {
-            e.preventDefault();
-            try {
-                const user = await loginComGoogleCandidato();
-                if (user) {
-                    window.location.href = 'InicialAluno.html';
+                console.error('Erro no cadastro:', error);
+                let errorMessage = 'Erro ao realizar cadastro. Tente novamente.';
+                
+                switch (error.code) {
+                    case 'auth/email-already-in-use':
+                        errorMessage = 'Este email já está em uso.';
+                        break;
+                    case 'auth/invalid-email':
+                        errorMessage = 'Email inválido.';
+                        break;
+                    case 'auth/weak-password':
+                        errorMessage = 'Senha muito fraca.';
+                        break;
                 }
-            } catch (error) {
-                // Erro já tratado na função
+                
+                showAlert('error', errorMessage);
             }
         });
     }
 
-    // --- LÓGICA DE RECUPERAÇÃO DE SENHA (CONECTANDO O LINK) ---
-    const btnEsqueciSenha = document.getElementById('btn-esqueci-senha');
-    if (btnEsqueciSenha) {
-        btnEsqueciSenha.addEventListener('click', (e) => {
-            e.preventDefault();
-            recuperarSenhaCandidato();
+    // Validação de senha em tempo real
+    const senhaInput = document.getElementById('senha-candidato');
+    if (senhaInput) {
+        senhaInput.addEventListener('input', function() {
+            validarSenhaEmTempoReal(this.value);
         });
     }
 
-  // --- 4. LÓGICA DA PÁGINA DE PERFIL (ATUALIZADA) ---
-const formPerfil = document.getElementById('profile-form');
-const formPerfilProfissional = document.getElementById('profile-profissional-form');
-
-if (formPerfil || formPerfilProfissional) {
-    const btnExcluirConta = document.getElementById('btn-excluir-conta');
-
-    const carregarDadosDoUsuario = async (userId) => {
-        try {
-            const doc = await db.collection('usuarios').doc(userId).get();
-            if (!doc.exists) { return; }
-            const data = doc.data();
+    // Verificação de confirmação de senha
+    const confirmarSenhaInput = document.getElementById('confirmar-senha-candidato');
+    if (confirmarSenhaInput) {
+        confirmarSenhaInput.addEventListener('input', function() {
+            const senha = document.getElementById('senha-candidato').value;
+            const confirmarSenha = this.value;
+            const errorMessage = document.getElementById('password-error-message');
             
-            // Dados pessoais
-            document.getElementById('user-name').textContent = data.nome || '';
-            document.getElementById('user-email').textContent = data.email || '';
-            document.getElementById('email').value = data.email || '';
-            document.getElementById('nome-completo').value = data.nome || '';
-            document.getElementById('celular').value = data.telefone || '';
-            document.getElementById('nascimento').value = data.dataNascimento || '';
-            document.getElementById('curso-aluno').value = data.cursoNome || 'Não informado';
-            
-            // NOVOS CAMPOS PROFISSIONAIS
-            document.getElementById('resumo-habilidades').value = data.resumoHabilidades || '';
-            document.getElementById('experiencias-profissionais').value = data.experienciasProfissionais || '';
-            
-        } catch (error) {
-            console.error("Erro ao carregar dados:", error);
-            alert("Erro ao carregar dados do seu perfil.");
-        }
-    };
-
-    const salvarDadosPessoais = async (userId) => {
-        const dadosParaSalvar = {
-            nome: document.getElementById('nome-completo').value,
-            telefone: document.getElementById('celular').value,
-            dataNascimento: document.getElementById('nascimento').value,
-            dataAtualizacao: firebase.firestore.FieldValue.serverTimestamp()
-        };
-
-        try {
-            await db.collection('usuarios').doc(userId).set(dadosParaSalvar, { merge: true });
-            alert("Dados pessoais salvos com sucesso!");
-            document.getElementById('user-name').textContent = dadosParaSalvar.nome;
-        } catch (error) {
-            console.error("Erro ao salvar dados pessoais:", error);
-            alert(`Erro ao salvar: ${error.message}`);
-        }
-    };
-
-    const salvarDadosProfissionais = async (userId) => {
-        const dadosParaSalvar = {
-            resumoHabilidades: document.getElementById('resumo-habilidades').value.substring(0, 150),
-            experienciasProfissionais: document.getElementById('experiencias-profissionais').value.substring(0, 150),
-            dataAtualizacao: firebase.firestore.FieldValue.serverTimestamp()
-        };
-
-        try {
-            await db.collection('usuarios').doc(userId).set(dadosParaSalvar, { merge: true });
-            alert("Perfil profissional salvo com sucesso!");
-        } catch (error) {
-            console.error("Erro ao salvar perfil profissional:", error);
-            alert(`Erro ao salvar: ${error.message}`);
-        }
-    };
-
-    // VARIÁVEL DE CONTROLE PARA EVITAR MÚLTIPLOS DISPAROS DE REDIRECIONAMENTO
-    let isAuthChecked = false;
-
-    auth.onAuthStateChanged(user => {
-        if (isAuthChecked) return;
-        isAuthChecked = true;
-
-        if (user) {
-            // Usuário logado: Carrega dados e configura botões
-            carregarDadosDoUsuario(user.uid);
-
-            // Formulário de dados pessoais
-            if (formPerfil) {
-                formPerfil.addEventListener('submit', (e) => {
-                    e.preventDefault();
-                    salvarDadosPessoais(user.uid);
-                });
+            if (senha !== confirmarSenha && confirmarSenha.length > 0) {
+                errorMessage.textContent = 'As senhas não coincidem!';
+            } else {
+                errorMessage.textContent = '';
             }
-
-            // NOVO: Formulário de perfil profissional
-            if (formPerfilProfissional) {
-                formPerfilProfissional.addEventListener('submit', (e) => {
-                    e.preventDefault();
-                    
-                    // VALIDAÇÃO DOS CAMPOS DE TEXTO ANTES DE SALVAR
-                    const resumoHabilidades = document.getElementById('resumo-habilidades').value;
-                    const experienciasProfissionais = document.getElementById('experiencias-profissionais').value;
-                    
-                    const erros = [];
-                    
-                    if (resumoHabilidades.length > 150) {
-                        erros.push('Resumo de Habilidades deve ter no máximo 150 caracteres');
-                    }
-                    
-                    if (experienciasProfissionais.length > 150) {
-                        erros.push('Experiências Profissionais deve ter no máximo 150 caracteres');
-                    }
-                    
-                    if (erros.length > 0) {
-                        alert(erros.join(', '));
-                        return;
-                    }
-                    
-                    // Se passou na validação, salva os dados
-                    salvarDadosProfissionais(user.uid);
-                });
-            }
-
-            if (btnExcluirConta) {
-                btnExcluirConta.addEventListener('click', () => {
-                    excluirContaCandidato(user);
-                });
-            }
-
-        } else {
-            // Usuário deslogado: Redireciona
-            if (!window.location.href.includes('login-candidato.html') && !window.location.href.includes('cadastro-candidato.html')) {
-                alert("Você precisa estar logado para acessar esta página.");
-                window.location.href = 'login-candidato.html';
-            }
-        }
-    });
-}
-    // --- 5. CONEXÃO DA FUNÇÃO DE LOGOUT ---
-    const btnDeslogar = document.getElementById('btn-deslogar');
-    if (btnDeslogar) {
-        btnDeslogar.addEventListener('click', (e) => {
-            e.preventDefault();
-            deslogarCandidato(); // Chama a função de logout
         });
     }
 });
+
+// Função para validar senha
+function validarSenha(senha) {
+    const minLength = senha.length >= 8;
+    const hasUpper = /[A-Z]/.test(senha);
+    const hasLower = /[a-z]/.test(senha);
+    const hasNumber = /[0-9]/.test(senha);
+    const hasSpecial = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(senha);
+    
+    return minLength && hasUpper && hasLower && hasNumber && hasSpecial;
+}
+
+// Validação de senha em tempo real
+function validarSenhaEmTempoReal(senha) {
+    const validations = {
+        'min-length': senha.length >= 8,
+        'has-upper': /[A-Z]/.test(senha),
+        'has-lower': /[a-z]/.test(senha),
+        'has-number': /[0-9]/.test(senha),
+        'has-special': /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(senha)
+    };
+
+    for (const [id, isValid] of Object.entries(validations)) {
+        const element = document.getElementById(id);
+        if (element) {
+            const icon = element.querySelector('.icon-status');
+            if (isValid) {
+                element.classList.remove('invalid');
+                element.classList.add('valid');
+                icon.setAttribute('data-feather', 'check');
+            } else {
+                element.classList.remove('valid');
+                element.classList.add('invalid');
+                icon.setAttribute('data-feather', 'x');
+            }
+            feather.replace();
+        }
+    }
+}
+
+// Gerenciamento do Perfil do Candidato
+document.addEventListener('DOMContentLoaded', function() {
+    // Verificar se estamos na página de perfil
+    const profileForm = document.getElementById('profile-form');
+    const profileProfissionalForm = document.getElementById('profile-profissional-form');
+    
+    if (profileForm || profileProfissionalForm) {
+        carregarPerfilUsuario();
+        
+        // Configurar formulário de dados pessoais
+        if (profileForm) {
+            profileForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                await salvarDadosPessoais();
+            });
+        }
+        
+        // Configurar formulário de perfil profissional
+        if (profileProfissionalForm) {
+            profileProfissionalForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                await salvarPerfilProfissional();
+            });
+        }
+        
+        // Configurar botão de deslogar
+        const btnDeslogar = document.getElementById('btn-deslogar');
+        if (btnDeslogar) {
+            btnDeslogar.addEventListener('click', deslogarUsuario);
+        }
+        
+        // Configurar botão de excluir conta
+        const btnExcluirConta = document.getElementById('btn-excluir-conta');
+        if (btnExcluirConta) {
+            btnExcluirConta.addEventListener('click', excluirConta);
+        }
+    }
+});
+
+// Carregar perfil do usuário
+async function carregarPerfilUsuario() {
+    try {
+        const user = auth.currentUser;
+        if (!user) {
+            window.location.href = 'login-candidato.html';
+            return;
+        }
+
+        const userDoc = await db.collection('candidatos').doc(user.uid).get();
+        
+        if (userDoc.exists) {
+            const userData = userDoc.data();
+            
+            // Preencher dados pessoais
+            document.getElementById('user-name').textContent = userData.nome || 'Usuário';
+            document.getElementById('user-email').textContent = userData.email || '';
+            document.getElementById('email').value = userData.email || '';
+            document.getElementById('nome-completo').value = userData.nome || '';
+            document.getElementById('celular').value = userData.telefone || '';
+            document.getElementById('nascimento').value = userData.dataNascimento || '';
+            document.getElementById('curso-aluno').value = userData.cursoNome || '';
+            document.getElementById('linkedin-perfil').value = userData.linkedin || ''; // CARREGAR LINKEDIN
+            
+            // Preencher perfil profissional
+            document.getElementById('resumo-habilidades').value = userData.resumoHabilidades || '';
+            document.getElementById('experiencias-profissionais').value = userData.experienciasProfissionais || '';
+            
+            // Atualizar contadores
+            const habilidadesCount = document.getElementById('habilidadesCount');
+            const experienciasCount = document.getElementById('experienciasCount');
+            if (habilidadesCount) habilidadesCount.textContent = userData.resumoHabilidades?.length || 0;
+            if (experienciasCount) experienciasCount.textContent = userData.experienciasProfissionais?.length || 0;
+        }
+    } catch (error) {
+        console.error('Erro ao carregar perfil:', error);
+        showAlert('error', 'Erro ao carregar dados do perfil.');
+    }
+}
+
+// Salvar dados pessoais
+async function salvarDadosPessoais() {
+    try {
+        const user = auth.currentUser;
+        if (!user) return;
+
+        const dadosAtualizados = {
+            nome: document.getElementById('nome-completo').value,
+            telefone: document.getElementById('celular').value,
+            dataNascimento: document.getElementById('nascimento').value,
+            linkedin: document.getElementById('linkedin-perfil').value // SALVAR LINKEDIN
+        };
+
+        await db.collection('candidatos').doc(user.uid).update(dadosAtualizados);
+        showAlert('success', 'Dados pessoais atualizados com sucesso!');
+        
+        // Atualizar nome exibido
+        document.getElementById('user-name').textContent = dadosAtualizados.nome;
+        
+    } catch (error) {
+        console.error('Erro ao salvar dados pessoais:', error);
+        showAlert('error', 'Erro ao salvar dados pessoais.');
+    }
+}
+
+// Salvar perfil profissional
+async function salvarPerfilProfissional() {
+    try {
+        const user = auth.currentUser;
+        if (!user) return;
+
+        const dadosAtualizados = {
+            resumoHabilidades: document.getElementById('resumo-habilidades').value,
+            experienciasProfissionais: document.getElementById('experiencias-profissionais').value
+        };
+
+        await db.collection('candidatos').doc(user.uid).update(dadosAtualizados);
+        showAlert('success', 'Perfil profissional atualizado com sucesso!');
+        
+    } catch (error) {
+        console.error('Erro ao salvar perfil profissional:', error);
+        showAlert('error', 'Erro ao salvar perfil profissional.');
+    }
+}
+
+// Deslogar usuário
+async function deslogarUsuario() {
+    try {
+        await auth.signOut();
+        showAlert('success', 'Deslogado com sucesso!');
+        setTimeout(() => {
+            window.location.href = 'login-candidato.html';
+        }, 1500);
+    } catch (error) {
+        console.error('Erro ao deslogar:', error);
+        showAlert('error', 'Erro ao deslogar.');
+    }
+}
+
+// Excluir conta
+async function excluirConta() {
+    if (!confirm('Tem certeza que deseja excluir sua conta permanentemente? Esta ação não pode ser desfeita.')) {
+        return;
+    }
+
+    try {
+        const user = auth.currentUser;
+        if (!user) return;
+
+        // Opcional: Deletar dados do Firestore primeiro
+        await db.collection('candidatos').doc(user.uid).delete();
+        
+        // Deletar usuário do Authentication
+        await user.delete();
+        
+        showAlert('success', 'Conta excluída com sucesso!');
+        setTimeout(() => {
+            window.location.href = 'index.html';
+        }, 1500);
+        
+    } catch (error) {
+        console.error('Erro ao excluir conta:', error);
+        showAlert('error', 'Erro ao excluir conta. Você pode precisar fazer login novamente.');
+    }
+}
+
+// Verificar autenticação em páginas protegidas
+auth.onAuthStateChanged((user) => {
+    const currentPage = window.location.pathname;
+    
+    // Páginas que requerem autenticação
+    const protectedPages = [
+        'InicialAluno.html',
+        'PerfilAluno.html',
+        'VagasAluno.html',
+        'minhasCandidaturas.html'
+    ];
+    
+    const isProtectedPage = protectedPages.some(page => currentPage.includes(page));
+    
+    if (isProtectedPage && !user) {
+        window.location.href = 'login-candidato.html';
+    }
+});
+
+// Auto-complete para cursos (se necessário)
+document.addEventListener('DOMContentLoaded', function() {
+    const cursoInput = document.getElementById('curso-candidato');
+    const sugestoesDiv = document.getElementById('sugestoes-curso');
+    const cursoIdInput = document.getElementById('curso-id-candidato');
+    
+    if (cursoInput && sugestoesDiv) {
+        // Implementar auto-complete de cursos aqui
+        // (mantenha sua implementação existente)
+    }
+});
+
