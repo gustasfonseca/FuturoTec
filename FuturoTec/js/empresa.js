@@ -220,8 +220,10 @@ const loadCandidaciesForCompany = async () => {
                           email: 'N/A', 
                           telefone: 'N/A', 
                           curso: 'N/A', 
-                          cursoNome: 'N/A', // ADICIONANDO CAMPO CURSO NOME
-                          area: 'N/A' 
+                          cursoNome: 'N/A',
+                          area: 'N/A',
+                          resumoHabilidades: 'Não informado',
+                          experienciasProfissionais: 'Não informado'
                       };
 
                       try {
@@ -256,9 +258,10 @@ const loadCandidaciesForCompany = async () => {
                            console.error("Erro ao buscar perfil do aluno:", candidatura.alunoId, e);
                       }
                       
-                      // EXIBINDO O CURSO CORRETAMENTE (LOCAL FOI REMOVIDO)
+                      // EXIBINDO O CURSO CORRETAMENTE
                       const alunoCurso = aluno.curso || 'Curso não informado';
                       
+                      // MOSTRAR TUDO COMPLETO SEM RÉTICENCIAS
                       candidatosHtml += `
                            <li class="candidate-card">
                                 <div class="candidate-details">
@@ -270,8 +273,17 @@ const loadCandidaciesForCompany = async () => {
                                     <p class="candidate-contact">
                                          <i data-feather="phone" class="icon-small"></i> <strong>Telefone:</strong> ${aluno.telefone}
                                     </p>
+                                    <div class="candidate-full-info">
+                                        <div class="info-section">
+                                            <h5>📝 Resumo de Habilidades</h5>
+                                            <p class="info-content">${aluno.resumoHabilidades || 'Não informado'}</p>
+                                        </div>
+                                        <div class="info-section">
+                                            <h5>💼 Experiências Profissionais</h5>
+                                            <p class="info-content">${aluno.experienciasProfissionais || 'Não informado'}</p>
+                                        </div>
+                                    </div>
                                 </div>
-                                <button class="view-cv-btn" data-aluno-id="${candidatura.alunoId}">Ver Perfil Completo</button>
                            </li>
                       `;
                  }
