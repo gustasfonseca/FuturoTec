@@ -1,920 +1,222 @@
-/* --- Reset e Variáveis Globais --- */
-
-* {
-
-    margin: 0;
-
-    padding: 0;
-
-    box-sizing: border-box;
-
-}
-
-
-
-:root {
-
-    --primary: hsl(195, 35%, 45%); /* Tom de azul mais próximo da imagem */
-
-    --primary-hover: hsl(195, 35%, 40%);
-
-    --primary-foreground: hsl(0, 0%, 100%);
-
-    --background: hsl(220, 15%, 96%); /* Fundo cinza claro como na imagem */
-
-    --card-background: hsl(0, 0%, 100%);
-
-    --foreground: hsl(218, 11%, 25%);
-
-    --muted-foreground: hsl(215, 16%, 55%);
-
-    --border: hsl(214.3, 31.8%, 91.4%);
-
-    --input-border: hsl(220, 13%, 88%);
-
-}
-
-
-
-/* --- Estilos Gerais --- */
-
-body {
-
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-
-    line-height: 1.6;
-
-    color: var(--foreground);
-
-    background-color: var(--background);
-
-}
-
-
-
-.container {
-
-    max-width: 1100px;
-
-    margin: 0 auto;
-
-    padding: 0 1rem;
-
-}
-
-
-
-/* --- Header --- */
-
-.header {
-
-    background-color: var(--card-background);
-
-    border-bottom: 1px solid var(--border);
-
-    padding: 0.5rem 0;
-
-}
-
-
-
-.nav-wrapper {
-
-    display: flex;
-
-    align-items: center;
-
-    justify-content: space-between;
-
-}
-
-
-
-.logo img {
-
-    height: 40px;
-
-    width: auto;
-
-}
-
-
-
-.user-nav {
-
-    display: flex;
-
-    align-items: center;
-
-    gap: 1rem;
-
-}
-
-
-
-.user-greeting {
-
-    font-weight: 500;
-
-    color: var(--muted-foreground);
-
-}
-
-
-
-.user-icon {
-
-    width: 36px;
-
-    height: 36px;
-
-    border-radius: 50%;
-
-    background-color: var(--primary);
-
-}
-
-
-
-/* --- Layout Principal da Página de Perfil --- */
-
-.profile-page-container {
-
-    max-width: 1000px;
-
-    margin: 2rem auto;
-
-    padding: 0 1rem;
-
-}
-
-
-
-.profile-header {
-
-    text-align: center;
-
-    margin-bottom: 2.5rem;
-
-}
-
-
-
-.profile-header h1 {
-
-    font-size: 2.25rem;
-
-    font-weight: 700;
-
-    color: var(--foreground);
-
-}
-
-
-
-.profile-header p {
-
-    font-size: 1.1rem;
-
-    color: var(--muted-foreground);
-
-}
-
-
-
-.profile-grid {
-
-    display: grid;
-
-    grid-template-columns: 1fr 2fr;
-
-    gap: 2.5rem;
-
-    align-items: flex-start;
-
-}
-
-
-
-.profile-info h3 {
-
-    font-size: 1.25rem;
-
-    margin-bottom: 0.5rem;
-
-}
-
-
-
-.profile-info p {
-
-    color: var(--muted-foreground);
-
-}
-
-
-
-/* --- Card do Formulário --- */
-
-.profile-form-card {
-
-    background-color: var(--card-background);
-
-    border: 1px solid var(--border);
-
-    border-radius: 8px;
-
-    padding: 2rem;
-
-}
-
-
-
-hr {
-
-    border: 0;
-
-    border-top: 1px solid var(--border);
-
-    margin: 1.5rem 0;
-
-}
-
-
-
-/* --- Resumo do Usuário --- */
-
-.user-summary {
-
-    display: flex;
-
-    align-items: center;
-
-    gap: 1.5rem;
-
-}
-
-
-
-.profile-picture {
-
-    text-align: center;
-
-}
-
-
-
-.profile-picture img {
-
-    width: 80px;
-
-    height: 80px;
-
-    border-radius: 50%;
-
-    object-fit: cover;
-
-    margin-bottom: 0.5rem;
-
-}
-
-
-
-.change-photo-btn {
-
-    background: none;
-
-    border: none;
-
-    color: var(--primary);
-
-    font-weight: 500;
-
-    cursor: pointer;
-
-    font-size: 0.9rem;
-
-}
-
-
-
-.user-details h2 {
-
-    font-size: 1.25rem;
-
-    font-weight: 600;
-
-}
-
-
-
-.user-details .email,
-
-.user-details .job-title {
-
-    color: var(--muted-foreground);
-
-    font-size: 0.9rem;
-
-}
-
-
-
-.user-details .job-title {
-
-    font-weight: 500;
-
-    text-transform: uppercase;
-
-}
-
-
-
-/* --- Estilos do Formulário --- */
-
-form {
-
-    display: grid;
-
-    grid-template-columns: 1fr 1fr;
-
-    gap: 1.5rem;
-
-}
-
-
-
-.form-group {
-
-    display: flex;
-
-    flex-direction: column;
-
-    gap: 0.5rem;
-
-}
-
-
-
-.form-group.full-width {
-
-    grid-column: 1 / -1;
-
-}
-
-
-
-.form-group label {
-
-    font-weight: 500;
-
-    font-size: 0.9rem;
-
-}
-
-
-
-.form-group label.required::after {
-
-    content: '*';
-
-    color: #e74c3c;
-
-    margin-left: 4px;
-
-}
-
-
-
-.form-group input[type="text"],
-
-.form-group input[type="email"],
-
-.form-group input[type="tel"],
-
-.form-group input[type="date"],
-
-.form-group select {
-
-    width: 100%;
-
-    padding: 0.7rem;
-
-    border: 1px solid var(--input-border);
-
-    border-radius: 6px;
-
-    font-size: 1rem;
-
-    color: var(--foreground);
-
-}
-
-
-
-.form-group input:focus,
-
-.form-group select:focus {
-
-    outline: none;
-
-    border-color: var(--primary);
-
-    box-shadow: 0 0 0 2px hsla(195, 35%, 45%, 0.2);
-
-}
-
-
-
-.form-group input[disabled] {
-
-    background-color: hsl(220, 20%, 94%);
-
-    cursor: not-allowed;
-
-}
-
-
-
-.form-group .subtitle {
-
-    font-size: 0.9rem;
-
-    color: var(--muted-foreground);
-
-    margin-top: -0.25rem;
-
-}
-
-
-
-.radio-group {
-
-    display: flex;
-
-    gap: 1.5rem;
-
-    padding-top: 0.25rem;
-
-}
-
-
-
-.radio-group label {
-
-    display: flex;
-
-    align-items: center;
-
-    gap: 0.5rem;
-
-    font-weight: normal;
-
-}
-
-
-
-.form-actions {
-
-    grid-column: 1 / -1;
-
-    display: flex;
-
-    justify-content: flex-end;
-
-    margin-top: 1rem;
-
-}
-
-
-
-.save-button {
-
-    background-color: var(--primary);
-
-    color: var(--primary-foreground);
-
-    border: none;
-
-    padding: 0.75rem 2rem;
-
-    border-radius: 6px;
-
-    font-size: 1rem;
-
-    font-weight: 500;
-
-    cursor: pointer;
-
-    transition: background-color 0.2s ease;
-
-}
-
-
-
-.save-button:hover {
-
-    background-color: var(--primary-hover);
-
-}
-
-
-
-/* --- Responsividade --- */
-
-@media (max-width: 900px) {
-
-    .profile-grid {
-
-        grid-template-columns: 1fr;
-
-    }
-
-    .profile-info {
-
-        text-align: center;
-
-    }
-
-}
-
-
-
-@media (max-width: 600px) {
-
-    form {
-
-        grid-template-columns: 1fr;
-
-    }
-
-    .user-summary {
-
-        flex-direction: column;
-
-        text-align: center;
-
-    }
-
-}
-
-/* ===== Estilos Gerais da Página de Perfil ===== */
-
-.profile-page-container {
-
-    max-width: 900px;
-
-    margin: 40px auto;
-
-    padding: 0 20px;
-
-}
-
-
-
-.profile-header {
-
-    text-align: center;
-
-    margin-bottom: 40px;
-
-}
-
-
-
-.profile-header h1 {
-
-    font-size: 2.5rem;
-
-    margin-bottom: 8px;
-
-    color: #333;
-
-}
-
-
-
-.profile-header p {
-
-    font-size: 1.1rem;
-
-    color: #666;
-
-}
-
-
-
-/* ===== Botão Salvar com a Nova Cor ===== */
-
-.save-button {
-
-    background-color: hsl(174, 36%, 45%); /* Nova cor principal */
-
-    color: white;
-
-    padding: 12px 20px;
-
-    border: none;
-
-    border-radius: 6px;
-
-    font-size: 1rem;
-
-    font-weight: 500;
-
-    cursor: pointer;
-
-    transition: background-color 0.3s ease;
-
-}
-
-
-
-.save-button:hover {
-
-    background-color: hsl(174, 36%, 35%); /* Tom mais escuro para hover */
-
-}
-
-
-
-
-
-/* ===== Estilos para a ZONA DE PERIGO (Nova Cor Padrão) ===== */
-
-
-
-.danger-zone {
-
-    margin-top: 60px;
-
-    padding: 24px;
-
-    border: 1px solid hsl(174, 36%, 85%); /* Borda verde-água clara */
-
-    border-radius: 8px;
-
-    background-color: hsl(174, 36%, 95%); /* Fundo verde-água bem claro */
-
-}
-
-
-
-.danger-zone h3 {
-
-    font-size: 1.5rem;
-
-    color: hsl(174, 25%, 25%); /* Título verde-água escuro */
-
-    margin-top: 0;
-
-    margin-bottom: 8px;
-
-}
-
-
-
-.danger-zone p {
-
-    font-size: 1rem;
-
-    color: hsl(174, 25%, 35%); /* Texto principal verde-água escuro */
-
-    line-height: 1.6;
-
-    margin-bottom: 20px;
-
-}
-
-
-
-.danger-zone hr {
-
-    border: none;
-
-    height: 1px;
-
-    background-color: hsl(174, 36%, 85%); /* Linha com cor da borda */
-
-    margin: 24px 0;
-
-}
-
-
-
-.delete-account-btn {
-
-    background-color: hsl(174, 36%, 45%); /* Nova cor principal */
-
-    color: white;
-
-    font-weight: bold;
-
-    font-size: 1rem;
-
-    padding: 10px 18px;
-
-    border: none;
-
-    border-radius: 6px;
-
-    cursor: pointer;
-
-    transition: background-color 0.3s ease, transform 0.2s ease;
-
-}
-
-
-
-.delete-account-btn:hover {
-
-    background-color: hsl(174, 36%, 35%); /* Tom mais escuro para hover */
-
-    transform: translateY(-2px);
-
-}
-/* --- CORREÇÃO PARA LABELS EM BRANCO --- */
-
-.profile-form-card .form-group label {
-    color: #333 !important; /* Força o texto a ficar cinza escuro */
-}
-
-/* ===== MELHORIAS PARA AS ÁREAS DE TEXTO GRANDES ===== */
-
-/* Container principal das seções */
-.profile-form-card section {
-    margin-bottom: 2.5rem;
-}
-
-/* Títulos das seções */
-.profile-form-card h2 {
-    font-size: 1.5rem;
-    font-weight: 600;
-    color: var(--foreground);
-    margin-bottom: 1rem;
-    padding-bottom: 0.5rem;
-    border-bottom: 2px solid var(--primary);
-}
-
-/* Área de texto GRANDE para Habilidades */
-.skills-textarea {
-    width: 100%;
-    min-height: 200px; /* Aumentado significativamente */
-    padding: 1.5rem;
-    border: 2px solid var(--input-border);
-    border-radius: 12px;
-    font-size: 1.1rem;
-    line-height: 1.6;
-    resize: vertical;
-    transition: all 0.3s ease;
-    background: var(--card-background);
-    font-family: inherit;
-}
-
-/* Área de texto GRANDE para Experiências */
-.experience-textarea {
-    width: 100%;
-    min-height: 250px; /* Ainda maior para experiências */
-    padding: 1.5rem;
-    border: 2px solid var(--input-border);
-    border-radius: 12px;
-    font-size: 1.1rem;
-    line-height: 1.6;
-    resize: vertical;
-    transition: all 0.3s ease;
-    background: var(--card-background);
-    font-family: inherit;
-}
-
-/* Efeitos de foco */
-.skills-textarea:focus,
-.experience-textarea:focus {
-    outline: none;
-    border-color: var(--primary);
-    box-shadow: 0 0 0 4px hsla(174, 36%, 45%, 0.15);
-    background: white;
-}
-
-/* Placeholders estilizados */
-.skills-textarea::placeholder,
-.experience-textarea::placeholder {
-    color: var(--muted-foreground);
-    font-style: italic;
-    font-size: 1rem;
-}
-
-/* Texto de exemplo */
-.example-text {
-    display: block;
-    font-size: 0.9rem;
-    color: var(--muted-foreground);
-    margin-top: 0.5rem;
-    margin-bottom: 1rem;
-    font-style: italic;
-    padding-left: 0.5rem;
-    border-left: 3px solid var(--border);
-}
-
-/* Contador de caracteres */
-.char-counter {
-    text-align: right;
-    font-size: 0.85rem;
-    color: var(--muted-foreground);
-    margin-top: 0.75rem;
-    font-weight: 500;
-}
-
-.char-counter.warning {
-    color: #e67e22;
-    font-weight: 600;
-}
-
-.char-counter.error {
-    color: #e74c3c;
-    font-weight: 600;
-}
-
-/* Dicas de formatação */
-.formatting-tips {
-    margin-top: 1.5rem;
-    padding: 1.25rem;
-    background: linear-gradient(135deg, hsla(174, 36%, 45%, 0.05), hsla(174, 36%, 35%, 0.05));
-    border-radius: 10px;
-    border-left: 4px solid var(--primary);
-}
-
-.formatting-tips h4 {
-    font-size: 1rem;
-    font-weight: 600;
-    margin-bottom: 0.75rem;
-    color: var(--foreground);
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.formatting-tips h4::before {
-    content: "💡";
-    font-size: 1.1rem;
-}
-
-.formatting-tips ul {
-    font-size: 0.9rem;
-    color: var(--muted-foreground);
-    padding-left: 1.5rem;
-    margin: 0;
-}
-
-.formatting-tips li {
-    margin-bottom: 0.5rem;
-    line-height: 1.5;
-}
-
-.formatting-tips strong {
-    color: var(--foreground);
-}
-
-/* Linha divisória estilizada */
-.profile-form-card hr {
-    border: 0;
-    height: 2px;
-    background: linear-gradient(90deg, var(--primary), var(--border));
-    margin: 2.5rem 0;
-    border-radius: 2px;
-}
-
-/* Responsividade para mobile */
-@media (max-width: 768px) {
-    .skills-textarea {
-        min-height: 180px;
-        padding: 1.25rem;
-        font-size: 1rem;
-    }
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Meu Perfil - FuturoTEC</title>
+    <link rel="stylesheet" href="css/perfil.css">
+    <link rel="stylesheet" href="css/styles.css">
+    <script src="https://unpkg.com/feather-icons"></script>
+</head>
+
+<body>
+    <div class="app">
+        <header class="header">
+            <div class="container">
+                <div class="nav-wrapper">
+                    <div class="logo">
+                        <img src="img/FuturoTecInicial.jpeg" alt="FuturoTEC Logo" />
+                    </div>
+                    <nav class="nav-desktop student-nav">
+                        <a href="InicialAluno.html" class="nav-link">Início</a>
+                        <a href="InicialAluno.html#cursos" class="nav-link">Cursos</a>
+                        <a href="VagasAluno.html" class="nav-link">Vagas</a>
+                        <a href="minhasCandidaturas.html" class="nav-link">Candidaturas</a>
+                    </nav>
+                    <div class="nav-actions">
+                        <a href="PerfilAluno.html" class="login-btn">Meu Perfil</a>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <main class="profile-page-container">
+            <div class="profile-header">
+                <h1>Seu Perfil</h1>
+                <p>Aqui você pode ver e editar seus dados de cadastro.</p>
+            </div>
+
+            <div class="profile-grid">
+                <aside class="profile-info">
+                    <h3>Dados Pessoais</h3>
+                    <p>Mantenha seus dados de contato sempre atualizados.</p>
+                </aside>
+
+                <section class="profile-form-card">
+                    <div class="user-summary">
+                        <div class="user-details">
+                            <h2 id="user-name">Carregando...</h2>
+                            <p class="email" id="user-email">Carregando...</p>
+                        </div>
+                    </div>
+                    <hr>
+
+                    <form id="profile-form">
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="email" id="email" disabled>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="nome-completo" class="required">Nome Completo</label>
+                            <input type="text" id="nome-completo" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="celular" class="required">Número de telefone</label>
+                            <input type="tel" id="celular" placeholder="(11) 90000-0000" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="nascimento" class="required">Data de nascimento</label>
+                            <input type="date" id="nascimento" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="curso-aluno" class="required">Curso</label>
+                            <input type="text" id="curso-aluno" disabled>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="save-button">Salvar Alterações</button>
+                        </div>
+                    </form>
+                </section>
+            </div>
+
+            <!-- SEÇÃO: PERFIL PROFISSIONAL COM LIMITE DE CARACTERES -->
+            <div class="profile-grid">
+                <aside class="profile-info">
+                    <h3>Perfil Profissional</h3>
+                    <p>Essas informações serão visíveis para as empresas quando você se candidatar a vagas.</p>
+                    <p><strong>Limite: 150 caracteres por campo</strong></p>
+                </aside>
+
+                <section class="profile-form-card">
+                    <form id="profile-profissional-form">
+                        <div class="form-group">
+                            <label for="resumo-habilidades">Resumo de Habilidades</label>
+                            <textarea id="resumo-habilidades" name="resumo-habilidades" rows="4" 
+                                      maxlength="150"
+                                      placeholder="Descreva suas principais habilidades (máx. 150 caracteres)"></textarea>
+                            <div class="char-counter">
+                                <span id="habilidadesCount">0</span>/150 caracteres
+                            </div>
+                            <small>Ex: JavaScript, React, Python, Gestão de Projetos, Inglês intermediário, comunicação...</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="experiencias-profissionais">Experiências Profissionais</label>
+                            <textarea id="experiencias-profissionais" name="experiencias-profissionais" rows="4" 
+                                      maxlength="150"
+                                      placeholder="Descreva suas experiências (máx. 150 caracteres)"></textarea>
+                            <div class="char-counter">
+                                <span id="experienciasCount">0</span>/150 caracteres
+                            </div>
+                            <small>Inclua empresa, cargo, período e atividades principais.</small>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="submit" class="save-button">Salvar Perfil Profissional</button>
+                        </div>
+                    </form>
+                </section>
+            </div>
+
+            <div class="danger-zone">
+                <h3>Zona de Perigo</h3>
+                <p>Use esta opção para sair da sua conta sem excluí-la permanentemente.</p>
+                <button type="button" class="delete-account-btn" id="btn-deslogar">
+                    <i data-feather="log-out"></i> Deslogar da Conta
+                </button>
+                <hr>
+                <p>A exclusão da sua conta é irreversível e removerá todos os seus dados e candidaturas.</p>
+                <button type="button" class="delete-account-btn" id="btn-excluir-conta">
+                    <i data-feather="alert-triangle"></i> Excluir Minha Conta Permanentemente
+                </button>
+            </div>
+        </main>
+    </div>
+
+    <footer class="footer">
+        <div class="container footer-grid">
+            <div class="footer-info">
+                <h4>FuturoTEC</h4>
+                <p>Projeto de Conclusão de Curso (TCC)</p>
+                <p class="school">ETEC Albert Einstein</p>
+                <p class="copyright">© 2025 FuturoTEC. Todos os direitos reservados.</p>
+                <p class="authors">Desenvolvido por: Nátaly Lima, Gustavo Fonseca, Eduarda Marques, Amanda Silva, Gabrielly Mendes, Uillian Oliveira e Felipe Cardoso.</p>
+            </div>
     
-    .experience-textarea {
-        min-height: 220px;
-        padding: 1.25rem;
-        font-size: 1rem;
-    }
+            <div class="footer-links">
+                <h4>Links Úteis</h4>
+                <ul>
+                    <li><a href="#">Termos de Uso</a></li>
+                    <li><a href="#">Política de Privacidade</a></li>
+                    <li><a href="#">Sobre nós</a></li>
+                    <li><a href="#">Contato</a></li>
+                </ul>
+            </div>
     
-    .formatting-tips {
-        padding: 1rem;
-        margin-top: 1.25rem;
-    }
-}
+            <div class="footer-social">
+                <h4>Conecte-se</h4>
+                <div class="social-icons">
+                    <a href="#"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6H6a2 2 0 0 0-2 2z"></path><path d="M14 2v6h6"></path><path d="M8 12h8"></path><path d="M8 16h8"></path></svg></a>
+                    <a href="#"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg></a>
+                    <a href="#"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"></path></svg></a>
+                </div>
+            </div>
+        </div>
+    </footer>
 
-@media (max-width: 480px) {
-    .skills-textarea {
-        min-height: 160px;
-        padding: 1rem;
-    }
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
     
-    .experience-textarea {
-        min-height: 200px;
-        padding: 1rem;
-    }
-    
-    .profile-form-card h2 {
-        font-size: 1.35rem;
-    }
-}
+    <script>
+        // Contador de caracteres para o perfil profissional
+        document.addEventListener('DOMContentLoaded', function() {
+            // Inicializar ícones
+            if (typeof feather !== 'undefined') {
+                feather.replace();
+            }
+
+            // Configurar contadores de caracteres
+            const habilidadesTextarea = document.getElementById('resumo-habilidades');
+            const experienciasTextarea = document.getElementById('experiencias-profissionais');
+            const habilidadesCounter = document.getElementById('habilidadesCount');
+            const experienciasCounter = document.getElementById('experienciasCount');
+
+            function updateCounter(textarea, counter) {
+                const length = textarea.value.length;
+                counter.textContent = length;
+                
+                // Adicionar classe de warning se estiver perto do limite
+                if (length > 140) {
+                    counter.parentElement.classList.add('warning');
+                } else {
+                    counter.parentElement.classList.remove('warning');
+                }
+            }
+
+            // Event listeners para os contadores
+            if (habilidadesTextarea && habilidadesCounter) {
+                habilidadesTextarea.addEventListener('input', function() {
+                    updateCounter(this, habilidadesCounter);
+                });
+                // Inicializar com valor atual se existir
+                updateCounter(habilidadesTextarea, habilidadesCounter);
+            }
+
+            if (experienciasTextarea && experienciasCounter) {
+                experienciasTextarea.addEventListener('input', function() {
+                    updateCounter(this, experienciasCounter);
+                });
+                // Inicializar com valor atual se existir
+                updateCounter(experienciasTextarea, experienciasCounter);
+            }
+        });
+    </script>
+
+    <script src="js/auth-candidato.js"></script>
+</body>
+</html>
