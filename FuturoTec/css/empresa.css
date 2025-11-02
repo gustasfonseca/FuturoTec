@@ -1374,19 +1374,47 @@ body {
     animation-delay: 0.2s;
 }
 
-/* Destaque para habilidades específicas (opcional) */
-.candidate-skills {
-    position: relative;
+/* Estilos para as informações completas dos candidatos */
+.candidate-full-info {
+    margin-top: 1rem;
+    border-top: 1px solid var(--border);
+    padding-top: 1rem;
 }
 
-.candidate-skills::first-line {
+.info-section {
+    margin-bottom: 1.5rem;
+}
+
+.info-section h5 {
+    font-size: 1rem;
     font-weight: 600;
-    color: #2c5530;
+    color: var(--foreground);
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
 }
 
-/* Melhoria visual para experiências profissionais */
-.candidate-experience {
-    border-left: 2px solid #c8e6c9;
-    padding-left: 1rem;
-    margin-left: 0.5rem;
+.info-content {
+    background: hsla(174, 36%, 45%, 0.05);
+    padding: 1rem;
+    border-radius: 8px;
+    border-left: 3px solid var(--primary);
+    color: var(--muted-foreground);
+    line-height: 1.6;
+    white-space: pre-line;
+    word-wrap: break-word;
+}
+
+.candidate-card {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.candidate-details {
+    width: 100%;
 }
