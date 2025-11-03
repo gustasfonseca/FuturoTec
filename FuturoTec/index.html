@@ -8,27 +8,70 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
-    
-    <link rel="stylesheet" href="css/styles.css">
     <link rel="stylesheet" href="css/inicialgeral.css">
 
+    <style>
+        /* Efeitos extras para as interações JS */
+        .botao-link.ativo {
+            background-color: var(--primary-hover) !important;
+            transform: translateY(-3px) scale(1.03) !important;
+            box-shadow: 0 10px 30px rgba(79, 155, 148, 0.6) !important;
+        }
+        
+        .efeito-particulas {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
+            pointer-events: none;
+            animation: flutuar 1s ease-out forwards;
+        }
+        
+        @keyframes flutuar {
+            0% {
+                transform: translate(0, 0) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(var(--tx), var(--ty)) scale(0);
+                opacity: 0;
+            }
+        }
+        
+        .efeito-digitar {
+            overflow: hidden;
+            border-right: 2px solid var(--primary);
+            white-space: nowrap;
+            animation: piscar 0.7s infinite;
+        }
+        
+        @keyframes piscar {
+            0%, 100% { border-color: transparent; }
+            50% { border-color: var(--primary); }
+        }
+    </style>
 </head>
 <body class="home">
-    <div class="app">
-        <main>
-            <div class="logo-topo">
-                <img src="img/FuturoTecIndexLogo.png" alt="FuturoTEC Logo">
-            </div>
-
-            <h1 class="top-title">Conectando <span class="highlight">talentos</span></h1>
-
-            <section id="cadastro" class="cadastro-container container">
+    <!-- Layout dividido -->
+    <div class="split-layout">
+        <!-- Metade esquerda com imagem de fundo -->
+        <div class="split-left"></div>
+        
+        <!-- Metade direita com fundo branco -->
+        <div class="split-right">
+            <!-- Espaço vazio - o conteúdo fica no card sobreposto -->
+        </div>
+        
+        <!-- Card sobreposto na divisão -->
+        <div class="cadastro-overlay">
+            <section id="cadastro" class="cadastro-container">
                 <div class="cadastro-content">
-                    <h2 class="cadastro-title">Seja bem-vindo!</h2>
-                    <p class="cadastro-subtitle">Escolha seu perfil para continuar.</p>
+                    <h2 class="cadastro-title" id="titulo-animado">Seja bem-vindo!</h2>
+                    <p class="cadastro-subtitle" id="subtitulo-animado">Escolha seu perfil para continuar:</p>
                     <div class="botoes-container">
 
-                        <a href="login-candidato.html" class="botao-link">
+                        <a href="login-candidato.html" class="botao-link" data-som="hover">
                             <div class="botao-icone">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
                                     <path
@@ -37,10 +80,10 @@
                             </div>
                             <div class="botao-texto">
                                 <p class="botao-titulo">Sou candidato</p>
-                                <p class="botao-subtitulo">Estou à procura de estágios</p>
+                                <p class="botao-subtitulo">estou a procura de estágios</p>
                             </div>
                         </a>
-                        <a href="login-empresa.html" class="botao-link">
+                        <a href="login-empresa.html" class="botao-link" data-som="hover">
                             <div class="botao-icone">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
                                     <path
@@ -52,7 +95,7 @@
                                 <p class="botao-subtitulo">Quero anunciar estágios</p>
                             </div>
                         </a>
-                        <a href="login-assistente.html" class="botao-link">
+                        <a href="login-assistente.html" class="botao-link" data-som="hover">
                             <div class="botao-icone">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
                                     <path
@@ -61,19 +104,164 @@
                             </div>
                             <div class="botao-texto">
                                 <p class="botao-titulo">Sou assistente técnico</p>
-                                <p class="botao-subtitulo">Vim para auxiliar no processo</p>
+                                <p class="botao-subtitulo">Vim auxiliar no processo</p>
                             </div>
                         </a>
                     </div>
                 </div>
-                <div class="cadastro-image">
-                    <img src="img/Index.jpeg"
-                        alt="Pessoas trabalhando em uma mesa">
-                </div>
             </section>
-        </main>
+        </div>
     </div>
 
-    <script src="script.js"></script>
+    <script>
+        // Efeito de digitação no título
+        function efeitoDigitacao(elemento, texto, velocidade = 100) {
+            let i = 0;
+            elemento.innerHTML = '';
+            
+            function digitar() {
+                if (i < texto.length) {
+                    elemento.innerHTML += texto.charAt(i);
+                    i++;
+                    setTimeout(digitar, velocidade);
+                }
+            }
+            digitar();
+        }
+
+        // Efeito de partículas nos botões
+        function criarParticulas(event) {
+            const botao = event.currentTarget;
+            const rect = botao.getBoundingClientRect();
+            
+            for (let i = 0; i < 8; i++) {
+                const particula = document.createElement('div');
+                particula.className = 'efeito-particulas';
+                
+                // Posição aleatória ao redor do botão
+                const angle = Math.random() * Math.PI * 2;
+                const distance = 30 + Math.random() * 40;
+                const tx = Math.cos(angle) * distance;
+                const ty = Math.sin(angle) * distance;
+                
+                particula.style.setProperty('--tx', `${tx}px`);
+                particula.style.setProperty('--ty', `${ty}px`);
+                particula.style.left = (event.clientX - rect.left) + 'px';
+                particula.style.top = (event.clientY - rect.top) + 'px';
+                
+                botao.appendChild(particula);
+                
+                // Remover partícula após animação
+                setTimeout(() => {
+                    particula.remove();
+                }, 1000);
+            }
+        }
+
+        // Feedback tátil para clique
+        function efeitoClique(event) {
+            const botao = event.currentTarget;
+            botao.classList.add('ativo');
+            
+            // Vibrar dispositivo (se suportado)
+            if (navigator.vibrate) {
+                navigator.vibrate(50);
+            }
+            
+            setTimeout(() => {
+                botao.classList.remove('ativo');
+            }, 300);
+        }
+
+        // Inicializar quando a página carregar
+        document.addEventListener('DOMContentLoaded', function() {
+            // Efeito de digitação nos textos
+            const titulo = document.getElementById('titulo-animado');
+            const subtitulo = document.getElementById('subtitulo-animado');
+            
+            if (titulo && subtitulo) {
+                const textoOriginalTitulo = titulo.textContent;
+                const textoOriginalSubtitulo = subtitulo.textContent;
+                
+                setTimeout(() => {
+                    efeitoDigitacao(titulo, textoOriginalTitulo, 80);
+                }, 500);
+                
+                setTimeout(() => {
+                    efeitoDigitacao(subtitulo, textoOriginalSubtitulo, 60);
+                }, 1200);
+            }
+
+            // Adicionar eventos aos botões
+            const botoes = document.querySelectorAll('.botao-link');
+            
+            botoes.forEach(botao => {
+                
+                // Efeito de clique
+                botao.addEventListener('click', function(e) {
+                    efeitoClique(e);
+                    contarInteracao();
+                    
+                    // Pequeno delay antes de seguir o link (para ver a animação)
+                    e.preventDefault();
+                    setTimeout(() => {
+                        window.location.href = botao.href;
+                    }, 400);
+                });
+                
+                // Efeito de foco para acessibilidade
+                botao.addEventListener('focus', function() {
+                    this.style.outline = '2px solid var(--primary)';
+                    this.style.outlineOffset = '2px';
+                });
+                
+                botao.addEventListener('blur', function() {
+                    this.style.outline = 'none';
+                });
+            });
+
+            // Parallax no movimento do mouse
+            document.addEventListener('mousemove', parallaxFundo);
+
+            // Efeito de entrada com delay nos botões
+            setTimeout(() => {
+                botoes.forEach((botao, index) => {
+                    setTimeout(() => {
+                        botao.style.opacity = '0';
+                        botao.style.transform = 'translateY(20px)';
+                        botao.style.display = 'flex';
+                        
+                        setTimeout(() => {
+                            botao.style.transition = 'all 0.5s ease';
+                            botao.style.opacity = '1';
+                            botao.style.transform = 'translateY(0)';
+                        }, 50);
+                    }, index * 200);
+                });
+            }, 2000);
+
+            // Feedback de carregamento completo
+            window.addEventListener('load', function() {
+                document.body.classList.add('carregado');
+                console.log('Página totalmente carregada e interativa!');
+            });
+        });
+
+        // Efeito de confete no scroll (opcional)
+        window.addEventListener('scroll', function() {
+            const scrollY = window.scrollY;
+            if (scrollY > 100 && scrollY < 150) {
+                console.log('Usuário está explorando a página!');
+            }
+        });
+
+        // Detectar preferência por redução de movimento
+        const prefereReduzirMovimento = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        
+        if (prefereReduzirMovimento) {
+            document.documentElement.style.setProperty('--animacao-velocidade', '0.01s');
+            console.log('Redução de movimento ativada - animações suavizadas');
+        }
+    </script>
 </body>
 </html>
