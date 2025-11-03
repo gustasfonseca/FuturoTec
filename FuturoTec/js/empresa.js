@@ -28,6 +28,161 @@ const loadAvailableCourses = async () => {
 };
 
 // =================================================================
+// LÓGICA DE AUTOCOMPLETE PARA MÚLTIPLOS CURSOS
+// =================================================================
+
+const renderSelectedCourses = () => {
+    const container = document.getElementById('cursos-selecionados');
+    if (!container) return;
+
+    // Constrói o HTML das tags
+    container.innerHTML = selectedCourses.map(course => `
+        <span class="course-tag" data-course="${course}">
+            ${course}
+            <i data-feather="x" class="remove-tag" data-course="${course}"></i>
+        </span>
+    `).join('');
+
+    // Re-renderizar os ícones do feather
+    if (typeof feather !== 'undefined') {
+        feather.replace();
+    }
+}
+
+const setupCourseAutocomplete = () => {
+    const input = document.getElementById('curso-vaga'); 
+    const suggestionsContainer = document.getElementById('sugestoes-curso-vaga');
+    const selectedContainer = document.getElementById('cursos-selecionados');
+    
+    if (!input || !suggestionsContainer || !selectedContainer) {
+        console.warn("Elementos de Autocomplete de Curso não encontrados. Verifique os IDs 'curso-vaga', 'sugestoes-curso-vaga' e 'cursos-selecionados'.");
+        return;
+    }
+
+    // 1. Lógica do Input (Buscar Sugestões)
+    input.addEventListener('input', () => {
+        const query = input.value.toLowerCase().trim();
+        suggestionsContainer.innerHTML = '';
+
+        if (query.length === 0) {
+            return;
+        }
+
+        // AGORA USA availableCourses (Carregado do Firestore)
+        const filteredCourses = availableCourses.filter(course => 
+            course.toLowerCase().includes(query) && !selectedCourses.includes(course)
+        );
+
+        if (filteredCourses.length > 0) {
+            filteredCourses.forEach(course => {
+                const item = document.createElement('div');
+                item.className = 'autocomplete-item';
+                item.textContent = course;
+                item.addEventListener('click', () => handleCourseSelection(course));
+                suggestionsContainer.appendChild(item);
+            });
+        } else {
+            suggestionsContainer.innerHTML = '<div class="autocomplete-item no-results">Nenhum curso encontrado.</div>';
+        }
+    });
+    
+    // 2. Lógica de Seleção de Curso
+    const handleCourseSelection = (course) => {
+        if (!selectedCourses.includes(course)) {
+            selectedCourses.push(course);
+            renderSelectedCourses();
+            input.value = ''; // Limpa o input
+            suggestionsContainer.innerHTML = ''; // Esconde as sugestões
+        }
+    };
+    
+    // 3. Lógica de Remover Tag (usando delegação de eventos no container)
+    selectedContainer.addEventListener('click', (e) => {
+        const removeButton = e.target.closest('.remove-tag');
+        if (removeButton) {
+            const courseToRemove = removeButton.dataset.course;
+            selectedCourses = selectedCourses.filter(c => c !== courseToRemove);
+            renderSelectedCourses();
+            
+            // Reabilita o autocomplete, caso o input esteja focado
+            const inputEl = document.getElementById('curso-vaga');
+            if (inputEl && document.activeElement === inputEl) {
+                 inputEl.dispatchEvent(new Event('input'));
+            }
+        }
+    });
+
+    // 4. Fechar Sugestões ao clicar fora
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('.autocomplete-container')) {
+            suggestionsContainer.innerHTML = '';
+        }
+    });
+}
+
+// =================================================================
+// LÓGICA DO FORMULÁRIO CRIAR VAGA
+// =================================================================
+const setupCreateJobForm = () => {
+    const createJobForm = document.getElementById('create-job-form');
+    if (createJobForm) {
+        createJobForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            if (!currentUser) { 
+                console.error("Erro: Usuário não autenticado no momento da submissão.");
+                return; 
+            }
+            
+            // Validação para garantir que pelo menos um curso foi selecionado
+            if (selectedCourses.length === 0) {
+                 alert("Por favor, selecione pelo menos um curso requerido para a vaga.");
+                 return;
+            }
+
+            // Captura o valor do checkbox PCD
+            const vagaPCD = document.getElementById('vaga-pcd').checked;
+
+            const vagaData = {
+                titulo: document.getElementById('titulo').value,
+                descricao: document.getElementById('descricao').value,
+                requisitos: document.getElementById('requisitos').value,
+                cargaHoraria: document.getElementById('cargaHoraria').value,
+                cursosRequeridos: selectedCourses,
+                local: document.getElementById('local').value,
+                periodo: document.getElementById('periodo').value,
+                pcd: vagaPCD,
+                empresaId: currentUser.uid, 
+                status: 'Vaga Ativa', 
+                criadaEm: firebase.firestore.FieldValue.serverTimestamp(),
+                ultimaAtualizacao: firebase.firestore.FieldValue.serverTimestamp()
+            };
+
+            const submitButton = createJobForm.querySelector('button[type="submit"]');
+            submitButton.disabled = true;
+            submitButton.textContent = 'Publicando...';
+
+            db.collection('vagas').add(vagaData)
+                .then(() => {
+                    console.log('Vaga criada com sucesso! Redirecionando...');
+                    createJobForm.reset();
+                    selectedCourses = []; // Limpa o estado após o envio
+                    renderSelectedCourses();
+                    window.location.href = 'MinhasVagas.html';
+                })
+                .catch(error => {
+                    console.error("Erro ao criar a vaga: ", error); 
+                    alert(`Erro ao criar a vaga: ${error.message}`);
+                })
+                .finally(() => {
+                    submitButton.disabled = false;
+                    submitButton.textContent = 'Publicar Vaga';
+                });
+        });
+    }
+}
+
+// =================================================================
 // FUNÇÕES DE CARREGAMENTO DE DADOS (Dashboard e Minhas Vagas)
 // =================================================================
 
@@ -306,17 +461,39 @@ if (logoutBtn) {
 }
 
 // =================================================================
-// INICIALIZAÇÃO
+// INICIALIZAÇÃO - CORRIGIDA PARA FUNCIONAR IGUAL AO CÓDIGO 1
 // =================================================================
 
-auth.onAuthStateChanged(user => {
+auth.onAuthStateChanged(async (user) => { 
     if (user) {
         currentUser = user;
-        loadAvailableCourses();
-        loadDashboardData(user);
-        loadCompanyJobs();
-        loadCandidaciesForCompany();
+        console.log('Usuário autenticado:', currentUser.uid);
+
+        const currentPath = window.location.pathname;
+        
+        // CARREGA OS CURSOS E CONFIGURA O AUTOCOMPLETE NAS PÁGINAS NECESSÁRIAS
+        if (currentPath.includes('CriarVagaEmpresa.html') || currentPath.includes('MinhasVagas.html')) {
+             await loadAvailableCourses(); 
+             setupCourseAutocomplete(); 
+        }
+
+        if (currentPath.includes('CriarVagaEmpresa.html')) {
+            setupCreateJobForm();
+        } 
+        
+        // Outras páginas...
+        else if (currentPath.includes('InicialEmpresa.html')) {
+            loadDashboardData(currentUser);
+        } else if (currentPath.includes('MinhasVagas.html')) {
+            loadCompanyJobs();
+            // setupJobActions(); // Se você tiver essa função, adicione aqui
+        } else if (currentPath.includes('EmpresaCandidatos.html')) { 
+            loadCandidaciesForCompany();
+        }
     } else {
-        window.location.href = 'login.html';
+        // Redireciona para o login se não estiver logado
+        if (!window.location.pathname.includes('login-empresa.html')) {
+            window.location.href = 'login-empresa.html'; 
+        }
     }
 });
