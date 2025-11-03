@@ -1,219 +1,355 @@
-/* --- Variáveis de cores (MANTIDAS) --- */
+/* --- Variáveis de cores --- */
 :root {
-    --primary: #4F9B94; /* Cor principal (verde água) */
-    --primary-hover: #458a83; /* Verde mais escuro para hover */
-    --background: #f0f4f8; /* Fundo cinza muito claro (usado nos botões) */
-    --foreground: #334e68; /* Azul escuro (texto principal) */
-    --muted-foreground: #6b84a0; /* Azul acinzentado (subtítulos) */
-    --card-background: #E0F7FA; 
-    --shadow-color: rgba(46, 139, 87, 0.15); 
-    --shadow-hover: rgba(46, 139, 87, 0.3); 
+    --primary: #4F9B94;
+    --primary-hover: #458a83;
+    --background: #ffffff;
+    --foreground: #334e68;
+    --muted-foreground: #6b84a0;
+    --cinza-fundo: #ffffff; /* Nova cor cinza para o fundo */
 }
 
-/* 1. CORREÇÃO ESSENCIAL PARA EVITAR O SCROLL HORIZONTAL */
+/* --- Reset e estilos base --- */
 *, *::before, *::after {
     box-sizing: border-box;
+    margin: 0;
+    padding: 0;
 }
 
-/* --- Estilos Gerais: CENTRALIZAÇÃO E FUNDO PROFISSIONAL --- */
 body {
     font-family: 'Poppins', sans-serif;
-    background-color: var(--background); 
+    background-color: var(--background);
     color: var(--foreground);
     margin: 0;
     padding: 0;
-    overflow-x: hidden; 
+    overflow-x: hidden;
 }
 
-.app {
+/* --- Layout dividido (MANTIDO COMO ESTAVA) --- */
+.split-layout {
     display: flex;
-    justify-content: center; 
-    align-items: flex-start;
     min-height: 100vh;
+    position: relative;
 }
 
-main {
-    width: 100%;
-    /* Reduzido de 1300px para centralizar melhor em telas mais comuns */
-    max-width: 1200px; 
-    padding: 20px;
-    margin: 50px auto; 
+/* --- Metade esquerda com imagem de fundo (MANTIDO) --- */
+.split-left {
+    flex: 1.4;
+    background-image: url('../img/FuturoTecIndexPC.jpeg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    position: relative;
 }
 
-/* --- Logo Proeminente (MAIOR ÊNFASE) --- */
-.logo-topo {
-    padding-top: 10px;
-    text-align: center;
-    margin-bottom: 1px; /* Reduzido o espaço para aproximar do título */
+/* Overlay sutil na imagem */
+.split-left::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.1);
 }
 
-.logo-topo img {
-    /* Aumenta a logo para a máxima ênfase (ponto focal) */
-    max-height: 200px; 
-    width: auto;
-}
-
-/* --- Título Principal (REDUZIDO) --- */
-.top-title {
-    text-align: center;
-    /* Reduzido o tamanho da fonte */
-    font-size: clamp(2em, 4vw, 3em); 
-    font-weight: 700;
-    color: var(--foreground);
-    margin-bottom: 10px; /* Reduzido o espaço para aproximar o card */
-}
-
-.top-title .highlight {
-    color: var(--primary); 
-}
-
-
-/* --- Card de Opções (REDUZIDO E CENTRALIZADO) --- */
-.cadastro-container {
+/* --- Metade direita com fundo branco (MANTIDO) --- */
+.split-right {
+    flex: 0.6;
+     background-color: var(--cinza-fundo);
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    
-    /* Reduzido o padding interno */
-    padding: clamp(30px, 5vw, 50px); 
-    
-    background-color: var(--primary);
-    border-radius: 20px; /* Ligeiramente mais sutil */
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2); 
-    
-    /* Reduz a largura máxima do card */
-    max-width: 1050px; 
-    margin: 40px auto; /* Garante a centralização */
-    
-    gap: 30px; /* Reduzido o gap entre os elementos */
+    justify-content: center;
+    padding: 40px;
 }
 
-/* --- Responsividade --- */
-@media (max-width: 992px) {
-    .cadastro-container {
-        flex-direction: column;
-        text-align: center;
-        gap: 40px;
-    }
-    /* ... (restante das regras de responsividade) ... */
+/* --- Card sobreposto na divisão (AJUSTADO) --- */
+.cadastro-overlay {
+    position: absolute;
+    top: 50%;
+    left: 72%;
+    transform: translate(-50%, -50%);
+    z-index: 10;
+    width: 75%;
+    max-width: 700px;
 }
 
-/* Conteúdo de texto e botões */
-.cadastro-content {
-    /* Ajusta para 50% de largura para dar espaço igual à imagem */
-    flex: 0 0 50%; 
-    max-width: 450px; /* Limita a largura do bloco de texto/botões */
-    min-width: 300px;
+.cadastro-container {
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+    padding: 40px; /* Aumentado */
     display: flex;
-    flex-direction: column;
-    align-items: flex-start;
+    gap: 40px; /* Aumentado */
+    align-items: center;
+    min-height: 650px;
 }
 
-/* Títulos dentro do Card */
+/* --- Conteúdo do card (ESCRITA AUMENTADA) --- */
+.cadastro-content {
+    flex: 1;
+    min-width: 250px;
+}
+
 .cadastro-title {
-    font-size: clamp(2em, 3.5vw, 2.6em); /* Título ligeiramente menor */
-    font-weight: 700;
-    color: #ffffff;
-    margin-bottom: 15px;
+    font-size: 2em; /* AUMENTADO (era 1.5em) */
+    font-weight: 600;
+    color: var(--primary);
+    margin-bottom: 12px; /* Aumentado */
 }
 
 .cadastro-subtitle {
-    font-size: 1.1em; /* Subtítulo ligeiramente menor */
+    font-size: 1.1em; /* AUMENTADO (era 0.9em) */
+    color: var(--muted-foreground);
+    margin-bottom: 30px; /* Aumentado */
     font-weight: 400;
-    color: var(--background);
-    margin-bottom: 30px; /* Mais perto dos botões */
-    opacity: 1; 
 }
 
-/* --- Imagem (REDUZIDA E CENTRALIZADA) --- */
+/* --- Imagem dentro do card --- */
 .cadastro-image {
-    /* Ajusta para 45% da largura para equilibrar com o bloco de 50% */
-    flex: 0 0 45%; 
-    max-width: 45%; 
-    min-width: 250px; 
+    flex: 1;
+    min-width: 200px;
     display: flex;
-    justify-content: center; /* Centraliza a imagem no próprio bloco */
-    
-    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), filter 0.4s ease-out; 
-    cursor: pointer;
-}
-
-@media (max-width: 992px) {
-    .cadastro-image {
-        max-width: 80%; 
-    }
+    justify-content: center;
+    align-items: center;
 }
 
 .cadastro-image img {
     width: 100%;
     height: auto;
-    border-radius: 18px; 
-    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25); 
-    object-fit: cover; 
-    transition: filter 0.4s ease-out; 
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
 
-/* Efeito interativo na imagem */
-.cadastro-image:hover {
-    transform: translateY(-5px); 
-}
-.cadastro-image:hover img {
-    filter: brightness(1.05); /* Brilho mais sutil */
-}
-
-
-/* --- Estilos dos Botões (MANTIDOS E POLIDOS) --- */
+/* --- BOTÕES COM ESCRITA E ÍCONES AUMENTADOS --- */
 .botoes-container {
     display: flex;
     flex-direction: column;
-    gap: 15px; /* Reduzido o espaço entre os botões */
+    gap: 40px;
     width: 100%;
 }
 
 .botao-link {
-    background-color: #ffffff; 
-    color: var(--primary);
-    padding: 20px; /* Reduzido o padding dos botões */
-    border-radius: 14px; 
+    background-color: var(--primary);
+    color: #ffffff;
+    padding: 22px 25px; /* AUMENTADO (era 18px 20px) */
+    border-radius: 8px;
     display: flex;
     align-items: center;
     text-decoration: none;
-    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
-    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); 
+    border: 1px solid var(--primary);
+    box-shadow: 0 2px 8px rgba(79, 155, 148, 0.3);
+    transition: all 0.3s ease;
+    min-height: 105px; /* AUMENTADO (era 95px) */
 }
 
 .botao-link:hover {
-    background-color: var(--primary); 
-    color: #ffffff; 
-    transform: translateY(-6px); /* Elevação sutil */
-    box-shadow: 0 15px 30px var(--shadow-hover); 
+    background-color: var(--primary-hover);
+    color: #ffffff;
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(79, 155, 148, 0.4);
+    border-color: var(--primary-hover);
 }
 
 .botao-icone {
-    margin-right: 20px; /* Reduzido o espaço */
-    transition: transform 0.3s ease-in-out; 
+    margin-right: 20px; /* Aumentado */
+    transition: transform 0.3s ease;
 }
 
 .botao-link:hover .botao-icone {
-    transform: scale(1.1); 
+    transform: scale(1.1);
 }
 
 .botao-icone svg {
-    width: 2.2em; /* Ícones ligeiramente menores */
-    height: 2.2em;
+    width: 2.2em; /* AUMENTADO (era 1.6em) */
+    height: 2.2em; /* AUMENTADO (era 1.6em) */
     fill: currentColor;
     display: block;
 }
 
 .botao-titulo {
-    font-size: 1.3em; 
-    font-weight: 700; 
+    font-size: 1.2em; /* AUMENTADO (era 1em) */
+    font-weight: 600;
     margin: 0;
 }
 
 .botao-subtitulo {
-    font-size: 0.9em; /* Subtítulo menor */
+    font-size: 0.95em; /* AUMENTADO (era 0.8em) */
     font-weight: 400;
     margin: 0;
-    opacity: 0.9; 
+    opacity: 0.9;
+}
+
+/* --- Logo no topo --- */
+.logo-topo {
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 20;
+    text-align: center;
+}
+
+.logo-topo img {
+    max-height: 90px;
+    width: auto;
+}
+
+/* --- Título principal (removido) --- */
+.top-title {
+    display: none;
+}
+
+/* --- Responsividade --- */
+@media (max-width: 992px) {
+    .split-layout {
+        flex-direction: column;
+    }
+    
+    .split-left {
+        height: 50vh;
+        flex: none;
+    }
+    
+    .split-right {
+        height: 50vh;
+        flex: none;
+    }
+    
+    .cadastro-overlay {
+        position: relative;
+        transform: none;
+        top: auto;
+        left: auto;
+        margin: -70px auto 30px;
+        width: 85%;
+    }
+    
+    .cadastro-container {
+        flex-direction: column;
+        text-align: center;
+        gap: 30px; /* Aumentado */
+        padding: 30px 25px; /* Aumentado */
+        min-height: auto;
+    }
+    
+    .cadastro-title {
+        font-size: 1.8em; /* Ajustado para mobile */
+    }
+    
+    .cadastro-subtitle {
+        font-size: 1em; /* Ajustado para mobile */
+    }
+    
+    .botoes-container {
+        gap: 25px; /* Aumentado */
+    }
+    
+    .botao-link {
+        padding: 20px 22px; /* Aumentado */
+        min-height: 95px; /* Aumentado */
+    }
+    
+    .botao-icone svg {
+        width: 2em; /* Ajustado para mobile */
+        height: 2em;
+    }
+    
+    .botao-titulo {
+        font-size: 1.1em; /* Ajustado para mobile */
+    }
+    
+    .botao-subtitulo {
+        font-size: 0.9em; /* Ajustado para mobile */
+    }
+    
+    .logo-topo {
+        position: relative;
+        top: auto;
+        left: auto;
+        transform: none;
+        margin: 15px 0;
+    }
+    
+    .logo-topo img {
+        max-height: 70px;
+    }
+}
+
+@media (max-width: 768px) {
+    .cadastro-container {
+        padding: 25px 20px;
+        gap: 25px;
+    }
+    
+    .cadastro-overlay {
+        width: 90%;
+    }
+    
+    .split-right {
+        padding: 20px;
+        background-color: var(--cinza-fundo);
+    }
+    
+    .botoes-container {
+        gap: 20px;
+    }
+    
+    .botao-link {
+        padding: 18px 20px;
+        min-height: 85px;
+    }
+    
+    .cadastro-title {
+        font-size: 1.6em;
+    }
+    
+    .cadastro-subtitle {
+        font-size: 0.95em;
+    }
+}
+
+@media (max-width: 480px) {
+    .cadastro-overlay {
+        width: 95%;
+        margin: -50px auto 20px;
+    }
+    
+    .cadastro-container {
+        padding: 20px 15px;
+        gap: 20px;
+    }
+    
+    .botoes-container {
+        gap: 18px;
+    }
+    
+    .botao-link {
+        padding: 16px 18px;
+        min-height: 80px;
+    }
+    
+    .botao-icone svg {
+        width: 1.8em;
+        height: 1.8em;
+    }
+    
+    .botao-titulo {
+        font-size: 1em;
+    }
+    
+    .botao-subtitulo {
+        font-size: 0.85em;
+    }
+    
+    .logo-topo img {
+        max-height: 60px;
+    }
+    
+    .cadastro-title {
+        font-size: 1.4em;
+    }
+    
+    .cadastro-subtitle {
+        font-size: 0.9em;
+    }
 }
