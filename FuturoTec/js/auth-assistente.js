@@ -219,10 +219,10 @@ function setupEtecAutocomplete() {
 
         const sourceEtecs = Array.isArray(allEtecs) ? allEtecs : [];
 
-        const filtered = sourceEtecs.filter(etec =>
-            (etec.nome && etec.nome.toLowerCase().includes(query)) ||
-            (etec.codigo && etec.codigo.toLowerCase().includes(query))
-        );
+       const filtered = sourceEtecs.filter(etec =>
+            (etec.nome && etec.nome.toLowerCase().includes(query)) ||
+            (etec.id && etec.id.toLowerCase().includes(query))
+        );
 
         if (filtered.length > 0) {
             filtered.slice(0, 8).forEach(etec => {
@@ -557,3 +557,4 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 });
+
