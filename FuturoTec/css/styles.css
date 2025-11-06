@@ -2187,3 +2187,24 @@ main {
         min-width: 100%;
     }
 }
+
+/* ============================================= */
+/* === ESTILOS DE VALIDAÇÃO DE SENHA         === */
+/* ============================================= */
+
+/* Define a cor VERMELHA para itens inválidos */
+.validation-item.invalid {
+    color: #c53030; /* Tom de vermelho (pode ser o rosa da sua imagem) */
+}
+.validation-item.invalid .icon-status {
+    color: #c53030;
+}
+
+
+/* Define a cor VERDE para itens válidos */
+.validation-item.valid {
+    color: #28a745;  /* O verde que você quer */
+}
+.validation-item.valid .icon-status {
+    color: #28a745;
+}
