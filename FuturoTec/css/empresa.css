@@ -1418,3 +1418,33 @@ body {
 .candidate-details {
     width: 100%;
 }
+/* Seletor: Link <a> dentro do contêiner de candidaturas */
+#candidaturas-empresa-container a { 
+
+  /* Configurações essenciais para o truncamento funcionar */
+  display: inline-block; 
+  
+  /* ALTURA/FINURA: Ajuste Extremo do Line-Height */
+  padding: 0px 8px; /* Mantém o padding vertical zerado */
+  line-height: 0.9; /* Reduz o line-height para um valor menor que 1.0 */
+  
+  /* ALINHAMENTO (Pode ser necessário reajustar) */
+  vertical-align: top; 
+  margin: 0; 
+  
+  /* LARGURA (Comprido) */
+  max-width: 300px; 
+  width: auto;
+  
+  /* Estilos de aparência */
+  background-color: #20b2aa; 
+  color: white;
+  border-radius: 4px;
+  text-decoration: none;
+  font-size: 1em; /* Tamanho da fonte padrão */
+  
+  /* Truncamento */
+  white-space: nowrap; 
+  overflow: hidden; 
+  text-overflow: ellipsis; 
+}
