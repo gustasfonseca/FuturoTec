@@ -1,11 +1,12 @@
-/* auth.css - AJUSTE FINAL: LARGURA 750px e ALTURA REDUZIDA */
+/* auth.css */
 
 /* --------------------
     1. Estilo da Seção e Fundo (Minimalista)
     -------------------- */
 body {
     font-family: 'Poppins', sans-serif;
-    background: #f0f4f8; /* Fundo suave, quase branco */
+    background: #f0f4f8;
+    /* Fundo suave, quase branco */
 }
 
 .app {
@@ -14,65 +15,74 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 100%; /* Garante que ele use a largura total */
+    width: 100%;
+    /* Garante que ele use a largura total */
 }
 
 .auth-section {
     padding: 60px 20px;
-    background-color: transparent; 
+    background-color: transparent;
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 100%; /* Garante que ele possa expandir */
+    width: 100%;
+    /* Garante que ele possa expandir */
 }
 
 /* --------------------
     2. Cartão de Login (Card) - LARGURA E ALTURA AJUSTADAS AQUI
     -------------------- */
 .auth-card {
-    --main-color: #4F9B94; /* Cor principal (verde água) */
-    --light-color: #fff; 
-    
+    --main-color: #4F9B94;
+    /* Cor principal (verde água) */
+    --light-color: #fff;
+
     background-color: var(--main-color);
     /* REDUÇÃO DE ALTURA: De 40px para 30px no topo e base (30px 40px) */
-    padding: 30px 40px; 
+    padding: 30px 40px;
     border-radius: 16px;
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15), 0 5px 15px rgba(0, 0, 0, 0.08); 
-    max-width: 750px; /* LARGURA MÁXIMA MANTIDA */
-    min-width: 350px; 
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15), 0 5px 15px rgba(0, 0, 0, 0.08);
+    max-width: 750px;
+    /* LARGURA MÁXIMA MANTIDA */
+    min-width: 350px;
     width: 100%;
     text-align: center;
     color: var(--light-color);
-    position: relative; 
+    position: relative;
     transition: transform 0.4s ease-out, box-shadow 0.4s ease;
 }
 
 .auth-logo {
-    background-color: var(--light-color); /* #fff */
-    
+    background-color: var(--light-color);
+    /* #fff */
+
     /* Centraliza o bloco na horizontal dentro do auth-card */
-    margin: 20px auto 15px auto; 
-    
+    margin: 20px auto 15px auto;
+
     /* Define uma largura para o card (ajuste conforme o tamanho do seu logo) */
-    max-width: 250px; 
+    max-width: 250px;
     width: 100%;
-    
+
     /* O padding é importante, mas o Flexbox fará a centralização */
-    padding: 20px; 
-    
+    padding: 20px;
+
     border-radius: 12px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); 
-    
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+
     /* --- AS LINHAS MÁGICAS PARA CENTRALIZAÇÃO COMPLETA (VERTICAL E HORIZONTAL) --- */
-    display: flex; /* Habilita o Flexbox */
-    justify-content: center; /* Centraliza horizontalmente (o conteúdo/filhos) */
-    align-items: center; /* Centraliza verticalmente (o conteúdo/filhos) */
+    display: flex;
+    /* Habilita o Flexbox */
+    justify-content: center;
+    /* Centraliza horizontalmente (o conteúdo/filhos) */
+    align-items: center;
+    /* Centraliza verticalmente (o conteúdo/filhos) */
     /* -------------------------------------------------------------------------- */
 }
 
 /* O estilo da imagem pode ser simplificado, pois o Flexbox faz a maior parte */
 .auth-title-image {
-    max-width: 100%; /* Garante que a imagem nunca ultrapasse o card */
+    max-width: 100%;
+    /* Garante que a imagem nunca ultrapasse o card */
     height: auto;
     /* Não precisamos mais de 'display: block' ou 'margin: 0 auto' aqui! */
 }
@@ -81,9 +91,10 @@ body {
     /* Mantido. Vai ficar logo abaixo do novo card branco. */
     font-size: 1.2em;
     font-weight: 300;
-    margin-bottom: 30px; 
+    margin-bottom: 30px;
     opacity: 0.9;
 }
+
 /* --------------------
     3. Botão do Google (Mantido)
     -------------------- */
@@ -152,73 +163,117 @@ body {
 }
 
 .form-group label {
-    display: block; 
+    display: block;
     margin-bottom: 5px;
     font-size: 0.9em;
     font-weight: 600;
     color: rgba(255, 255, 255, 0.9);
 }
 
-.form-group input {
+.form-group input,
+.form-group textarea {
     width: 100%;
     padding: 14px;
-    padding-right: 45px; /* Deixa espaço para o ícone */
     border: 1px solid transparent;
     border-radius: 8px;
     font-size: 1em;
     color: #333;
     background-color: rgba(255, 255, 255, 0.95);
-    transition: all 0.3s ease; 
+    transition: all 0.3s ease;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05) inset;
     box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+    resize: vertical;
 }
 
-.form-group input::placeholder {
+.form-group input::placeholder,
+.form-group textarea::placeholder {
     color: #999;
 }
 
-.form-group input:focus {
-    border-color: #5a9ca8; 
-    box-shadow: 0 0 0 3px rgba(90, 156, 168, 0.4); 
+.form-group input:focus,
+.form-group textarea:focus {
+    border-color: #5a9ca8;
+    box-shadow: 0 0 0 3px rgba(90, 156, 168, 0.4);
     outline: none;
     background-color: #fff;
+}
+
+/* Para inputs que precisam de ícone (como senha) */
+.form-group input[type="password"] {
+    padding-right: 45px;
+    /* Deixa espaço para o ícone */
 }
 
 /* ESTILOS DE CORREÇÃO UNIVERSAL PARA O ÍCONE DA SENHA (OLHO) */
 
 .password-group .password-toggle {
     position: absolute;
-    right: 15px; 
+    right: 15px;
     cursor: pointer;
-    color: #666; 
+    color: #666;
     transition: color 0.2s ease;
-    z-index: 2; 
+    z-index: 2;
 }
 
 /* SOLUÇÃO ROBUSTA: Centralizar o ícone em relação ao INPUT */
-/* Usa o seletor de IRMÃO SUBSEQUENTE (+) para posicionar o toggle 
-   exatamente 37px abaixo do topo do form-group, centralizando-o no INPUT. */
-.password-group input[type="password"] + .password-toggle,
-.password-group input[type="text"] + .password-toggle {
-    /* Este valor é a chave. Ele centraliza o ícone verticalmente no input 
-       independentemente do que vier DEPOIS (como a validation-list) */
-    top: 37px; 
-    transform: none; 
+.password-group input[type="password"]+.password-toggle,
+.password-group input[type="text"]+.password-toggle {
+    top: 37px;
+    transform: none;
 }
 
 .password-toggle:hover {
     color: #333;
 }
 
-
 /* Estilização e correção do input de data (Calendário) */
 .form-group input[type="date"] {
-    /* Remove o padding direito extra, confiando no ícone nativo */
-    padding-right: 14px; 
+    padding-right: 14px;
 }
 
 /* --------------------
-    6. Botão de Envio (Mantido)
+    6. Textareas - Estilo igual aos inputs
+    -------------------- */
+.form-group textarea {
+    min-height: 100px;
+    line-height: 1.5;
+}
+
+/* --------------------
+    7. Contadores de Caracteres
+    -------------------- */
+.char-counter {
+    text-align: right;
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.8);
+    margin-top: 0.25rem;
+}
+
+.char-counter.warning {
+    color: #ff9999;
+    font-weight: bold;
+}
+
+/* --------------------
+    8. Texto de ajuda/dica
+    -------------------- */
+.field-hint,
+.form-group small {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.8rem;
+    margin-top: 0.25rem;
+    display: block;
+}
+
+.optional-label {
+    color: rgba(255, 255, 255, 0.7);
+    font-weight: normal;
+    font-size: 0.8em;
+}
+
+/* --------------------
+    9. Botão de Envio (Mantido)
     -------------------- */
 .submit-btn {
     background-color: var(--light-color);
@@ -248,7 +303,7 @@ body {
 }
 
 /* --------------------
-    7. Links e Voltar (Mantido)
+    10. Links e Voltar (Mantido)
     -------------------- */
 .login-link a,
 .forgot-password a {
@@ -268,7 +323,7 @@ body {
     position: absolute;
     top: 20px;
     left: 20px;
-    color: var(--light-color); 
+    color: var(--light-color);
     text-decoration: none;
     font-size: 0.9em;
     font-weight: 500;
@@ -280,12 +335,12 @@ body {
 }
 
 .back-link .back-icon {
-    width: 16px; 
+    width: 16px;
 }
 
 .back-link:hover {
     opacity: 1;
-    transform: translateX(-2px); 
+    transform: translateX(-2px);
 }
 
 /* --- ESTILOS UNIFICADOS PARA AUTOCOMPLETE (Mantido) --- */
@@ -317,17 +372,15 @@ body {
     background-color: #f0f0f0;
 }
 
-
 /* --------------------
-    8. Estilos de Validação da Senha em Tempo Real
+    11. Estilos de Validação da Senha em Tempo Real
     -------------------- */
-
 .validation-list {
     margin-top: 10px;
     padding: 15px;
     list-style: none;
     text-align: left;
-    background-color: rgba(255, 255, 255, 0.1); 
+    background-color: rgba(255, 255, 255, 0.1);
     border-radius: 8px;
     border: 1px solid rgba(255, 255, 255, 0.2);
 }
@@ -338,26 +391,26 @@ body {
     font-size: 0.9em;
     margin: 5px 0;
     transition: color 0.3s ease;
-    color: rgba(255, 255, 255, 0.7); 
+    color: rgba(255, 255, 255, 0.7);
 }
 
 /* Estado de Sucesso (VERDE) */
 .validation-item.valid {
-    color: #92e6a1; 
+    color: #92e6a1;
     font-weight: 500;
 }
 
 .validation-item.valid .icon-status {
-    color: #5cb85c; 
+    color: #5cb85c;
 }
 
 /* Estado de Falha (VERMELHO) */
 .validation-item.invalid {
-    color: #ff9999; 
+    color: #ff9999;
 }
 
 .validation-item.invalid .icon-status {
-    color: #d9534f; 
+    color: #d9534f;
 }
 
 /* Estilo do Ícone (Feather Icons) */
@@ -365,7 +418,49 @@ body {
     margin-right: 8px;
     width: 16px;
     height: 16px;
-    display: block; 
+    display: block;
     transition: transform 0.3s ease;
 }
 
+/* --------------------
+    12. Responsividade
+    -------------------- */
+@media (max-width: 768px) {
+    .auth-card {
+        padding: 25px 20px;
+        margin: 20px;
+    }
+
+    .auth-logo {
+        max-width: 200px;
+        padding: 15px;
+    }
+
+    .form-group input,
+    .form-group textarea {
+        padding: 12px;
+    }
+
+    .submit-btn {
+        padding: 12px 25px;
+        font-size: 1em;
+    }
+}
+
+@media (max-width: 480px) {
+    .auth-section {
+        padding: 40px 15px;
+    }
+
+    .auth-card {
+        padding: 20px 15px;
+    }
+
+    .back-link {
+        position: relative;
+        top: auto;
+        left: auto;
+        margin-bottom: 15px;
+        justify-content: center;
+    }
+}
