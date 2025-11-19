@@ -1,194 +1,184 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-    <head>
-        <meta charset="UTF-8"/>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-        <title>Cadastro Candidato - FuturoTEC</title>
-        <meta name="description" content="Plataforma que conecta estudantes da ETEC com empresas parceiras." />
-        <meta name="author" content="FuturoTEC"/>
 
-        <meta property="og:title" content="FuturoTEC - Conectando talentos da ETEC" />
-        <meta property="og:description" content="Plataforma que conecta estudantes da ETEC com empresas parceiras." />
-        <meta property="og:type" content="website"/>
-        <meta property="og:image" content="https://placehold.co/1200x630/1A2B3C/FFFFFF?text=FuturoTEC"/>
-        <meta name="twitter:card" content="summary_large_image"/>
-        <meta name="twitter:image" content="https://placehold.co/1200x630/1A2B3C/FFFFFF?text=FuturoTEC"/>
-        <link rel="stylesheet" href="css/alerts.css">
-        <link rel="stylesheet" href="css/styles.css">
-        <link rel="stylesheet" href="css/auth.css">
-    
-    </head>
-    <body>
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cadastro Candidato - FuturoTEC</title>
+    <meta name="description" content="Plataforma que conecta estudantes da ETEC com empresas parceiras." />
+    <meta name="author" content="FuturoTEC" />
 
-        <div class="app">
-            <main class="auth-section">
-                <div class="auth-card">
-                    
-                    <a href="login-candidato.html" class="back-link">
-                        <i data-feather="arrow-left" class="back-icon"></i>
-                        Voltar para Login
-                    </a>
+    <meta property="og:title" content="FuturoTEC - Conectando talentos da ETEC" />
+    <meta property="og:description" content="Plataforma que conecta estudantes da ETEC com empresas parceiras." />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="https://placehold.co/1200x630/1A2B3C/FFFFFF?text=FuturoTEC" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content="https://placehold.co/1200x630/1A2B3C/FFFFFF?text=FuturoTEC" />
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/auth.css">
 
-                    <div class="auth-logo">
-                    <img src="img/FuturoTecIndexLogo.png" alt="Logotipo FuturoTEC" class="auth-title-image">                    
+</head>
+
+<body>
+
+    <div class="app">
+        <main class="auth-section">
+            <div class="auth-card">
+
+                <a href="login-candidato.html" class="back-link">
+                    <i data-feather="arrow-left" class="back-icon"></i>
+                    Voltar para Login
+                </a>
+
+                <div class="auth-logo">
+                    <img src="img/FuturoTecIndexLogo.png" alt="Logotipo FuturoTEC" class="auth-title-image">
                 </div>
-                    <h2 class="auth-subtitle">Cadastro do Candidato</h2>
-                    
-                    <form id="form-candidato" class="auth-form">
-                        <div class="form-group">
-                            <label for="nome-candidato">Nome:</label>
-                            <input type="text" id="nome-candidato" name="nome" placeholder="Nome completo:" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="telefone-candidato">Número de telefone:</label>
-                            <input type="tel" id="telefone-candidato" name="telefone" placeholder="Telefone (DDD + Número):" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="email-candidato">Email:</label>
-                            <input type="email" id="email-candidato" name="email" placeholder="Email:" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="data-nascimento-candidato">Data de nascimento:</label>
-                            <input type="date" id="data-nascimento-candidato" name="dataNascimento" required>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="curso-candidato">Curso:</label>
-                            <input type="text" id="curso-candidato" name="cursoNome" placeholder="Digite o nome do curso (ex: Administração)" autocomplete="off" required>
-                            
-                            <input type="hidden" id="curso-id-candidato" name="cursoId" required>
+                <h2 class="auth-subtitle">Cadastro do Candidato</h2>
 
-                            <div id="sugestoes-curso" class="autocomplete-list"></div>
-                        </div>
+                <form id="form-candidato" class="auth-form">
+                    <div class="form-group">
+                        <label for="nome-candidato">Nome:</label>
+                        <input type="text" id="nome-candidato" name="nome" placeholder="Nome completo:" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="telefone-candidato">Número de telefone:</label>
+                        <input type="tel" id="telefone-candidato" name="telefone" placeholder="Telefone (DDD + Número):"
+                            required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email-candidato">Email:</label>
+                        <input type="email" id="email-candidato" name="email" placeholder="Email:" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="data-nascimento-candidato">Data de nascimento:</label>
+                        <input type="date" id="data-nascimento-candidato" name="dataNascimento" required>
+                    </div>
 
-                        <!-- Campo LinkedIn Opcional - ADICIONADO AQUI -->
-                        <div class="form-group">
-                            <label for="linkedin-candidato">LinkedIn <span class="optional-label">(opcional)</span>:</label>
-                            <input type="url" id="linkedin-candidato" name="linkedin" placeholder="https://linkedin.com/in/seu-perfil">
-                            <small class="field-hint">Cole o link completo do seu perfil do LinkedIn</small>
-                        </div>
+                    <div class="form-group">
+                        <label for="curso-candidato">Curso:</label>
+                        <input type="text" id="curso-candidato" name="cursoNome"
+                            placeholder="Digite o nome do curso (ex: Administração)" autocomplete="off" required>
 
-                       <div class="form-group">
-                         <label for="resumo-habilidades">Resumo de Habilidades</label>
-                         <textarea id="resumo-habilidades" name="resumo-habilidades" rows="4" 
-                         maxlength="150"
-                         placeholder="Descreva suas principais habilidades (máx. 150 caracteres)"></textarea>
-                         <div class="char-counter">
-                         <span id="habilidadesCount">0</span>/150 caracteres
-                         </div>
-                         <small>Ex: JavaScript, React, Python, Gestão de Projetos, Inglês...</small>
-                         </div>
+                        <input type="hidden" id="curso-id-candidato" name="cursoId" required>
 
+                        <div id="sugestoes-curso" class="autocomplete-list"></div>
+                    </div>
 
-                        <div class="form-group">
-                        <label for="experiencias-profissionais">Experiências Profissionais</label>
-                        <textarea id="experiencias-profissionais" name="experiencias-profissionais" rows="4" 
-                        maxlength="150"
-                        placeholder="Descreva suas experiências (máx. 150 caracteres)"></textarea>
+                    <!-- Campo LinkedIn Opcional - ADICIONADO AQUI -->
+                    <div class="form-group">
+                        <label for="linkedin-candidato">LinkedIn <span class="optional-label">(opcional)</span>:</label>
+                        <input type="url" id="linkedin-candidato" name="linkedin"
+                            placeholder="https://linkedin.com/in/seu-perfil">
+                        <small class="field-hint">Cole o link completo do seu perfil do LinkedIn</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="resumo-habilidades">Resumo de Habilidades</label>
+                        <textarea id="resumo-habilidades" name="resumo-habilidades" rows="4" maxlength="150"
+                            placeholder="Descreva suas principais habilidades (máx. 150 caracteres)"></textarea>
                         <div class="char-counter">
-                        <span id="experienciasCount">0</span>/150 caracteres
-                        </div>                        
+                            <span id="habilidadesCount">0</span>/150 caracteres
+                        </div>
+                        <small>Ex: JavaScript, React, Python, Gestão de Projetos, Inglês...</small>
+                    </div>
+
+
+                    <div class="form-group">
+                        <label for="experiencias-profissionais">Experiências Profissionais</label>
+                        <textarea id="experiencias-profissionais" name="experiencias-profissionais" rows="4"
+                            maxlength="150" placeholder="Descreva suas experiências (máx. 150 caracteres)"></textarea>
+                        <div class="char-counter">
+                            <span id="experienciasCount">0</span>/150 caracteres
+                        </div>
                         <small>Inclua empresa, cargo, período e atividades principais.</small>
+                    </div>
+
+
+
+                    <div class="form-group password-group">
+                        <label for="senha-candidato">Senha:</label>
+                        <input type="password" id="senha-candidato" name="senha" placeholder="Senha:" required>
+                        <span class="password-toggle" data-target="senha-candidato"><i data-feather="eye"></i></span>
+
+                        <div id="password-validation-list" class="validation-list">
+                            <p id="min-length" class="validation-item invalid"><i data-feather="x"
+                                    class="icon-status"></i> Mínimo 8 caracteres</p>
+                            <p id="has-upper" class="validation-item invalid"><i data-feather="x"
+                                    class="icon-status"></i> Pelo menos 1 maiúscula (A-Z)</p>
+                            <p id="has-lower" class="validation-item invalid"><i data-feather="x"
+                                    class="icon-status"></i> Pelo menos 1 minúscula (a-z)</p>
+                            <p id="has-number" class="validation-item invalid"><i data-feather="x"
+                                    class="icon-status"></i> Pelo menos 1 número (0-9)</p>
+                            <p id="has-special" class="validation-item invalid"><i data-feather="x"
+                                    class="icon-status"></i> Pelo menos 1 caractere especial</p>
                         </div>
-                        
-                        
-                        
-                        <div class="form-group password-group">
-                            <label for="senha-candidato">Senha:</label>
-                            <input type="password" id="senha-candidato" name="senha" placeholder="Senha:" required>
-                            <span class="password-toggle" data-target="senha-candidato"><i data-feather="eye"></i></span>
-                            
-                            <div id="password-validation-list" class="validation-list">
-                                <p id="min-length" class="validation-item invalid"><i data-feather="x" class="icon-status"></i> Mínimo 8 caracteres</p>
-                                <p id="has-upper" class="validation-item invalid"><i data-feather="x" class="icon-status"></i> Pelo menos 1 maiúscula (A-Z)</p>
-                                <p id="has-lower" class="validation-item invalid"><i data-feather="x" class="icon-status"></i> Pelo menos 1 minúscula (a-z)</p>
-                                <p id="has-number" class="validation-item invalid"><i data-feather="x" class="icon-status"></i> Pelo menos 1 número (0-9)</p>
-                                <p id="has-special" class="validation-item invalid"><i data-feather="x" class="icon-status"></i> Pelo menos 1 caractere especial</p>
-                            </div>
-                        </div>
-                        <div class="form-group password-group">
-                            <label for="confirmar-senha-candidato">Confirme sua senha:</label>
-                            <input type="password" id="confirmar-senha-candidato" name="confirmar-senha" placeholder="Confirme sua senha:" required>
-                            <span class="password-toggle" data-target="confirmar-senha-candidato"><i data-feather="eye"></i></span>
-                        </div>
-                        
-                        <div id="password-error-message" style="color: #c53030; font-size: 0.9em; margin-top: -10px; margin-bottom: 15px; text-align: left;"></div>
-                        
-                        <button type="submit" class="submit-btn">Criar Conta</button>
-                        <p class="login-link">Já possui uma conta? <a href="login-candidato.html">Fazer Login</a></p>
-                    </form>
-                </div>
-            </main>
-        </div>
-        
-        <script src="https://unpkg.com/feather-icons"></script>
-        <script> feather.replace(); </script>
+                    </div>
+                    <div class="form-group password-group">
+                        <label for="confirmar-senha-candidato">Confirme sua senha:</label>
+                        <input type="password" id="confirmar-senha-candidato" name="confirmar-senha"
+                            placeholder="Confirme sua senha:" required>
+                        <span class="password-toggle" data-target="confirmar-senha-candidato"><i
+                                data-feather="eye"></i></span>
+                    </div>
 
-        <script>
-            const passwordToggles = document.querySelectorAll('.password-toggle');
+                    <div id="password-error-message"
+                        style="color: #c53030; font-size: 0.9em; margin-top: -10px; margin-bottom: 15px; text-align: left;">
+                    </div>
 
-            passwordToggles.forEach(toggle => {
-                toggle.addEventListener('click', function () {
-                    const targetId = this.getAttribute('data-target');
-                    const passwordInput = document.getElementById(targetId);
-                    const icon = this.querySelector('i');
+                    <button type="submit" class="submit-btn">Criar Conta</button>
+                    <p class="login-link">Já possui uma conta? <a href="login-candidato.html">Fazer Login</a></p>
+                </form>
+            </div>
+        </main>
+    </div>
 
-                    if (passwordInput.type === 'password') {
-                        passwordInput.type = 'text';
-                        icon.setAttribute('data-feather', 'eye-off');
-                    } else {
-                        passwordInput.type = 'password';
-                        icon.setAttribute('data-feather', 'eye');
-                    }
-                    feather.replace(); 
-                });
-            });
-        </script>
-        
-        <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-        <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
-        <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
-        <script type="module" src="js/alert-manager.js"></script>
-        <script type="module" src="js/auth-candidato.js"></script>
+    <script src="https://unpkg.com/feather-icons"></script>
+    <script> feather.replace(); </script>
 
-        <script>
-    // Contador de caracteres para os campos
-    document.addEventListener('DOMContentLoaded', function() {
-        const habilidadesTextarea = document.getElementById('resumo-habilidades');
-        const experienciasTextarea = document.getElementById('experiencias-profissionais');
-        const habilidadesCounter = document.getElementById('habilidadesCount');
-        const experienciasCounter = document.getElementById('experienciasCount');
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <script type="module" src="js/auth-candidato.js"></script>
 
-        // Função para atualizar contador
-        function updateCounter(textarea, counter) {
-            const length = textarea.value.length;
-            counter.textContent = length;
-            
-            // Adicionar classe de warning se estiver perto do limite
-            if (length > 150) {
-                counter.parentElement.classList.add('warning');
-            } else {
-                counter.parentElement.classList.remove('warning');
+    <script>
+        // Contador de caracteres para os campos
+        document.addEventListener('DOMContentLoaded', function () {
+            const habilidadesTextarea = document.getElementById('resumo-habilidades');
+            const experienciasTextarea = document.getElementById('experiencias-profissionais');
+            const habilidadesCounter = document.getElementById('habilidadesCount');
+            const experienciasCounter = document.getElementById('experienciasCount');
+
+            // Função para atualizar contador
+            function updateCounter(textarea, counter) {
+                const length = textarea.value.length;
+                counter.textContent = length;
+
+                // Adicionar classe de warning se estiver perto do limite
+                if (length > 150) {
+                    counter.parentElement.classList.add('warning');
+                } else {
+                    counter.parentElement.classList.remove('warning');
+                }
             }
-        }
 
-        // Event listeners
-        if (habilidadesTextarea && habilidadesCounter) {
-            habilidadesTextarea.addEventListener('input', function() {
-                updateCounter(this, habilidadesCounter);
-            });
-            // Inicializar contador
-            updateCounter(habilidadesTextarea, habilidadesCounter);
-        }
+            // Event listeners
+            if (habilidadesTextarea && habilidadesCounter) {
+                habilidadesTextarea.addEventListener('input', function () {
+                    updateCounter(this, habilidadesCounter);
+                });
+                // Inicializar contador
+                updateCounter(habilidadesTextarea, habilidadesCounter);
+            }
 
-        if (experienciasTextarea && experienciasCounter) {
-            experienciasTextarea.addEventListener('input', function() {
-                updateCounter(this, experienciasCounter);
-            });
-            // Inicializar contador
-            updateCounter(experienciasTextarea, experienciasCounter);
-        }
-    });
-</script>
-    </body>
+            if (experienciasTextarea && experienciasCounter) {
+                experienciasTextarea.addEventListener('input', function () {
+                    updateCounter(this, experienciasCounter);
+                });
+                // Inicializar contador
+                updateCounter(experienciasTextarea, experienciasCounter);
+            }
+        });
+    </script>
+</body>
+
 </html>
