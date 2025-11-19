@@ -49,6 +49,21 @@ function isPasswordStrong(password) {
     return { valid: true, message: '' };
 }
 
+// --- FUNÇÃO DE VALIDAÇÃO DO LINKEDIN ---
+function isValidLinkedInUrl(url) {
+    if (!url || url.trim() === '') return true; // Campo opcional
+
+    const linkedinUrl = url.trim();
+
+    // Padrões aceitáveis:
+    // https://linkedin.com/in/username
+    // https://www.linkedin.com/in/username
+    // http://linkedin.com/in/username
+    // linkedin.com/in/username
+    const linkedinRegex = /^(https?:\/\/)?(www\.)?linkedin\.com\/in\/[a-zA-Z0-9\-_]+\/?$/;
+
+    return linkedinRegex.test(linkedinUrl);
+}
 
 // =======================================================
 // === FUNÇÕES DE AUTENTICAÇÃO E FIRESTORE ===
@@ -91,9 +106,9 @@ async function loginComGoogleCandidato() {
         const errorMessage = error.message.includes("Conta não encontrada")
             ? error.message
             : error.message.includes("Acesso negado")
-            ? error.message
-            : `Erro ao fazer login com o Google. Tente novamente ou use e-mail/senha. Detalhe: ${error.message}`;
-        
+                ? error.message
+                : `Erro ao fazer login com o Google. Tente novamente ou use e-mail/senha. Detalhe: ${error.message}`;
+
         alert(errorMessage);
         throw error;
     }
@@ -117,7 +132,7 @@ async function recuperarSenhaCandidato() {
         if (error.code === 'auth/user-not-found') {
             errorMessage = "Não encontramos uma conta para este e-mail. Verifique se digitou corretamente.";
         } else if (error.code === 'auth/invalid-email') {
-             errorMessage = "O formato do e-mail é inválido.";
+            errorMessage = "O formato do e-mail é inválido.";
         }
         alert(`Erro: ${errorMessage}`);
     }
@@ -146,7 +161,6 @@ Para confirmar a exclusão, digite seu EMAIL (${userEmail}) no campo abaixo:`);
         alert("Exclusão cancelada. É necessário informar a senha.");
         return;
     }
-
 
     try {
         const credential = firebase.auth.EmailAuthProvider.credential(userEmail, confirmacaoSenha);
@@ -179,7 +193,7 @@ Para confirmar a exclusão, digite seu EMAIL (${userEmail}) no campo abaixo:`);
         let errorMessage = "Ocorreu um erro ao tentar excluir sua conta.";
 
         if (error.code === 'auth/wrong-password' || error.message.includes('password')) {
-             errorMessage = "Senha incorreta. A exclusão da conta foi cancelada.";
+            errorMessage = "Senha incorreta. A exclusão da conta foi cancelada.";
         } else if (error.code === 'auth/requires-recent-login') {
             errorMessage = "Erro de Segurança: Você precisa ter feito login *recentemente*. Por favor, saia e entre novamente, e tente excluir a conta em seguida.";
         }
@@ -215,13 +229,11 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-
     // --- ELEMENTOS DE VALIDAÇÃO VISUAL ---
     const senhaInput = document.getElementById('senha-candidato');
     const confirmarSenhaInput = document.getElementById('confirmar-senha-candidato');
     const validationList = document.getElementById('password-validation-list');
     const errorMessageDiv = document.getElementById('password-error-message');
-
 
     // Função para atualizar o status visual das regras de senha
     function updatePasswordValidation() {
@@ -259,8 +271,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // Limpa a mensagem de erro principal ao começar a digitar a senha
-        if(errorMessageDiv) {
-             errorMessageDiv.textContent = '';
+        if (errorMessageDiv) {
+            errorMessageDiv.textContent = '';
         }
     }
 
@@ -272,7 +284,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Opcional: Limpa mensagem de erro ao digitar na confirmação
     if (confirmarSenhaInput && errorMessageDiv) {
         confirmarSenhaInput.addEventListener('input', () => {
-             errorMessageDiv.textContent = '';
+            errorMessageDiv.textContent = '';
         });
     }
 
@@ -348,106 +360,114 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-
     // --- 2. LÓGICA DE CADASTRO COM VALIDAÇÃO (REVISADA) ---
-const formCandidato = document.getElementById('form-candidato');
-if (formCandidato) {
-    formCandidato.addEventListener('submit', async (e) => {
-        e.preventDefault();
+    const formCandidato = document.getElementById('form-candidato');
+    if (formCandidato) {
+        formCandidato.addEventListener('submit', async (e) => {
+            e.preventDefault();
 
-        const cadastroErrorMessageDiv = document.getElementById('form-error-message') || errorMessageDiv;
-        if (cadastroErrorMessageDiv) cadastroErrorMessageDiv.textContent = '';
+            const cadastroErrorMessageDiv = document.getElementById('form-error-message') || errorMessageDiv;
+            if (cadastroErrorMessageDiv) cadastroErrorMessageDiv.textContent = '';
 
-        const email = document.getElementById('email-candidato').value;
-        const senha = document.getElementById('senha-candidato').value;
-        const confirmarSenha = document.getElementById('confirmar-senha-candidato').value;
-        const nome = document.getElementById('nome-candidato').value;
-        const telefone = document.getElementById('telefone-candidato').value;
-        const dataNascimento = document.getElementById('data-nascimento-candidato').value;
-        const cursoId = document.getElementById('curso-id-candidato').value;
-        const cursoNome = document.getElementById('curso-candidato').value;
-        
-        // NOVOS CAMPOS - Adicione estas linhas
-        const resumoHabilidades = document.getElementById('resumo-habilidades')?.value || '';
-        const experienciasProfissionais = document.getElementById('experiencias-profissionais')?.value || '';
+            const email = document.getElementById('email-candidato').value;
+            const senha = document.getElementById('senha-candidato').value;
+            const confirmarSenha = document.getElementById('confirmar-senha-candidato').value;
+            const nome = document.getElementById('nome-candidato').value;
+            const telefone = document.getElementById('telefone-candidato').value;
+            const dataNascimento = document.getElementById('data-nascimento-candidato').value;
+            const cursoId = document.getElementById('curso-id-candidato').value;
+            const cursoNome = document.getElementById('curso-candidato').value;
 
-        // 1. Validação de Curso
-        if (!cursoId) {
-            const msg = "Por favor, selecione um curso válido da lista de sugestões.";
-            if (cadastroErrorMessageDiv) cadastroErrorMessageDiv.textContent = msg;
-            else alert(msg);
-            return;
-        }
+            // NOVOS CAMPOS
+            const resumoHabilidades = document.getElementById('resumo-habilidades')?.value || '';
+            const experienciasProfissionais = document.getElementById('experiencias-profissionais')?.value || '';
+            const linkedin = document.getElementById('linkedin-candidato')?.value || '';
 
-        // 2. Validação de Confirmação de Senha
-        if (senha !== confirmarSenha) {
-            const msg = "As senhas não coincidem. Por favor, tente novamente.";
-            if (cadastroErrorMessageDiv) cadastroErrorMessageDiv.textContent = msg;
-            else alert(msg);
-            return;
-        }
-
-        // 3. Validação de Força de Senha
-        const passwordCheck = isPasswordStrong(senha);
-        if (!passwordCheck.valid) {
-            if (cadastroErrorMessageDiv) cadastroErrorMessageDiv.textContent = passwordCheck.message;
-            else alert(passwordCheck.message);
-            return;
-        }
-
-        // 4. Validação dos campos de texto (resumo e experiências)
-        if (resumoHabilidades.length > 150) {
-            const msg = "Resumo de Habilidades deve ter no máximo 150 caracteres.";
-            if (cadastroErrorMessageDiv) cadastroErrorMessageDiv.textContent = msg;
-            else alert(msg);
-            return;
-        }
-
-        if (experienciasProfissionais.length > 150) {
-            const msg = "Experiências Profissionais deve ter no máximo 150 caracteres.";
-            if (cadastroErrorMessageDiv) cadastroErrorMessageDiv.textContent = msg;
-            else alert(msg);
-            return;
-        }
-
-        // Se todas as validações passaram, inicia o cadastro no Firebase
-        try {
-            const userCredential = await auth.createUserWithEmailAndPassword(email, senha);
-            const user = userCredential.user;
-
-            const perfilData = {
-                role: 'aluno',
-                nome: nome,
-                telefone: telefone,
-                dataNascimento: dataNascimento,
-                email: email,
-                cursoId: cursoId,
-                cursoNome: cursoNome,
-                // NOVOS CAMPOS - Adicione estas linhas
-                resumoHabilidades: resumoHabilidades.substring(0, 150),
-                experienciasProfissionais: experienciasProfissionais.substring(0, 150),
-                dataCriacao: firebase.firestore.FieldValue.serverTimestamp()
-            };
-            await db.collection('usuarios').doc(user.uid).set(perfilData);
-
-            await auth.signOut();
-
-            alert("Cadastro de Candidato realizado com sucesso! Por favor, faça login.");
-            window.location.href = 'login-candidato.html';
-        } catch (error) {
-            console.error("Erro no cadastro:", error);
-
-            let friendlyError = error.message;
-            if (error.code === 'auth/email-already-in-use') {
-                friendlyError = "Este e-mail já está em uso. Tente fazer login ou use outro e-mail.";
+            // 1. Validação de Curso
+            if (!cursoId) {
+                const msg = "Por favor, selecione um curso válido da lista de sugestões.";
+                if (cadastroErrorMessageDiv) cadastroErrorMessageDiv.textContent = msg;
+                else alert(msg);
+                return;
             }
 
-            const msg = `Erro ao cadastrar: ${friendlyError}`;
-            if (cadastroErrorMessageDiv) cadastroErrorMessageDiv.textContent = msg;
-            else alert(msg);
-        }
-    });
-}
+            // 2. Validação de Confirmação de Senha
+            if (senha !== confirmarSenha) {
+                const msg = "As senhas não coincidem. Por favor, tente novamente.";
+                if (cadastroErrorMessageDiv) cadastroErrorMessageDiv.textContent = msg;
+                else alert(msg);
+                return;
+            }
+
+            // 3. Validação de Força de Senha
+            const passwordCheck = isPasswordStrong(senha);
+            if (!passwordCheck.valid) {
+                if (cadastroErrorMessageDiv) cadastroErrorMessageDiv.textContent = passwordCheck.message;
+                else alert(passwordCheck.message);
+                return;
+            }
+
+            // 4. Validação dos campos de texto (resumo e experiências)
+            if (resumoHabilidades.length > 150) {
+                const msg = "Resumo de Habilidades deve ter no máximo 150 caracteres.";
+                if (cadastroErrorMessageDiv) cadastroErrorMessageDiv.textContent = msg;
+                else alert(msg);
+                return;
+            }
+
+            if (experienciasProfissionais.length > 150) {
+                const msg = "Experiências Profissionais deve ter no máximo 150 caracteres.";
+                if (cadastroErrorMessageDiv) cadastroErrorMessageDiv.textContent = msg;
+                else alert(msg);
+                return;
+            }
+
+            // 5. Validação do LinkedIn (se preenchido)
+            if (linkedin && !isValidLinkedInUrl(linkedin)) {
+                const msg = "Por favor, insira um URL válido do LinkedIn (ex: https://linkedin.com/in/seu-perfil)";
+                if (cadastroErrorMessageDiv) cadastroErrorMessageDiv.textContent = msg;
+                else alert(msg);
+                return;
+            }
+
+            // Se todas as validações passaram, inicia o cadastro no Firebase
+            try {
+                const userCredential = await auth.createUserWithEmailAndPassword(email, senha);
+                const user = userCredential.user;
+
+                const perfilData = {
+                    role: 'aluno',
+                    nome: nome,
+                    telefone: telefone,
+                    dataNascimento: dataNascimento,
+                    email: email,
+                    cursoId: cursoId,
+                    cursoNome: cursoNome,
+                    resumoHabilidades: resumoHabilidades.substring(0, 150),
+                    experienciasProfissionais: experienciasProfissionais.substring(0, 150),
+                    linkedin: linkedin,
+                    dataCriacao: firebase.firestore.FieldValue.serverTimestamp()
+                };
+                await db.collection('usuarios').doc(user.uid).set(perfilData);
+
+                await auth.signOut();
+
+                alert("Cadastro de Candidato realizado com sucesso! Por favor, faça login.");
+                window.location.href = 'login-candidato.html';
+            } catch (error) {
+                console.error("Erro no cadastro:", error);
+
+                let friendlyError = error.message;
+                if (error.code === 'auth/email-already-in-use') {
+                    friendlyError = "Este e-mail já está em uso. Tente fazer login ou use outro e-mail.";
+                }
+
+                const msg = `Erro ao cadastrar: ${friendlyError}`;
+                if (cadastroErrorMessageDiv) cadastroErrorMessageDiv.textContent = msg;
+                else alert(msg);
+            }
+        });
+    }
 
     // --- 3. LÓGICA DE LOGIN (EXISTENTE) ---
     const formLoginCandidato = document.getElementById('form-login-candidato');
@@ -456,7 +476,6 @@ if (formCandidato) {
             e.preventDefault();
             const email = document.getElementById('email-login-candidato').value;
             const senha = document.getElementById('senha-login-candidato').value;
-            // Adicione aqui a manipulação de erro de login se houver um div para isso no login-candidato.html
 
             try {
                 const userCredential = await auth.signInWithEmailAndPassword(email, senha);
@@ -467,13 +486,11 @@ if (formCandidato) {
                 if (userData && userData.role === 'aluno') {
                     window.location.href = 'InicialAluno.html';
                 } else {
-        
                     alert("Acesso negado. Este login é apenas para candidatos.");
                     auth.signOut();
                 }
             } catch (error) {
                 console.error("Erro no login:", error);
-    
                 alert(`Erro ao fazer login: ${error.message}`);
             }
         });
@@ -504,135 +521,164 @@ if (formCandidato) {
         });
     }
 
-  // --- 4. LÓGICA DA PÁGINA DE PERFIL (ATUALIZADA) ---
-const formPerfil = document.getElementById('profile-form');
-const formPerfilProfissional = document.getElementById('profile-profissional-form');
+    // --- 4. LÓGICA DA PÁGINA DE PERFIL (ATUALIZADA) ---
+    const formPerfil = document.getElementById('profile-form');
+    const formPerfilProfissional = document.getElementById('profile-profissional-form');
 
-if (formPerfil || formPerfilProfissional) {
-    const btnExcluirConta = document.getElementById('btn-excluir-conta');
+    if (formPerfil || formPerfilProfissional) {
+        const btnExcluirConta = document.getElementById('btn-excluir-conta');
 
-    const carregarDadosDoUsuario = async (userId) => {
-        try {
-            const doc = await db.collection('usuarios').doc(userId).get();
-            if (!doc.exists) { return; }
-            const data = doc.data();
-            
-            // Dados pessoais
-            document.getElementById('user-name').textContent = data.nome || '';
-            document.getElementById('user-email').textContent = data.email || '';
-            document.getElementById('email').value = data.email || '';
-            document.getElementById('nome-completo').value = data.nome || '';
-            document.getElementById('celular').value = data.telefone || '';
-            document.getElementById('nascimento').value = data.dataNascimento || '';
-            document.getElementById('curso-aluno').value = data.cursoNome || 'Não informado';
-            
-            // NOVOS CAMPOS PROFISSIONAIS
-            document.getElementById('resumo-habilidades').value = data.resumoHabilidades || '';
-            document.getElementById('experiencias-profissionais').value = data.experienciasProfissionais || '';
-            
-        } catch (error) {
-            console.error("Erro ao carregar dados:", error);
-            alert("Erro ao carregar dados do seu perfil.");
-        }
-    };
+        const carregarDadosDoUsuario = async (userId) => {
+            try {
+                const doc = await db.collection('usuarios').doc(userId).get();
+                if (!doc.exists) { return; }
+                const data = doc.data();
 
-    const salvarDadosPessoais = async (userId) => {
-        const dadosParaSalvar = {
-            nome: document.getElementById('nome-completo').value,
-            telefone: document.getElementById('celular').value,
-            dataNascimento: document.getElementById('nascimento').value,
-            dataAtualizacao: firebase.firestore.FieldValue.serverTimestamp()
+                // Dados pessoais
+                document.getElementById('user-name').textContent = data.nome || '';
+                document.getElementById('user-email').textContent = data.email || '';
+                document.getElementById('email').value = data.email || '';
+                document.getElementById('nome-completo').value = data.nome || '';
+                document.getElementById('celular').value = data.telefone || '';
+                document.getElementById('nascimento').value = data.dataNascimento || '';
+                document.getElementById('curso-aluno').value = data.cursoNome || 'Não informado';
+
+                // NOVO: Campo LinkedIn
+                document.getElementById('linkedin-perfil').value = data.linkedin || '';
+
+                // CAMPOS PROFISSIONAIS
+                document.getElementById('resumo-habilidades').value = data.resumoHabilidades || '';
+                document.getElementById('experiencias-profissionais').value = data.experienciasProfissionais || '';
+
+                // Atualizar contadores de caracteres
+                const updateCharacterCounters = () => {
+                    const habilidadesTextarea = document.getElementById('resumo-habilidades');
+                    const experienciasTextarea = document.getElementById('experiencias-profissionais');
+                    const habilidadesCounter = document.getElementById('habilidadesCount');
+                    const experienciasCounter = document.getElementById('experienciasCount');
+
+                    if (habilidadesTextarea && habilidadesCounter) {
+                        habilidadesCounter.textContent = habilidadesTextarea.value.length;
+                    }
+                    if (experienciasTextarea && experienciasCounter) {
+                        experienciasCounter.textContent = experienciasTextarea.value.length;
+                    }
+                };
+
+                updateCharacterCounters();
+
+            } catch (error) {
+                console.error("Erro ao carregar dados:", error);
+                alert("Erro ao carregar dados do seu perfil.");
+            }
         };
 
-        try {
-            await db.collection('usuarios').doc(userId).set(dadosParaSalvar, { merge: true });
-            alert("Dados pessoais salvos com sucesso!");
-            document.getElementById('user-name').textContent = dadosParaSalvar.nome;
-        } catch (error) {
-            console.error("Erro ao salvar dados pessoais:", error);
-            alert(`Erro ao salvar: ${error.message}`);
-        }
-    };
+        const salvarDadosPessoais = async (userId) => {
+            // Validação do LinkedIn antes de salvar
+            const linkedin = document.getElementById('linkedin-perfil').value;
+            if (linkedin && !isValidLinkedInUrl(linkedin)) {
+                alert("Por favor, insira um URL válido do LinkedIn (ex: https://linkedin.com/in/seu-perfil)");
+                return;
+            }
 
-    const salvarDadosProfissionais = async (userId) => {
-        const dadosParaSalvar = {
-            resumoHabilidades: document.getElementById('resumo-habilidades').value.substring(0, 150),
-            experienciasProfissionais: document.getElementById('experiencias-profissionais').value.substring(0, 150),
-            dataAtualizacao: firebase.firestore.FieldValue.serverTimestamp()
+            const dadosParaSalvar = {
+                nome: document.getElementById('nome-completo').value,
+                telefone: document.getElementById('celular').value,
+                dataNascimento: document.getElementById('nascimento').value,
+                linkedin: linkedin,
+                dataAtualizacao: firebase.firestore.FieldValue.serverTimestamp()
+            };
+
+            try {
+                await db.collection('usuarios').doc(userId).set(dadosParaSalvar, { merge: true });
+                alert("Dados pessoais salvos com sucesso!");
+                document.getElementById('user-name').textContent = dadosParaSalvar.nome;
+            } catch (error) {
+                console.error("Erro ao salvar dados pessoais:", error);
+                alert(`Erro ao salvar: ${error.message}`);
+            }
         };
 
-        try {
-            await db.collection('usuarios').doc(userId).set(dadosParaSalvar, { merge: true });
-            alert("Perfil profissional salvo com sucesso!");
-        } catch (error) {
-            console.error("Erro ao salvar perfil profissional:", error);
-            alert(`Erro ao salvar: ${error.message}`);
-        }
-    };
+        const salvarDadosProfissionais = async (userId) => {
+            const dadosParaSalvar = {
+                resumoHabilidades: document.getElementById('resumo-habilidades').value.substring(0, 150),
+                experienciasProfissionais: document.getElementById('experiencias-profissionais').value.substring(0, 150),
+                dataAtualizacao: firebase.firestore.FieldValue.serverTimestamp()
+            };
 
-    // VARIÁVEL DE CONTROLE PARA EVITAR MÚLTIPLOS DISPAROS DE REDIRECIONAMENTO
-    let isAuthChecked = false;
-
-    auth.onAuthStateChanged(user => {
-        if (isAuthChecked) return;
-        isAuthChecked = true;
-
-        if (user) {
-            // Usuário logado: Carrega dados e configura botões
-            carregarDadosDoUsuario(user.uid);
-
-            // Formulário de dados pessoais
-            if (formPerfil) {
-                formPerfil.addEventListener('submit', (e) => {
-                    e.preventDefault();
-                    salvarDadosPessoais(user.uid);
-                });
+            try {
+                await db.collection('usuarios').doc(userId).set(dadosParaSalvar, { merge: true });
+                alert("Perfil profissional salvo com sucesso!");
+            } catch (error) {
+                console.error("Erro ao salvar perfil profissional:", error);
+                alert(`Erro ao salvar: ${error.message}`);
             }
+        };
 
-            // NOVO: Formulário de perfil profissional
-            if (formPerfilProfissional) {
-                formPerfilProfissional.addEventListener('submit', (e) => {
-                    e.preventDefault();
-                    
-                    // VALIDAÇÃO DOS CAMPOS DE TEXTO ANTES DE SALVAR
-                    const resumoHabilidades = document.getElementById('resumo-habilidades').value;
-                    const experienciasProfissionais = document.getElementById('experiencias-profissionais').value;
-                    
-                    const erros = [];
-                    
-                    if (resumoHabilidades.length > 150) {
-                        erros.push('Resumo de Habilidades deve ter no máximo 150 caracteres');
-                    }
-                    
-                    if (experienciasProfissionais.length > 150) {
-                        erros.push('Experiências Profissionais deve ter no máximo 150 caracteres');
-                    }
-                    
-                    if (erros.length > 0) {
-                        alert(erros.join(', '));
-                        return;
-                    }
-                    
-                    // Se passou na validação, salva os dados
-                    salvarDadosProfissionais(user.uid);
-                });
-            }
+        // VARIÁVEL DE CONTROLE PARA EVITAR MÚLTIPLOS DISPAROS DE REDIRECIONAMENTO
+        let isAuthChecked = false;
 
-            if (btnExcluirConta) {
-                btnExcluirConta.addEventListener('click', () => {
-                    excluirContaCandidato(user);
-                });
-            }
+        auth.onAuthStateChanged(user => {
+            if (isAuthChecked) return;
+            isAuthChecked = true;
 
-        } else {
-            // Usuário deslogado: Redireciona
-            if (!window.location.href.includes('login-candidato.html') && !window.location.href.includes('cadastro-candidato.html')) {
-                alert("Você precisa estar logado para acessar esta página.");
-                window.location.href = 'login-candidato.html';
+            if (user) {
+                // Usuário logado: Carrega dados e configura botões
+                carregarDadosDoUsuario(user.uid);
+
+                // Formulário de dados pessoais
+                if (formPerfil) {
+                    formPerfil.addEventListener('submit', (e) => {
+                        e.preventDefault();
+                        salvarDadosPessoais(user.uid);
+                    });
+                }
+
+                // Formulário de perfil profissional
+                if (formPerfilProfissional) {
+                    formPerfilProfissional.addEventListener('submit', (e) => {
+                        e.preventDefault();
+
+                        // VALIDAÇÃO DOS CAMPOS DE TEXTO ANTES DE SALVAR
+                        const resumoHabilidades = document.getElementById('resumo-habilidades').value;
+                        const experienciasProfissionais = document.getElementById('experiencias-profissionais').value;
+
+                        const erros = [];
+
+                        if (resumoHabilidades.length > 150) {
+                            erros.push('Resumo de Habilidades deve ter no máximo 150 caracteres');
+                        }
+
+                        if (experienciasProfissionais.length > 150) {
+                            erros.push('Experiências Profissionais deve ter no máximo 150 caracteres');
+                        }
+
+                        if (erros.length > 0) {
+                            alert(erros.join(', '));
+                            return;
+                        }
+
+                        // Se passou na validação, salva os dados
+                        salvarDadosProfissionais(user.uid);
+                    });
+                }
+
+                if (btnExcluirConta) {
+                    btnExcluirConta.addEventListener('click', () => {
+                        excluirContaCandidato(user);
+                    });
+                }
+
+            } else {
+                // Usuário deslogado: Redireciona
+                if (!window.location.href.includes('login-candidato.html') && !window.location.href.includes('cadastro-candidato.html')) {
+                    alert("Você precisa estar logado para acessar esta página.");
+                    window.location.href = 'login-candidato.html';
+                }
             }
-        }
-    });
-}
+        });
+    }
+
     // --- 5. CONEXÃO DA FUNÇÃO DE LOGOUT ---
     const btnDeslogar = document.getElementById('btn-deslogar');
     if (btnDeslogar) {
